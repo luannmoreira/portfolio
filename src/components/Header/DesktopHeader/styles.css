@@ -1,0 +1,38 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4rem;
+  border-bottom: 1px solid #eee;
+  transition: transform 0.5s;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.visible {
+  transform: translateY(0);
+}
+
+.hidden {
+  transform: translateY(-60px);
+  animation: 2s ease-in-out;
+}
+
+.navbar__logo {
+  margin-top: 1rem;
+}
+a {
+  color: #22A39F;
+  padding: 1rem;
+}
+a:link {
+  text-decoration: none;
+}
+
+.navbar__items {
+  text-decoration: none;
+  margin-left: 15rem;
+  margin-top: 1rem;
+}
