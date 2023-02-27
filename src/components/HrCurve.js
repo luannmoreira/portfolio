@@ -1,6 +1,12 @@
-import hr from '../assets/curve-hr.svg'
-export default function HrCurve(){
-    return (
-        <img src={hr} className="w-full md:h-3 mt-8" alt="hr" />
-    )
+export default function HrCurve() {
+  return (
+    <hr
+      style={{
+        marginTop: "2.5rem",
+        marginBottom: "2.5rem",
+        border: "0",
+        borderTop: "1px solid #eee",
+      }}
+    />
+  );
 }

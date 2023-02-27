@@ -1,36 +1,104 @@
-import CertCard from "./CertCard.js"
+import CertCard from "./CardCerts.js";
+import matangular from "../assets/certs/matangular.jpg";
+import serfrontend from "../assets/certs/serfrontend.jpg";
+import serfrontend2 from "../assets/certs/serfrontend2.jpg";
+import harvardcs from "../assets/certs/harvardcs50.png";
+import nuxttailwind from "../assets/certs/nuxttailwind.jpg";
+import javascriptbible from "../assets/certs/javascriptbible.jpg";
+import matreact from "../assets/certs/matreact.jpg";
 
-import hr from "../assets/curve-hr.svg"
-import mtcna from "../assets/certs/mtcna.jpg"
-import adinusa from "../assets/certs/adinusa.png"
-import dicodingAws from "../assets/certs/dicoding-aws.png"
-import dicodingJs from "../assets/certs/dicoding-js.png"
-import dicodingNetwork from "../assets/certs/dicoding-network.png"
-import progateHtml from "../assets/certs/progate-htmlcss.png"
-import progateJs from "../assets/certs/progate-js.png"
-import fccResponsive from "../assets/certs/fcc-responsive.png"
+import HrCurve from "./HrCurve.js";
 
-// import 
+// import
 
-export default function Certs(){
-    return (
-        <div id="certs" className="mt-4 text-white">
-            <h1 className="text-2xl font-bold">Certifications</h1>
-            <p className="font-light text-gray-400">Here are some of my Certifications</p>
+export default function Certs() {
+  return (
+    <div id="certs" className="mt-4 text-white">
+      <h1 className="text-2xl font-bold">Cursos</h1>
+      <p className="font-light text-gray-400">
+        Cursos que eu já fiz e recomendo!
+      </p>
 
-            {/* <div className="flex flex-col md:flex-row flex-wrap mt-4 gap-5"> */}
-            <div className="grid grid-cols-1 md:grid-cols-3 justify-center mt-4 gap-5">
-                <CertCard name="Bootcamp Btech Academy Cloud Engineer" img={adinusa} issued="Adinusa" date="Jul 2022" />
-                <CertCard name="Mikrotik Certfied Network Associate" img={mtcna} issued="Mikrotik" date="Jun 2022" />
-                <CertCard name="Cloud Practitioner Essentials" img={dicodingAws} issued="Dicoding Indonesia" date="Feb 2022" />
-                <CertCard name="Dasar Pemprograman Javascript" img={dicodingJs} issued="Dicodig Indonesia" date="Mei 2021" />
-                <CertCard name="Jaringan Komputer untuk Pemula" img={dicodingNetwork} issued="Dicodig Indonesia" date="Jan 2023" />
-                <CertCard name="Responsive Web Design " img={fccResponsive} issued="Dicodig Indonesia" date="Dec 21" />
-                <CertCard name="Kursus Javascript" img={progateJs} issued="Progate" date="Oct 2020" />
-                <CertCard name="Kursus HTML & CSS" img={progateHtml} issued="Progate" date="Oct 2020" />
-
-            </div>
-            <img src={hr} className="w-full mt-8 md:h-2" alt="hr" />
-        </div>
-    )
+      {/* <div className="flex flex-col md:flex-row flex-wrap mt-4 gap-5"> */}
+      <div className="grid grid-cols-1 md:grid-cols-3 justify-center mt-4 gap-5">
+        <CertCard
+          name="Harvard CS50"
+          desc="Estrutura de dados;
+Encapsulamento;
+Algoritmos;
+Segurança da Informação;
+Contato com linguagens de programação (C, Python, SQL)"
+          img={harvardcs}
+          issued="freeCodeCamp.org"
+          date="Jul 2022"
+          linkCurso="https://www.freecodecamp.org/news/harvard-cs50/"
+        />
+        <CertCard
+          name="Lógica de Programação com Javascript"
+          desc="Conceitos em lógica de programação;
+          Estrutura de dados;"
+          img={serfrontend}
+          issued="UDEMY"
+          date="Jul 2022"
+          linkCurso="https://www.udemy.com/course/logica-de-programacao-com-javascript-iniciando-no-frontend/"
+        />
+        <CertCard
+          name="Curso de Javascript Completo do iniciante ao mestre"
+          desc="Introdução a lógica de programação;
+          Conceitos de programação orientada a objetos;
+          Javascript;"
+          img={serfrontend2}
+          issued="UDEMY"
+          date="Jul 2022"
+          linkCurso="https://www.udemy.com/course/javascript-completo-2018-do-iniciante-ao-mestre/"
+        />
+        <CertCard
+          name="Nuxt.js e TailwindCSS para turbinar a criação de front-end"
+          desc="Nuxt.js
+          TailwindCSS
+          API, tags de SEO, componentes e mais."
+          img={nuxttailwind}
+          issued="UDEMY"
+          date="Jul 2022"
+          linkCurso="https://www.udemy.com/course/nuxtjs-e-tailwindcss-para-turbinar-a-criacao-de-front-end/"
+        />
+        <CertCard
+          name="Curso Matheus Battisti Angular 13"
+          desc="Angular 13
+          Projeto em prática
+          Criação de telas
+          Estrutura do Angular (CLI, Two-Way Data Binding, TypeScript)"
+          img={matangular}
+          issued="Matheus Battisti (YouTube)"
+          date="Jul 2022"
+          linkCurso="https://youtu.be/vJt_K1bFUeA"
+        />
+        <CertCard
+          name="The Javascript Bible"
+          desc="AJAX;
+          JQUERY;
+          JSON;
+          AngularJS;
+          Fetch API;"
+          img={javascriptbible}
+          issued="UDEMY"
+          date="Jul 2022"
+          linkCurso="https://www.udemy.com/course/javascript-bible/"
+        />
+        <CertCard
+          name="Curso Matheus Battisti React"
+          desc="JSX
+          React Framework
+          Criação de telas
+          Consumindo API
+          Projeto em prática"
+          img={matreact}
+          issued="Matheus Battisti (YouTube)"
+          date="Jul 2022"
+          linkCurso="https://youtu.be/FXqX7oof0I4"
+        />
+      </div>
+      <HrCurve />
+    </div>
+  );
 }
