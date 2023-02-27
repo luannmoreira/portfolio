@@ -20,7 +20,7 @@ export default function Navbar() {
             04. <a href="#certs">Cursos/Certificados</a>
           </li>
           <li className="p-4 font-mono text-white hover:text-blue">
-            05. <a href="#conta">Contato</a>
+            05. <a href="#contact">Contato</a>
           </li>
         </ul>
         <a

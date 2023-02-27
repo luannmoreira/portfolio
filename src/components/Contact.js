@@ -7,14 +7,14 @@ export default function Contact() {
   return (
     <div
       id="contact"
-      className="flex w-full h-screen flex-col md:flex-column gap-5 items-center justify-center text-white relative"
+      className="flex w-full h-screen flex-col md:flex-column gap-5 items-center align-center justify-center text-white relative"
     >
-      <div className="flex flex-col items-center w-full">
+      <div className="flex flex-col align-center justify-center items-center w-full pl-5 pr-5">
         <h1 className="text-3xl text-transparent font-bold bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-500 font-mono">
           Gostou?
         </h1>
         <h1 className="text-5xl font-bold">Entre em contato!</h1>
-        <p className="text-xl font-light text-gray-300 pt-2 pl-10 pr-10 w-3/6">
+        <p className="text-xl font-light text-gray-300 pt-2 sm:w-3/6">
           Olá! Atualmente estou procurando por novas oportunidades de emprego e
           gostaria de explorar possíveis vagas em sua empresa. Se houver alguma
           vaga que se alinhe com minhas habilidades e experiência, adoraria
