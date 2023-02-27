@@ -22,7 +22,7 @@ export default function Hiro() {
         id="home"
         className="flex w-full lg:h-screen mt-20 flex-col md:flex-row gap-5 items-center justify-center text-white relative"
       >
-        <div className="w-3/6 h-3/6">
+        <div className="w-100 md:w-3/6">
           <img
             data-aos="flip-right"
             data-aos-duration="1500"
