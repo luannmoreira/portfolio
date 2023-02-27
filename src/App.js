@@ -6,6 +6,7 @@ import Habilidades from './components/Habilidades'
 import Experiencia from './components/Experiencia';
 import Certs from './components/Certs';
 import Footer from './components/Footer';
+import Contact from './components/Contact'
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
@@ -16,12 +17,13 @@ function App() {
       AOS.init();
     }, []);
   return (
-    <div className="px-6 lg:px-20 xl:px-36 bg-dark-500">
+    <div className="w-100 px-6 lg:px-20 xl:px-36 bg-dark-500">
       <Navbar />
       <Hero />
       <Habilidades />
       <Experiencia />
       <Certs />
+      <Contact />
       <Footer />
     </div>
   );

@@ -18,6 +18,7 @@ import gitlab from "../assets/skills/gitlab.svg";
 import html from "../assets/skills/html.svg";
 import vue from "../assets/skills/vue.svg";
 import HrCurve from "./HrCurve.js";
+import csharp from "../assets/skills/csharp.svg"
 
 export default function Habilidades() {
   const settings = {
@@ -38,19 +39,20 @@ export default function Habilidades() {
       <div className="mt-4">
         <Slider {...settings}>
           <SkillCard name="JavaScript" experience="4 anos" img={javascript} />
+          <SkillCard name="Python" experience="3 anos" img={python} />
+          <SkillCard name="C#" experience="1 ano" img={csharp} />
+          <SkillCard name="Docker" experience="1 ano" img={docker} />
+          <SkillCard name="BASH" experience="6 anos" img={bash} />
           <SkillCard name="HTML" experience="4 anos" img={html} />
           <SkillCard name="React" experience="2 anos" img={reactIcon} />
           <SkillCard name="Vue" experience="2 anos" img={vue} />
           <SkillCard name="Tailwind" experience="1 ano" img={tailwind} />
           <SkillCard name="NodeJS" experience="2 anos" img={node} />
           <SkillCard name="express" experience="2 anos" img={express} />
-          <SkillCard name="Linux" experience="6 anos" img={linux} />
-          <SkillCard name="BASH" experience="6 anos" img={bash} />
-          <SkillCard name="Python" experience="3 ano" img={python} />
-          <SkillCard name="Windows Server" experience="4 anos" img={windows} />
-          <SkillCard name="Docker" experience="1 ano" img={docker} />
           <SkillCard name="GIT" experience="3 anos" img={git} />
           <SkillCard name="GitLab" experience="3 anos" img={gitlab} />
+          <SkillCard name="Linux" experience="6 anos" img={linux} />
+          <SkillCard name="Windows Server" experience="4 anos" img={windows} />
         </Slider>
       </div>
       <HrCurve />

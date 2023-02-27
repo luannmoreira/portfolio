@@ -20,7 +20,7 @@ export default function Hiro() {
       ) : null}
       <div
         id="home"
-        className="flex w-full h-screen flex-col md:flex-row gap-5 items-center justify-center text-white relative"
+        className="flex w-full h-screen flex-col md:flex-row gap-5 items-center justify-center text-white relative top-5"
       >
         <div className="md:w-3/6 md:p-4">
           <img
@@ -39,7 +39,7 @@ export default function Hiro() {
           data-aos-offset="100"
         >
           <div className="flex flex-col w-full mt-8">
-            <h1 className="text-2xl text-gray-400">Olá! Eu me chamo</h1>
+            <h1 className="text-2xl text-transparent font-bold bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-500 font-mono">Olá! Eu me chamo</h1>
             <h1 className="text-5xl font-bold">Luann Curioso</h1>
             <p class="text-2xl font-bold text-gray-200">
               E eu construo coisas para a{" "}
@@ -61,7 +61,7 @@ export default function Hiro() {
             <FontAwesomeIcon className="ml-2" icon={faCircleArrowRight} />{" "}
           </a>
 
-          <ul className="flex mt-2 gap-4 items-center">
+          <ul className="flex mt-2 gap-3 items-center">
             <li>
               <a
                 href="https://github.com/luannmoreira"
