@@ -34,11 +34,6 @@ export default function Footer() {
       </ul>
 
       <HrCurve />
-      <a href="https://wa.me/5565999722455?text=Ol%C3%A1%2C%20Luann!">
-        <p className="text-sm font-bold text-center py-1">
-          +55 (65) 99972-2455
-        </p>
-      </a>
       <p className="text-sm font-light text-center">
         Copyright © <span>{year}</span> Luann Curioso. Todos os direitos
         reservados

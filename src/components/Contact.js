@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { faGithub, faLinkedinIn } from "@fortawesome/free-brands-svg-icons";
+import { faGithub, faLinkedinIn, faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 
 export default function Contact() {
   return (
@@ -13,7 +13,7 @@ export default function Contact() {
           Gostou?
         </h1>
         <h1 className="text-5xl font-bold">Entre em contato!</h1>
-        <p className="text-xl font-light text-gray-300 pt-2 sm:w-3/6">
+        <p className="text-xl text-justify font-light text-gray-300 pt-2 sm:w-3/6">
           Atualmente estou procurando por novas oportunidades de emprego e
           gostaria de explorar possíveis vagas em sua empresa. Se houver alguma
           vaga que se alinhe com minhas habilidades e experiência, adoraria
@@ -30,7 +30,7 @@ export default function Contact() {
         Mande um alô!{" "}
         <FontAwesomeIcon className="ml-2" icon={faCircleArrowRight} />{" "}
       </a>
-
+      <p className="text-md font-light text-gray-300">Ou, se preferir, visite minhas redes sociais ou me mande uma mensagem via WhatsApp!</p>
       <ul className="flex mt-2 gap-3 items-center">
         <li>
           <a
@@ -48,6 +48,15 @@ export default function Contact() {
             target="_blank"
           >
             <FontAwesomeIcon size="2xl" icon={faLinkedinIn} />
+          </a>
+        </li>
+        <li>
+          <a
+            href="https://wa.me/5565999722455?text=Ol%C3%A1%2C%20Luann!"
+            rel="noreferrer"
+            target="_blank"
+          >
+            <FontAwesomeIcon size="2xl" icon={faWhatsapp} />
           </a>
         </li>
       </ul>
