@@ -34,7 +34,7 @@ export default function Footer() {
       </ul>
 
       <HrCurve />
-      <a href="tel:65999722455">
+      <a href="https://wa.me/5565999722455?text=Ol%C3%A1%2C%20Luann!">
         <p className="text-sm font-bold text-center py-1">
           +55 (65) 99972-2455
         </p>

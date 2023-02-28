@@ -1,7 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { faGithub, faLinkedinIn } from "@fortawesome/free-brands-svg-icons";
-import resume from "../assets/resume.pdf";
 
 export default function Contact() {
   return (
@@ -25,7 +24,7 @@ export default function Contact() {
         </p>
       </div>
       <a
-        href={resume}
+        href="mailto:luannmcurioso@gmail.com"
         className="bg-dark-100 rounded-full px-5 py-2 border border-dark-100 hover:border-dark-50 font-bold font-mono border border-4"
       >
         Mande um alô!{" "}
