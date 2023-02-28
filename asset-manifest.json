@@ -1,16 +1,19 @@
 {
   "files": {
-    "main.css": "/portfolio/static/css/main.e5760f33.css",
-    "main.js": "/portfolio/static/js/main.1747d3a0.js",
+    "main.css": "/portfolio/static/css/main.bfe45499.css",
+    "main.js": "/portfolio/static/js/main.fbd7f190.js",
     "static/js/787.1ed0c42c.chunk.js": "/portfolio/static/js/787.1ed0c42c.chunk.js",
+    "static/media/frame.png": "/portfolio/static/media/frame.9699dc5767548688d49e.png",
     "static/media/harvardcs50.png": "/portfolio/static/media/harvardcs50.80d1307e7e63b8b29de9.png",
-    "static/media/profile.svg": "/portfolio/static/media/profile.6bbe60ff10026e7582e97f45a8d3d640.svg",
+    "static/media/pythoncurso.jpeg": "/portfolio/static/media/pythoncurso.29a831ada0e8544d1740.jpeg",
     "static/media/matreact.jpg": "/portfolio/static/media/matreact.e26a08f6d3510f9027b3.jpg",
+    "static/media/profilepic.jpg": "/portfolio/static/media/profilepic.2c9e16e7a0d3c4e5e0a1.jpg",
     "static/media/resume.pdf": "/portfolio/static/media/resume.540c58db1bb2120af250.pdf",
     "static/media/serfrontend.jpg": "/portfolio/static/media/serfrontend.7d6e4d51e8266666e586.jpg",
     "static/media/javascriptbible.jpg": "/portfolio/static/media/javascriptbible.715fbe7de340654e72cc.jpg",
     "static/media/matangular.jpg": "/portfolio/static/media/matangular.f0f3048ce1415fb88a7e.jpg",
     "static/media/linux.svg": "/portfolio/static/media/linux.ff969ad1bae76cb9a7cc6aca65fd15f5.svg",
+    "static/media/csharpcurso.jpg": "/portfolio/static/media/csharpcurso.9a91bd277a33a12cdecf.jpg",
     "static/media/logo.png": "/portfolio/static/media/logo.a3b951ef409fad5f15dc.png",
     "static/media/react.svg": "/portfolio/static/media/react.e27571eaed899c642345e71163624ef9.svg",
     "static/media/bash.svg": "/portfolio/static/media/bash.31469aae70b8e95103fe760027703efa.svg",
@@ -32,12 +35,12 @@
     "index.html": "/portfolio/index.html",
     "static/media/loading.svg": "/portfolio/static/media/loading.8d13d6d9849a59769147a9da868d566c.svg",
     "static/media/vue.svg": "/portfolio/static/media/vue.f1fd23be1db9361fbcd81511fe862b08.svg",
-    "main.e5760f33.css.map": "/portfolio/static/css/main.e5760f33.css.map",
-    "main.1747d3a0.js.map": "/portfolio/static/js/main.1747d3a0.js.map",
+    "main.bfe45499.css.map": "/portfolio/static/css/main.bfe45499.css.map",
+    "main.fbd7f190.js.map": "/portfolio/static/js/main.fbd7f190.js.map",
     "787.1ed0c42c.chunk.js.map": "/portfolio/static/js/787.1ed0c42c.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.e5760f33.css",
-    "static/js/main.1747d3a0.js"
+    "static/css/main.bfe45499.css",
+    "static/js/main.fbd7f190.js"
   ]
 }
