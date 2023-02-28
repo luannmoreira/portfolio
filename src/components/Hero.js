@@ -1,13 +1,14 @@
 import { useState } from "react";
 
-import profile from "../assets/profile.svg";
+import profile from "../assets/frame.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { faGithub, faLinkedinIn } from "@fortawesome/free-brands-svg-icons";
 import HrCurve from "./HrCurve";
 import resume from "../assets/resume.pdf";
 import loading from "../assets/loading.svg";
-export default function Hiro() {
+
+export default function Hero() {
   const [loaded, setLoaded] = useState(true);
 
   return (

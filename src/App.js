@@ -2,6 +2,7 @@ import './App.css';
 import {useEffect} from 'react'
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
+import About from './components/About';
 import Habilidades from './components/Habilidades'
 import Experiencia from './components/Experiencia';
 import Certs from './components/Certs';
@@ -20,6 +21,7 @@ function App() {
     <div className="w-100 px-6 lg:px-20 xl:px-36 bg-dark-500">
       <Navbar />
       <Hero />
+      <About />
       <Habilidades />
       <Experiencia />
       <Certs />

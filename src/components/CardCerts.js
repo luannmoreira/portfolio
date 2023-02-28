@@ -14,7 +14,7 @@ export default function CardCerts(props) {
         ></img>
         <div className="mt-2">
           <h1 className="font-bold md:text-xl">{props.name}</h1>
-          <p className="font-light md:text-lg">by {props.issued}</p>
+          <p className="font-light md:text-lg">por {props.issued}</p>
           <p className="font-light text-gray-400">{props.desc}</p>
           <p className="font-light text-gray-400">{props.date}</p>
         </div>

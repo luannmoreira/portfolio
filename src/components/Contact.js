@@ -15,13 +15,13 @@ export default function Contact() {
         </h1>
         <h1 className="text-5xl font-bold">Entre em contato!</h1>
         <p className="text-xl font-light text-gray-300 pt-2 sm:w-3/6">
-          Olá! Atualmente estou procurando por novas oportunidades de emprego e
+          Atualmente estou procurando por novas oportunidades de emprego e
           gostaria de explorar possíveis vagas em sua empresa. Se houver alguma
           vaga que se alinhe com minhas habilidades e experiência, adoraria
           discutir mais sobre isso. Alternativamente, se você gostaria apenas de
           se conectar ou tiver alguma pergunta para mim, sinta-se à vontade para
           me enviar uma mensagem. Estou sempre ansioso para expandir minha rede
-          profissional e vou garantir que retornarei o mais breve possível!
+          profissional e retornarei o mais breve possível!
         </p>
       </div>
       <a

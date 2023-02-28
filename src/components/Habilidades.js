@@ -40,7 +40,7 @@ export default function Habilidades() {
         <Slider {...settings}>
           <SkillCard name="JavaScript" experience="4 anos" img={javascript} />
           <SkillCard name="Python" experience="3 anos" img={python} />
-          <SkillCard name="C#" experience="1 ano" img={csharp} />
+          <SkillCard name="C#" experience="Ainda não pude exercer  nenhum ano" img={csharp} />
           <SkillCard name="Docker" experience="1 ano" img={docker} />
           <SkillCard name="BASH" experience="6 anos" img={bash} />
           <SkillCard name="HTML" experience="4 anos" img={html} />

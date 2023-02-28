@@ -6,7 +6,8 @@ import harvardcs from "../assets/certs/harvardcs50.png";
 import nuxttailwind from "../assets/certs/nuxttailwind.jpg";
 import javascriptbible from "../assets/certs/javascriptbible.jpg";
 import matreact from "../assets/certs/matreact.jpg";
-
+import csharpcurso from "../assets/certs/csharpcurso.jpg";
+import pythoncurso from "../assets/certs/pythoncurso.jpeg";
 import HrCurve from "./HrCurve.js";
 
 // import
@@ -30,7 +31,7 @@ Segurança da Informação;
 Contato com linguagens de programação (C, Python, SQL)"
           img={harvardcs}
           issued="freeCodeCamp.org"
-          date="Jul 2022"
+          date="Set 2022"
           linkCurso="https://www.freecodecamp.org/news/harvard-cs50/"
         />
         <CertCard
@@ -39,7 +40,7 @@ Contato com linguagens de programação (C, Python, SQL)"
           Estrutura de dados;"
           img={serfrontend}
           issued="UDEMY"
-          date="Jul 2022"
+          date="Mar 2022"
           linkCurso="https://www.udemy.com/course/logica-de-programacao-com-javascript-iniciando-no-frontend/"
         />
         <CertCard
@@ -49,7 +50,7 @@ Contato com linguagens de programação (C, Python, SQL)"
           Javascript;"
           img={serfrontend2}
           issued="UDEMY"
-          date="Jul 2022"
+          date="Set 2022"
           linkCurso="https://www.udemy.com/course/javascript-completo-2018-do-iniciante-ao-mestre/"
         />
         <CertCard
@@ -82,7 +83,7 @@ Contato com linguagens de programação (C, Python, SQL)"
           Fetch API;"
           img={javascriptbible}
           issued="UDEMY"
-          date="Jul 2022"
+          date="Oct 2022"
           linkCurso="https://www.udemy.com/course/javascript-bible/"
         />
         <CertCard
@@ -94,8 +95,28 @@ Contato com linguagens de programação (C, Python, SQL)"
           Projeto em prática"
           img={matreact}
           issued="Matheus Battisti (YouTube)"
-          date="Jul 2022"
+          date="Dez 2022"
           linkCurso="https://youtu.be/FXqX7oof0I4"
+        />
+        <CertCard
+          name="C# Curso Completo: Do Básico ao Avançado!"
+          desc="Algoritmo, Estrutura de Dados, Fundamentos, OO, Coleções, Lambdas, LINQ e vários recursos!"
+          img={csharpcurso}
+          issued="UDEMY"
+          date="Jul 2022"
+          linkCurso="https://www.udemy.com/share/101qHe3@41XpvOjvHsARpPXPCHZWlvoeXFziz1d6Q4TupP_63TgapO9ACIrVlAX334PeAIOC/"
+        />
+        <CertCard
+          name="Free Python Programming Course [2022]"
+          desc="Variables
+          Expressions and Statements
+          Comments
+          Data Types
+          Operators e muito mais sobre a linguagem!"
+          img={pythoncurso}
+          issued="freeCodeCamp.org"
+          date="Ago 2022"
+          linkCurso="https://www.freecodecamp.org/news/python-programming-course/"
         />
       </div>
       <HrCurve />
