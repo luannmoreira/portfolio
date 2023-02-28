@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/portfolio/static/css/main.67fb56e0.css",
-    "main.js": "/portfolio/static/js/main.b8b4d2a9.js",
+    "main.js": "/portfolio/static/js/main.dfeaac82.js",
     "static/js/787.1ed0c42c.chunk.js": "/portfolio/static/js/787.1ed0c42c.chunk.js",
     "static/media/frame.png": "/portfolio/static/media/frame.9699dc5767548688d49e.png",
     "static/media/harvardcs50.png": "/portfolio/static/media/harvardcs50.80d1307e7e63b8b29de9.png",
     "static/media/pythoncurso.jpeg": "/portfolio/static/media/pythoncurso.29a831ada0e8544d1740.jpeg",
     "static/media/matreact.jpg": "/portfolio/static/media/matreact.e26a08f6d3510f9027b3.jpg",
     "static/media/profilepic.jpg": "/portfolio/static/media/profilepic.2c9e16e7a0d3c4e5e0a1.jpg",
-    "static/media/resume.pdf": "/portfolio/static/media/resume.540c58db1bb2120af250.pdf",
+    "static/media/resume.pdf": "/portfolio/static/media/resume.54b0315e7b0a5df68994.pdf",
     "static/media/serfrontend.jpg": "/portfolio/static/media/serfrontend.7d6e4d51e8266666e586.jpg",
     "static/media/javascriptbible.jpg": "/portfolio/static/media/javascriptbible.715fbe7de340654e72cc.jpg",
     "static/media/matangular.jpg": "/portfolio/static/media/matangular.f0f3048ce1415fb88a7e.jpg",
@@ -36,11 +36,11 @@
     "static/media/loading.svg": "/portfolio/static/media/loading.8d13d6d9849a59769147a9da868d566c.svg",
     "static/media/vue.svg": "/portfolio/static/media/vue.f1fd23be1db9361fbcd81511fe862b08.svg",
     "main.67fb56e0.css.map": "/portfolio/static/css/main.67fb56e0.css.map",
-    "main.b8b4d2a9.js.map": "/portfolio/static/js/main.b8b4d2a9.js.map",
+    "main.dfeaac82.js.map": "/portfolio/static/js/main.dfeaac82.js.map",
     "787.1ed0c42c.chunk.js.map": "/portfolio/static/js/787.1ed0c42c.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.67fb56e0.css",
-    "static/js/main.b8b4d2a9.js"
+    "static/js/main.dfeaac82.js"
   ]
 }
