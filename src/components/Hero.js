@@ -58,11 +58,10 @@ export default function Hero() {
               + testes.
             </p>
           </div>
-          <a href={resume} className="mt-2 block">
+          <a href={resume} rel="noreferrer" className="mt-2 block">
             Cheque meu currículo{" "}
             <FontAwesomeIcon className="ml-2" icon={faCircleArrowRight} />{" "}
           </a>
-
           <ul className="flex mt-2 gap-3 items-center">
             <li>
               <a
