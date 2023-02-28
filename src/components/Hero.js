@@ -58,7 +58,7 @@ export default function Hero() {
               + testes.
             </p>
           </div>
-          <a href={resume} rel="noreferrer" className="mt-2 block">
+          <a href={resume} target="_blank" rel="noreferrer" className="mt-2 block">
             Cheque meu currículo{" "}
             <FontAwesomeIcon className="ml-2" icon={faCircleArrowRight} />{" "}
           </a>
