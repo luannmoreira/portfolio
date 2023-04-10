@@ -15,9 +15,9 @@ import HrCurve from "./HrCurve.js";
 export default function Certs() {
   return (
     <div id="certs" className="mt-4 text-white">
-      <h1 className="text-2xl font-bold">Cursos</h1>
+      <h1 className="text-2xl font-bold">Courses</h1>
       <p className="font-light text-gray-400">
-        Cursos que eu já fiz e recomendo!
+        I've done them and I'll always recomend!
       </p>
 
       {/* <div className="flex flex-col md:flex-row flex-wrap mt-4 gap-5"> */}

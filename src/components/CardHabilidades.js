@@ -14,7 +14,7 @@ export default function CardHabilidades(props) {
       <div className="mt-2">
         <h1 className="font-bold md:text-xl">{props.name}</h1>
         <p className="font-light md:text-lg">
-          {props.experience} de experiência
+          {props.experience} of experience
         </p>
       </div>
     </div>

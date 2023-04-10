@@ -8,35 +8,34 @@ export default function Footer() {
       <ul className="text-center font-bold pt-5 m-2 ">
         <li>
           <a href="#home" className="hover:underline">
-            Sobre
+            About
           </a>
         </li>
         <li>
           <a href="#skills" className="hover:underline">
-            Habilidades
+            Skills
           </a>
         </li>
         <li>
           <a href="#honors" className="hover:underline">
-            Experiência
+            Experience
           </a>
         </li>
         <li>
           <a href="#certs" className="hover:underline">
-            Certificações
+            Certifications
           </a>
         </li>
         <li>
           <a href="#contact" className="hover:underline">
-            Contato
+            Contact
           </a>
         </li>
       </ul>
 
       <HrCurve />
       <p className="text-sm font-light text-center">
-        Copyright © <span>{year}</span> Luann Curioso. Todos os direitos
-        reservados
+        Copyright © <span>{year}</span> Luann Curioso. All Rights Reserved.
       </p>
     </div>
   );

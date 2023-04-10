@@ -10,9 +10,9 @@ export default function CardExperiencia(props) {
       {/* <img src={props.img} className="w-20 max-h-20 mx-auto" alt={props.name}></img> */}
       <div className="mt-2">
         <h1 className="font-bold md:text-xl">{props.name}</h1>
-        <p className="font-light md:text-lg">Empresa {props.issued}</p>
+        <p className="font-light md:text-lg">Company {props.issued}</p>
         <p className="font-light text-gray-300 md:text-md">
-          ({props.anoEntrada} até {props.anoSaida})
+          ({props.anoEntrada} till {props.anoSaida})
         </p>
         <p className="font-light text-gray-400">{props.desc}</p>
       </div>

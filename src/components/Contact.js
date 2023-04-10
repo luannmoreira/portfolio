@@ -10,27 +10,21 @@ export default function Contact() {
     >
       <div className="flex flex-col align-center justify-center items-center w-full pl-5 pr-5">
         <h1 className="text-3xl text-transparent font-bold bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-500 font-mono">
-          Gostou?
+          Did you like this website?
         </h1>
-        <h1 className="text-5xl font-bold">Entre em contato!</h1>
+        <h1 className="text-5xl font-bold">Be in touch!</h1>
         <p className="text-xl text-justify font-light text-gray-300 pt-2 sm:w-3/6">
-          Atualmente estou procurando por novas oportunidades de emprego e
-          gostaria de explorar possíveis vagas em sua empresa. Se houver alguma
-          vaga que se alinhe com minhas habilidades e experiência, adoraria
-          discutir mais sobre isso. Alternativamente, se você gostaria apenas de
-          se conectar ou tiver alguma pergunta para mim, sinta-se à vontade para
-          me enviar uma mensagem. Estou sempre ansioso para expandir minha rede
-          profissional e retornarei o mais breve possível!
+          I'm not looking for a job right now, but I am always listening new people and I love to make contact and network, so feel free to check my stuff out or be in touch, I'm sure there's always something new I'm working torwards!
         </p>
       </div>
       <a
         href="mailto:luannmcurioso@gmail.com"
         className="bg-dark-100 rounded-full px-5 py-2 border border-dark-100 hover:border-dark-50 font-bold font-mono border border-4"
       >
-        Mande um alô!{" "}
+        Send a hey!{" "}
         <FontAwesomeIcon className="ml-2" icon={faCircleArrowRight} />{" "}
       </a>
-      <p className="text-md font-light text-gray-300">Ou, se preferir, visite minhas redes sociais ou me mande uma mensagem via WhatsApp!</p>
+      <p className="text-md font-light text-gray-300 text-center">Or, rather, visit my social medias or send me a WhatsApp message!</p>
       <ul className="flex mt-2 gap-3 items-center">
         <li>
           <a
