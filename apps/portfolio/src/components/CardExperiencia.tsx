@@ -1,4 +1,4 @@
-interface CardExperienciaProps {
+export interface CardExperienciaProps {
   name: string;
   issued: string;
   desc: string;
