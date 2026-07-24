@@ -42,9 +42,9 @@ export default function Hero() {
               Howdy, Partner! I'm called
             </h1>
             <h1 className="text-5xl font-bold">Luann Curioso</h1>
-            <p class="text-2xl font-bold text-gray-200">
+            <p className="text-2xl font-bold text-gray-200">
               And I build for the{" "}
-              <span class="font-extrabold text-transparent text-3xl bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-600">
+              <span className="font-extrabold text-transparent text-3xl bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-600">
                 web
               </span>
             </p>
