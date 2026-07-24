@@ -32,6 +32,18 @@ module.exports = [
     },
   },
   {
+    // playwright.config.ts and the e2e specs run under Node, not the
+    // browser-facing src/ ruleset above (no React/JSX here).
+    files: ["playwright.config.ts", "e2e/**/*.ts"],
+    languageOptions: {
+      sourceType: "module",
+      parser: tseslint.parser,
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
+  {
     files: ["src/**/*.{js,jsx,ts,tsx}"],
     plugins: {
       react,
