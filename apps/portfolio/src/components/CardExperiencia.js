@@ -4,8 +4,7 @@ export default function CardExperiencia(props) {
       data-aos="fade-up"
       data-aos-duration="500"
       data-aos-offset="100"
-      className="w-
-         md:w-2/6 bg-dark-100 rounded-md py-4 px-4"
+      className="md:w-2/6 bg-dark-100 rounded-md py-4 px-4"
     >
       {/* <img src={props.img} className="w-20 max-h-20 mx-auto" alt={props.name}></img> */}
       <div className="mt-2">
