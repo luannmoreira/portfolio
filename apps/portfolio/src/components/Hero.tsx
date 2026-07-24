@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import profile from "../assets/frame.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -9,11 +9,22 @@ import resume from "../assets/resume.pdf";
 import loading from "../assets/loading.svg";
 
 export default function Hero() {
-  const [loaded, setLoaded] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const profileImgRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    // If the browser already has this image cached, it can be "complete" by
+    // the time this effect runs — some browsers don't reliably fire onLoad
+    // for an already-cached image, which would otherwise leave the overlay
+    // stuck. onLoad below still handles the normal, not-yet-cached case.
+    if (profileImgRef.current?.complete) {
+      setIsLoading(false);
+    }
+  }, []);
 
   return (
     <>
-      {loaded ? (
+      {isLoading ? (
         <div className="fixed bg-dark-500 text-white top-0 left-0 right-0 bottom-0 w-full h-screen z-50 overflow-hidden bg-white flex flex-col items-center justify-center">
           <img src={loading} alt="loading" />
           <p>Loading...</p>
@@ -22,13 +33,14 @@ export default function Hero() {
       <section className="flex w-full lg:h-screen mt-20 flex-col md:flex-row gap-5 items-center justify-center text-white relative">
         <div className="w-100 md:w-3/6">
           <img
+            ref={profileImgRef}
             data-aos="flip-right"
             data-aos-duration="1500"
             data-aos-offset="200"
             src={profile}
             alt="profile"
             className="top-50"
-            onLoad={() => setLoaded(false)}
+            onLoad={() => setIsLoading(false)}
           />
         </div>
         <div
