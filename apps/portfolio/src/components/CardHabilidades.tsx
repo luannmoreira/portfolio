@@ -1,4 +1,4 @@
-interface CardHabilidadesProps {
+export interface CardHabilidadesProps {
   name: string;
   experience: string;
   img: string;
