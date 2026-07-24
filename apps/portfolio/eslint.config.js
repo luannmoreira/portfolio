@@ -20,6 +20,17 @@ module.exports = [
     },
   },
   {
+    // Vite's own config loader supports ESM import/export regardless of
+    // this package's CommonJS default, so this one file is the exception.
+    files: ["vite.config.js"],
+    languageOptions: {
+      sourceType: "module",
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
+  {
     files: ["src/**/*.{js,jsx}"],
     plugins: {
       react,
