@@ -5,7 +5,9 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  reporter: "list",
+  // HTML report only in CI (uploaded as an artifact) — locally, the list
+  // reporter's console output is enough and avoids an unread report dir.
+  reporter: process.env.CI ? [["html", { open: "never" }]] : "list",
   use: {
     baseURL: "http://localhost:4173/portfolio/",
     trace: "on-first-retry",
