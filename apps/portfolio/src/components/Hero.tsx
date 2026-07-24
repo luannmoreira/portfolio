@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 
 import profile from "../assets/frame.png";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { faGithub, faLinkedinIn } from "@fortawesome/free-brands-svg-icons";
+import ArrowRightCircleIcon from "./icons/ArrowRightCircleIcon";
+import GithubIcon from "./icons/GithubIcon";
+import LinkedinIcon from "./icons/LinkedinIcon";
 import HrCurve from "./HrCurve";
 import Reveal from "./Reveal";
 import resume from "../assets/resume.pdf";
@@ -78,7 +78,7 @@ export default function Hero() {
             className="mt-2 block"
           >
             Check my resume{" "}
-            <FontAwesomeIcon className="ml-2" icon={faCircleArrowRight} />{" "}
+            <ArrowRightCircleIcon className="ml-2 w-4 h-4 inline-block" />{" "}
           </a>
           <ul className="flex mt-2 gap-3 items-center">
             <li>
@@ -88,7 +88,7 @@ export default function Hero() {
                 target="_blank"
                 aria-label="GitHub"
               >
-                <FontAwesomeIcon size="2xl" icon={faGithub} />
+                <GithubIcon className="w-8 h-8" />
               </a>
             </li>
             <li>
@@ -98,7 +98,7 @@ export default function Hero() {
                 target="_blank"
                 aria-label="LinkedIn"
               >
-                <FontAwesomeIcon size="2xl" icon={faLinkedinIn} />
+                <LinkedinIcon className="w-8 h-8" />
               </a>
             </li>
           </ul>

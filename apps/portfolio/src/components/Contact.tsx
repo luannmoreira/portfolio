@@ -1,10 +1,7 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleArrowRight } from "@fortawesome/free-solid-svg-icons";
-import {
-  faGithub,
-  faLinkedinIn,
-  faWhatsapp,
-} from "@fortawesome/free-brands-svg-icons";
+import ArrowRightCircleIcon from "./icons/ArrowRightCircleIcon";
+import GithubIcon from "./icons/GithubIcon";
+import LinkedinIcon from "./icons/LinkedinIcon";
+import WhatsappIcon from "./icons/WhatsappIcon";
 
 export default function Contact() {
   return (
@@ -29,7 +26,7 @@ export default function Contact() {
         className="bg-dark-100 rounded-full px-5 py-2 border border-dark-100 hover:border-dark-50 font-bold font-mono border border-4"
       >
         Send a hey!{" "}
-        <FontAwesomeIcon className="ml-2" icon={faCircleArrowRight} />{" "}
+        <ArrowRightCircleIcon className="ml-2 w-4 h-4 inline-block" />{" "}
       </a>
       <p className="text-md font-light text-gray-300 text-center">
         Or, rather, visit my social medias or send me a WhatsApp message!
@@ -42,7 +39,7 @@ export default function Contact() {
             target="_blank"
             aria-label="GitHub"
           >
-            <FontAwesomeIcon size="2xl" icon={faGithub} />
+            <GithubIcon className="w-8 h-8" />
           </a>
         </li>
         <li>
@@ -52,7 +49,7 @@ export default function Contact() {
             target="_blank"
             aria-label="LinkedIn"
           >
-            <FontAwesomeIcon size="2xl" icon={faLinkedinIn} />
+            <LinkedinIcon className="w-8 h-8" />
           </a>
         </li>
         <li>
@@ -62,7 +59,7 @@ export default function Contact() {
             target="_blank"
             aria-label="WhatsApp"
           >
-            <FontAwesomeIcon size="2xl" icon={faWhatsapp} />
+            <WhatsappIcon className="w-8 h-8" />
           </a>
         </li>
       </ul>
