@@ -10,8 +10,6 @@ import csharpcurso from "../assets/certs/csharpcurso.jpg";
 import pythoncurso from "../assets/certs/pythoncurso.jpeg";
 import HrCurve from "./HrCurve.js";
 
-// import
-
 export default function Certs() {
   return (
     <div id="certs" className="mt-4 text-white">
@@ -20,7 +18,6 @@ export default function Certs() {
         I've done them and I'll always recomend!
       </p>
 
-      {/* <div className="flex flex-col md:flex-row flex-wrap mt-4 gap-5"> */}
       <div className="grid grid-cols-1 md:grid-cols-3 justify-center mt-4 gap-5">
         <CertCard
           name="Harvard CS50"
