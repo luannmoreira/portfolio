@@ -85,7 +85,6 @@ export const certs: CardCertsProps[] = [
     img: pythoncurso,
     issued: "freeCodeCamp.org",
     date: "Ago 2022",
-    linkCurso:
-      "https://www.freecodecamp.org/news/python-programming-course/",
+    linkCurso: "https://www.freecodecamp.org/news/python-programming-course/",
   },
 ];
