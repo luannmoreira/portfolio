@@ -1,5 +1,5 @@
-import HonorCard from "./CardExperiencia.js";
-import HrCurve from "./HrCurve.js";
+import HonorCard from "./CardExperiencia";
+import HrCurve from "./HrCurve";
 
 export default function Experiencia() {
   return (

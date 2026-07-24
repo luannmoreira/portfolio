@@ -1,4 +1,4 @@
-import CertCard from "./CardCerts.js";
+import CertCard from "./CardCerts";
 import matangular from "../assets/certs/matangular.jpg";
 import serfrontend from "../assets/certs/serfrontend.jpg";
 import serfrontend2 from "../assets/certs/serfrontend2.jpg";
@@ -8,7 +8,7 @@ import javascriptbible from "../assets/certs/javascriptbible.jpg";
 import matreact from "../assets/certs/matreact.jpg";
 import csharpcurso from "../assets/certs/csharpcurso.jpg";
 import pythoncurso from "../assets/certs/pythoncurso.jpeg";
-import HrCurve from "./HrCurve.js";
+import HrCurve from "./HrCurve";
 
 export default function Certs() {
   return (

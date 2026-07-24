@@ -1,7 +1,7 @@
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import SkillCard from "./CardHabilidades.js";
+import SkillCard from "./CardHabilidades";
 
 import javascript from "../assets/skills/javascript.svg";
 import bash from "../assets/skills/bash.svg";
@@ -17,7 +17,7 @@ import express from "../assets/skills/express.svg";
 import gitlab from "../assets/skills/gitlab.svg";
 import html from "../assets/skills/html.svg";
 import vue from "../assets/skills/vue.svg";
-import HrCurve from "./HrCurve.js";
+import HrCurve from "./HrCurve";
 import csharp from "../assets/skills/csharp.svg";
 
 export default function Habilidades() {
