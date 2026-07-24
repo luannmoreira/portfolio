@@ -18,26 +18,24 @@ export default function About() {
             About me
           </h1>
           <p className="text-lg font-light text-gray-300">
-          Hello! My name is Luann and I'm a developer passionate about
+            Hello! My name is Luann and I'm a developer passionate about
             programming, especially interfaces, UI/UX and CI/CD. Furthermore,
-            I'm a big fan of cooking and I love to try new recipes in
-            my free time. My tech journey started in 2019 when
-            I started to venture into the development of web interfaces.
-            Since then, I have worked in different technology companies,
-            including the Secretariat for Economic Development of Mato Grosso,
-            always looking to improve my skills in programming and
-            improve my experience in interfaces. I am currently
-            specialist in TypeScript, JavaScript, Vue, React and Node.js and
-            I also have knowledge in Python and C#. I'm always looking for
-            new challenges and technologies to learn and implement in my
-            projects. I love building products that help people and make
-            their lives easier and more enjoyable. When I'm not coding,
-            I like to spend my time trying out new cooking recipes and
-            learning more about different techniques and ingredients. In addition
-            In addition, I am a great admirer of dogs and whenever I can,
-            I like to walk and play with them. I'm excited to continue
-            my journey in technology and contribute to amazing projects and
-            innovators in the future.
+            I'm a big fan of cooking and I love to try new recipes in my free
+            time. My tech journey started in 2019 when I started to venture into
+            the development of web interfaces. Since then, I have worked in
+            different technology companies, including the Secretariat for
+            Economic Development of Mato Grosso, always looking to improve my
+            skills in programming and improve my experience in interfaces. I am
+            currently specialist in TypeScript, JavaScript, Vue, React and
+            Node.js and I also have knowledge in Python and C#. I'm always
+            looking for new challenges and technologies to learn and implement
+            in my projects. I love building products that help people and make
+            their lives easier and more enjoyable. When I'm not coding, I like
+            to spend my time trying out new cooking recipes and learning more
+            about different techniques and ingredients. In addition In addition,
+            I am a great admirer of dogs and whenever I can, I like to walk and
+            play with them. I'm excited to continue my journey in technology and
+            contribute to amazing projects and innovators in the future.
           </p>
         </div>
       </div>

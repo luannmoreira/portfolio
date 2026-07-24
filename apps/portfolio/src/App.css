@@ -1,8 +1,9 @@
 html {
   scroll-behavior: smooth;
-  background-color: #0A0D11;
+  background-color: #0a0d11;
 }
-html, body {
+html,
+body {
   max-width: 100%;
   overflow-x: hidden;
 }

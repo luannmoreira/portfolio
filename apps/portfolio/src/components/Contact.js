@@ -1,6 +1,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { faGithub, faLinkedinIn, faWhatsapp } from "@fortawesome/free-brands-svg-icons";
+import {
+  faGithub,
+  faLinkedinIn,
+  faWhatsapp,
+} from "@fortawesome/free-brands-svg-icons";
 
 export default function Contact() {
   return (
@@ -14,7 +18,10 @@ export default function Contact() {
         </h1>
         <h1 className="text-5xl font-bold">Be in touch!</h1>
         <p className="text-xl text-justify font-light text-gray-300 pt-2 sm:w-3/6">
-          I'm not looking for a job right now, but I am always listening new people and I love to make contact and network, so feel free to check my stuff out or be in touch, I'm sure there's always something new I'm working torwards!
+          I'm not looking for a job right now, but I am always listening new
+          people and I love to make contact and network, so feel free to check
+          my stuff out or be in touch, I'm sure there's always something new I'm
+          working torwards!
         </p>
       </div>
       <a
@@ -24,7 +31,9 @@ export default function Contact() {
         Send a hey!{" "}
         <FontAwesomeIcon className="ml-2" icon={faCircleArrowRight} />{" "}
       </a>
-      <p className="text-md font-light text-gray-300 text-center">Or, rather, visit my social medias or send me a WhatsApp message!</p>
+      <p className="text-md font-light text-gray-300 text-center">
+        Or, rather, visit my social medias or send me a WhatsApp message!
+      </p>
       <ul className="flex mt-2 gap-3 items-center">
         <li>
           <a

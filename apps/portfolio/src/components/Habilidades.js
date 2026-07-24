@@ -18,7 +18,7 @@ import gitlab from "../assets/skills/gitlab.svg";
 import html from "../assets/skills/html.svg";
 import vue from "../assets/skills/vue.svg";
 import HrCurve from "./HrCurve.js";
-import csharp from "../assets/skills/csharp.svg"
+import csharp from "../assets/skills/csharp.svg";
 
 export default function Habilidades() {
   const settings = {
@@ -40,7 +40,11 @@ export default function Habilidades() {
         <Slider {...settings}>
           <SkillCard name="JavaScript" experience="4 years" img={javascript} />
           <SkillCard name="Python" experience="3 years" img={python} />
-          <SkillCard name="C#" experience="I haven't worked with this language professionaly :)" img={csharp} />
+          <SkillCard
+            name="C#"
+            experience="I haven't worked with this language professionaly :)"
+            img={csharp}
+          />
           <SkillCard name="Docker" experience="1 year" img={docker} />
           <SkillCard name="BASH" experience="6 years" img={bash} />
           <SkillCard name="HTML" experience="4 years" img={html} />
