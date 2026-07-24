@@ -10,6 +10,11 @@
     "build": "pnpm --filter portfolio build",
     "preview": "pnpm --filter portfolio preview",
     "lint": "pnpm --filter portfolio lint",
-    "deploy": "pnpm --filter portfolio deploy"
+    "deploy": "pnpm --filter portfolio deploy",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "prettier": "^3.9.6"
   }
 }
