@@ -82,7 +82,7 @@ module.exports = [
     files: ["src/**/*.test.{js,jsx,ts,tsx}"],
     languageOptions: {
       globals: {
-        ...globals.jest,
+        ...globals.vitest,
         ...globals.node,
       },
     },
