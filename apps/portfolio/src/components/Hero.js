@@ -19,7 +19,7 @@ export default function Hero() {
           <p>Loading...</p>
         </div>
       ) : null}
-      <div className="flex w-full lg:h-screen mt-20 flex-col md:flex-row gap-5 items-center justify-center text-white relative">
+      <section className="flex w-full lg:h-screen mt-20 flex-col md:flex-row gap-5 items-center justify-center text-white relative">
         <div className="w-100 md:w-3/6">
           <img
             data-aos="flip-right"
@@ -71,6 +71,7 @@ export default function Hero() {
                 href="https://github.com/luannmoreira"
                 rel="noreferrer"
                 target="_blank"
+                aria-label="GitHub"
               >
                 <FontAwesomeIcon size="2xl" icon={faGithub} />
               </a>
@@ -80,6 +81,7 @@ export default function Hero() {
                 href="https://linkedin.com/in/luanncurioso"
                 rel="noreferrer"
                 target="_blank"
+                aria-label="LinkedIn"
               >
                 <FontAwesomeIcon size="2xl" icon={faLinkedinIn} />
               </a>
@@ -87,7 +89,7 @@ export default function Hero() {
           </ul>
         </div>
         <HrCurve />
-      </div>
+      </section>
     </>
   );
 }

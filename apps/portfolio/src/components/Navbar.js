@@ -3,7 +3,7 @@ import resume from "../assets/resume.pdf";
 
 export default function Navbar() {
   return (
-    <div className="fixed z-50 bg-dark-500 w-full top-0 left-0 px-8 py-4 lg:px-20 xl:px-36">
+    <nav className="fixed z-50 bg-dark-500 w-full top-0 left-0 px-8 py-4 lg:px-20 xl:px-36">
       <div className="flex justify-between items-center text-white">
         <img src={logo} className="App-logo w-12 rounded-full" alt="logo" />
         <ul className="hidden md:flex">
@@ -32,6 +32,6 @@ export default function Navbar() {
           Resume
         </a>
       </div>
-    </div>
+    </nav>
   );
 }

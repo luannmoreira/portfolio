@@ -8,7 +8,7 @@ import {
 
 export default function Contact() {
   return (
-    <div
+    <section
       id="contact"
       className="flex w-full h-screen flex-col md:flex-column gap-5 items-center align-center justify-center text-white relative"
     >
@@ -40,6 +40,7 @@ export default function Contact() {
             href="https://github.com/luannmoreira"
             rel="noreferrer"
             target="_blank"
+            aria-label="GitHub"
           >
             <FontAwesomeIcon size="2xl" icon={faGithub} />
           </a>
@@ -49,6 +50,7 @@ export default function Contact() {
             href="https://linkedin.com/in/luanncurioso"
             rel="noreferrer"
             target="_blank"
+            aria-label="LinkedIn"
           >
             <FontAwesomeIcon size="2xl" icon={faLinkedinIn} />
           </a>
@@ -58,11 +60,12 @@ export default function Contact() {
             href="https://wa.me/5565999722455?text=Ol%C3%A1%2C%20Luann!"
             rel="noreferrer"
             target="_blank"
+            aria-label="WhatsApp"
           >
             <FontAwesomeIcon size="2xl" icon={faWhatsapp} />
           </a>
         </li>
       </ul>
-    </div>
+    </section>
   );
 }

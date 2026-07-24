@@ -12,7 +12,7 @@ import HrCurve from "./HrCurve.js";
 
 export default function Certs() {
   return (
-    <div id="certs" className="mt-4 text-white">
+    <section id="certs" className="mt-4 text-white">
       <h1 className="text-2xl font-bold">Courses</h1>
       <p className="font-light text-gray-400">
         I've done them and I'll always recomend!
@@ -117,6 +117,6 @@ Contato com linguagens de programação (C, Python, SQL)"
         />
       </div>
       <HrCurve />
-    </div>
+    </section>
   );
 }

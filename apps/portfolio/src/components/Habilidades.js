@@ -30,7 +30,7 @@ export default function Habilidades() {
   };
 
   return (
-    <div id="skills" className="mt-4 text-white">
+    <section id="skills" className="mt-4 text-white">
       <h1 className="text-2xl font-bold">Skills</h1>
       <p className="font-light text-gray-400">
         Here are some of my tech skills!
@@ -60,6 +60,6 @@ export default function Habilidades() {
         </Slider>
       </div>
       <HrCurve />
-    </div>
+    </section>
   );
 }

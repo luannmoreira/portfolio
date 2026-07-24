@@ -3,7 +3,7 @@ import HrCurve from "./HrCurve.js";
 
 export default function Experiencia() {
   return (
-    <div id="honors" className="mt-4 text-white">
+    <section id="honors" className="mt-4 text-white">
       <h1 className="text-2xl font-bold">Experience</h1>
       <p className="font-light text-gray-400">
         I present to you my professional experience!
@@ -43,6 +43,6 @@ export default function Experiencia() {
         />
       </div>
       <HrCurve />
-    </div>
+    </section>
   );
 }

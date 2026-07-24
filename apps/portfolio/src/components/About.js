@@ -3,7 +3,7 @@ import HrCurve from "./HrCurve";
 
 export default function About() {
   return (
-    <div
+    <section
       id="home"
       className="flex w-full lg:h-screen flex-col md:flex-row gap-5 items-center justify-center text-white relative"
     >
@@ -43,6 +43,6 @@ export default function About() {
         <img src={profile} alt="profile" className="top-50 rounded" />
       </div>
       <HrCurve />
-    </div>
+    </section>
   );
 }
