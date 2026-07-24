@@ -15,9 +15,7 @@
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
-    "esModuleInterop": true,
-
-    "allowJs": true
+    "esModuleInterop": true
   },
   "include": ["src"]
 }
