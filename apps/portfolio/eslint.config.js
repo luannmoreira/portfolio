@@ -1,16 +1,10 @@
-const js = require("@eslint/js");
 const globals = require("globals");
-const react = require("eslint-plugin-react");
-const reactHooks = require("eslint-plugin-react-hooks");
-const jsxA11y = require("eslint-plugin-jsx-a11y");
 const tseslint = require("typescript-eslint");
 const prettierConfig = require("eslint-config-prettier");
+const sharedConfig = require("@portfolio/config-eslint");
 
 module.exports = [
-  {
-    ignores: ["dist/**", "build/**", "node_modules/**"],
-  },
-  js.configs.recommended,
+  ...sharedConfig,
   {
     files: ["*.config.js"],
     languageOptions: {
@@ -33,7 +27,9 @@ module.exports = [
   },
   {
     // playwright.config.ts and the e2e specs run under Node, not the
-    // browser-facing src/ ruleset above (no React/JSX here).
+    // browser-facing src/ ruleset from the shared config (no React/JSX
+    // here). Not extracted into @portfolio/config-eslint — this shape is
+    // portfolio-specific until blog actually needs the identical thing.
     files: ["playwright.config.ts", "e2e/**/*.ts"],
     languageOptions: {
       sourceType: "module",
@@ -41,53 +37,6 @@ module.exports = [
       globals: {
         ...globals.node,
       },
-    },
-  },
-  {
-    files: ["src/**/*.{js,jsx,ts,tsx}"],
-    plugins: {
-      react,
-      "react-hooks": reactHooks,
-      "jsx-a11y": jsxA11y,
-      "@typescript-eslint": tseslint.plugin,
-    },
-    languageOptions: {
-      ecmaVersion: 2021,
-      sourceType: "module",
-      parser: tseslint.parser,
-      parserOptions: {
-        ecmaFeatures: { jsx: true },
-      },
-      globals: {
-        ...globals.browser,
-        ...globals.es2021,
-      },
-    },
-    settings: {
-      react: { version: "detect" },
-    },
-    rules: {
-      ...react.configs.recommended.rules,
-      ...react.configs["jsx-runtime"].rules,
-      ...reactHooks.configs.recommended.rules,
-      ...jsxA11y.configs.recommended.rules,
-      ...tseslint.configs.recommended.reduce(
-        (rules, config) => ({ ...rules, ...config.rules }),
-        {}
-      ),
-      "react/prop-types": "off",
-      // This is a writing-heavy site (blog/portfolio prose); forcing every
-      // apostrophe in JSX text into an HTML entity hurts source readability
-      // for no correctness benefit (raw ' and " render fine in JSX text).
-      "react/no-unescaped-entities": "off",
-      // TS's own noUnusedLocals-equivalent checking is handled by tsc, and
-      // the plain no-unused-vars rule doesn't understand TS-only constructs
-      // (type-only imports, etc.) — defer entirely to the TS-aware version.
-      "no-unused-vars": "off",
-      "@typescript-eslint/no-unused-vars": [
-        "warn",
-        { argsIgnorePattern: "^_" },
-      ],
     },
   },
   {
@@ -99,5 +48,7 @@ module.exports = [
       },
     },
   },
+  // Must stay last: disables stylistic rules that conflict with Prettier,
+  // and needs to win over every block above it, including local ones.
   prettierConfig,
 ];
