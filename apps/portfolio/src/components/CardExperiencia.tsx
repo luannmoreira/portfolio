@@ -1,3 +1,5 @@
+import Reveal from "./Reveal";
+
 export interface CardExperienciaProps {
   name: string;
   issued: string;
@@ -14,10 +16,10 @@ export default function CardExperiencia({
   anoSaida,
 }: CardExperienciaProps) {
   return (
-    <div
-      data-aos="fade-up"
-      data-aos-duration="500"
-      data-aos-offset="100"
+    <Reveal
+      variant="fade-up"
+      duration={500}
+      offset={100}
       className="md:w-2/6 bg-dark-100 rounded-md py-4 px-4"
     >
       <div className="mt-2">
@@ -28,6 +30,6 @@ export default function CardExperiencia({
         </p>
         <p className="font-light text-gray-400">{desc}</p>
       </div>
-    </div>
+    </Reveal>
   );
 }

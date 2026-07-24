@@ -1,3 +1,5 @@
+import Reveal from "./Reveal";
+
 export interface CardCertsProps {
   name: string;
   desc: string;
@@ -17,10 +19,10 @@ export default function CardCerts({
 }: CardCertsProps) {
   return (
     <a href={linkCurso} target="_blank" rel="noreferrer">
-      <div
-        data-aos="fade-up"
-        data-aos-duration="500"
-        data-aos-offset="100"
+      <Reveal
+        variant="fade-up"
+        duration={500}
+        offset={100}
         className="hover:bg-dark w-full h-full bg-dark-200 rounded-md py-4 px-4"
       >
         <img
@@ -34,7 +36,7 @@ export default function CardCerts({
           <p className="font-light text-gray-400">{desc}</p>
           <p className="font-light text-gray-400">{date}</p>
         </div>
-      </div>
+      </Reveal>
     </a>
   );
 }

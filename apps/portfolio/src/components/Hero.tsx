@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { faGithub, faLinkedinIn } from "@fortawesome/free-brands-svg-icons";
 import HrCurve from "./HrCurve";
+import Reveal from "./Reveal";
 import resume from "../assets/resume.pdf";
 import loading from "../assets/loading.svg";
 
@@ -31,23 +32,25 @@ export default function Hero() {
         </div>
       ) : null}
       <section className="flex w-full lg:h-screen mt-20 flex-col md:flex-row gap-5 items-center justify-center text-white relative">
-        <div className="w-100 md:w-3/6">
+        <Reveal
+          variant="flip-right"
+          duration={1500}
+          offset={200}
+          className="w-100 md:w-3/6"
+        >
           <img
             ref={profileImgRef}
-            data-aos="flip-right"
-            data-aos-duration="1500"
-            data-aos-offset="200"
             src={profile}
             alt="profile"
             className="top-50"
             onLoad={() => setIsLoading(false)}
           />
-        </div>
-        <div
+        </Reveal>
+        <Reveal
+          variant="fade-right"
+          duration={1000}
+          offset={100}
           className="md:w-3/6"
-          data-aos="fade-right"
-          data-aos-duration="1000"
-          data-aos-offset="100"
         >
           <div className="flex flex-col w-full mt-8">
             <h1 className="text-2xl text-transparent font-bold bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-500 font-mono">
@@ -99,7 +102,7 @@ export default function Hero() {
               </a>
             </li>
           </ul>
-        </div>
+        </Reveal>
         <HrCurve />
       </section>
     </>

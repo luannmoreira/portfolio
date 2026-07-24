@@ -1,5 +1,6 @@
 import profile from "../assets/profilepic.jpg";
 import HrCurve from "./HrCurve";
+import Reveal from "./Reveal";
 
 export default function About() {
   return (
@@ -7,11 +8,11 @@ export default function About() {
       id="home"
       className="flex w-full lg:h-screen flex-col md:flex-row gap-5 items-center justify-center text-white relative"
     >
-      <div
+      <Reveal
+        variant="fade-left"
+        duration={1000}
+        offset={100}
         className="md:w-3/6"
-        data-aos="fade-left"
-        data-aos-duration="1000"
-        data-aos-offset="100"
       >
         <div className="flex flex-col w-full">
           <h1 className="text-3xl text-transparent font-bold bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-500 font-mono">
@@ -38,7 +39,7 @@ export default function About() {
             contribute to amazing projects and innovators in the future.
           </p>
         </div>
-      </div>
+      </Reveal>
       <div className="w-100 md:w-1/5">
         <img src={profile} alt="profile" className="top-50 rounded" />
       </div>
