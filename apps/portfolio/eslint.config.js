@@ -72,7 +72,10 @@ module.exports = [
       // the plain no-unused-vars rule doesn't understand TS-only constructs
       // (type-only imports, etc.) — defer entirely to the TS-aware version.
       "no-unused-vars": "off",
-      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_" },
+      ],
     },
   },
   {
