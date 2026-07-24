@@ -1,4 +1,4 @@
-interface CardCertsProps {
+export interface CardCertsProps {
   name: string;
   desc: string;
   img: string;
