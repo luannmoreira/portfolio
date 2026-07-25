@@ -87,6 +87,11 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # Needed at compile time now, not just for e2e: rehype-mermaid (9.7)
+      # renders Mermaid diagrams via a real headless browser during the MDX
+      # build, and this repo's content now includes one.
+      - run: pnpm --filter blog exec playwright install --with-deps chromium
+
       - run: pnpm --filter blog lint
 
       - run: pnpm --filter blog typecheck
