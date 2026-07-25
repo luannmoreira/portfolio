@@ -6,11 +6,11 @@ test.describe("page navigation", () => {
   });
 
   const pages = [
-    { link: "About", hash: "#/about", heading: "About" },
+    { link: "About", hash: "#/about", heading: "About me" },
     { link: "Projects", hash: "#/projects", heading: "Projects" },
     { link: "Uses", hash: "#/uses", heading: "Uses" },
     { link: "Now", hash: "#/now", heading: "Now" },
-    { link: "Contact", hash: "#/contact", heading: "Contact" },
+    { link: "Contact", hash: "#/contact", heading: "Be in touch!" },
   ];
 
   for (const { link, hash, heading } of pages) {
@@ -28,11 +28,8 @@ test.describe("page navigation", () => {
 });
 
 test.describe("outbound links", () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto("/");
-  });
-
   test("resume link opens the PDF in a new tab", async ({ page }) => {
+    await page.goto("/");
     const resumeLink = page
       .getByRole("navigation")
       .getByRole("link", { name: "Resume" });
@@ -41,10 +38,12 @@ test.describe("outbound links", () => {
     await expect(resumeLink).toHaveAttribute("rel", "noreferrer");
   });
 
+  // GitHub/LinkedIn appear once on Home (Hero) and once on the Contact
+  // page (its own route since 10.2) — not both on the same page anymore.
   test("every GitHub link points to the same profile", async ({ page }) => {
-    const links = page.getByRole("link", { name: "GitHub" });
-    await expect(links).toHaveCount(2); // Hero + Contact
-    for (const link of await links.all()) {
+    for (const path of ["/", "/#/contact"]) {
+      await page.goto(path);
+      const link = page.getByRole("link", { name: "GitHub" });
       await expect(link).toHaveAttribute(
         "href",
         "https://github.com/luannmoreira"
@@ -54,9 +53,9 @@ test.describe("outbound links", () => {
   });
 
   test("every LinkedIn link points to the same profile", async ({ page }) => {
-    const links = page.getByRole("link", { name: "LinkedIn" });
-    await expect(links).toHaveCount(2); // Hero + Contact
-    for (const link of await links.all()) {
+    for (const path of ["/", "/#/contact"]) {
+      await page.goto(path);
+      const link = page.getByRole("link", { name: "LinkedIn" });
       await expect(link).toHaveAttribute(
         "href",
         "https://linkedin.com/in/luanncurioso"
@@ -66,6 +65,7 @@ test.describe("outbound links", () => {
   });
 
   test("WhatsApp link opens the right chat", async ({ page }) => {
+    await page.goto("/#/contact");
     const link = page.getByRole("link", { name: "WhatsApp" });
     await expect(link).toHaveAttribute("href", /wa\.me\/5565999722455/);
     await expect(link).toHaveAttribute("target", "_blank");

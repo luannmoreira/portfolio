@@ -1,15 +1,11 @@
 import { render, screen } from "@testing-library/react";
-import About from "./About";
 import Resume from "./Resume";
 import Projects from "./Projects";
 import Uses from "./Uses";
 import Now from "./Now";
-import Contact from "./Contact";
 
-test("About renders its placeholder heading", () => {
-  render(<About />);
-  expect(screen.getByRole("heading", { name: "About" })).toBeInTheDocument();
-});
+// About and Contact were migrated in 10.2 (real content, tested via
+// App.test.tsx). Remaining stubs: Resume, Projects, Uses, Now.
 
 test("Resume renders its placeholder heading", () => {
   render(<Resume />);
@@ -29,9 +25,4 @@ test("Uses renders its placeholder heading", () => {
 test("Now renders its placeholder heading", () => {
   render(<Now />);
   expect(screen.getByRole("heading", { name: "Now" })).toBeInTheDocument();
-});
-
-test("Contact page renders its placeholder heading", () => {
-  render(<Contact />);
-  expect(screen.getByRole("heading", { name: "Contact" })).toBeInTheDocument();
 });
