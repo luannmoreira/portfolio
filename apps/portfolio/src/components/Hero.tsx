@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router";
 
 import profile from "../assets/frame.png";
 import ArrowRightCircleIcon from "./icons/ArrowRightCircleIcon";
@@ -6,7 +7,6 @@ import GithubIcon from "./icons/GithubIcon";
 import LinkedinIcon from "./icons/LinkedinIcon";
 import HrCurve from "./HrCurve";
 import Reveal from "./Reveal";
-import resume from "../assets/resume.pdf";
 import loading from "../assets/loading.svg";
 
 export default function Hero() {
@@ -71,15 +71,10 @@ export default function Hero() {
               technologies on the market to back-end programming + tests.
             </p>
           </div>
-          <a
-            href={resume}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-2 block"
-          >
+          <Link to="/resume" className="mt-2 block">
             Check my resume{" "}
             <ArrowRightCircleIcon className="ml-2 w-4 h-4 inline-block" />{" "}
-          </a>
+          </Link>
           <ul className="flex mt-2 gap-3 items-center">
             <li>
               <a

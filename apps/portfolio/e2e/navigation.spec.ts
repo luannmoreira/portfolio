@@ -7,6 +7,7 @@ test.describe("page navigation", () => {
 
   const pages = [
     { link: "About", hash: "#/about", heading: "About me" },
+    { link: "Resume", hash: "#/resume", heading: "Luann Curioso" },
     { link: "Projects", hash: "#/projects", heading: "Projects" },
     { link: "Uses", hash: "#/uses", heading: "Uses" },
     { link: "Now", hash: "#/now", heading: "Now" },
@@ -25,19 +26,17 @@ test.describe("page navigation", () => {
       ).toBeVisible();
     });
   }
+
+  test("Resume page renders real experience content and a print button", async ({
+    page,
+  }) => {
+    await page.goto("/#/resume");
+    await expect(page.getByText(/ShellHub/)).toBeVisible();
+    await expect(page.getByRole("button", { name: /print/i })).toBeVisible();
+  });
 });
 
 test.describe("outbound links", () => {
-  test("resume link opens the PDF in a new tab", async ({ page }) => {
-    await page.goto("/");
-    const resumeLink = page
-      .getByRole("navigation")
-      .getByRole("link", { name: "Resume" });
-    await expect(resumeLink).toHaveAttribute("href", /resume.*\.pdf$/);
-    await expect(resumeLink).toHaveAttribute("target", "_blank");
-    await expect(resumeLink).toHaveAttribute("rel", "noreferrer");
-  });
-
   // GitHub/LinkedIn appear once on Home (Hero) and once on the Contact
   // page (its own route since 10.2) — not both on the same page anymore.
   test("every GitHub link points to the same profile", async ({ page }) => {

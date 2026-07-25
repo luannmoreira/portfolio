@@ -1,10 +1,9 @@
 import { Link } from "react-router";
 import logo from "../assets/logo.png";
-import resume from "../assets/resume.pdf";
 
 export default function Navbar() {
   return (
-    <nav className="fixed z-50 bg-dark-500 w-full top-0 left-0 px-8 py-4 lg:px-20 xl:px-36">
+    <nav className="fixed z-50 bg-dark-500 w-full top-0 left-0 px-8 py-4 lg:px-20 xl:px-36 print:hidden">
       <div className="flex justify-between items-center text-white">
         <Link to="/">
           <img src={logo} className="App-logo w-12 rounded-full" alt="logo" />
@@ -26,14 +25,12 @@ export default function Navbar() {
             05. <Link to="/contact">Contact</Link>
           </li>
         </ul>
-        <a
-          href={resume}
-          rel="noreferrer"
-          target="_blank"
+        <Link
+          to="/resume"
           className="bg-dark-100 rounded-full px-5 py-2 border border-dark-100 hover:border-dark-50 font-bold font-mono border border-4"
         >
           Resume
-        </a>
+        </Link>
       </div>
     </nav>
   );

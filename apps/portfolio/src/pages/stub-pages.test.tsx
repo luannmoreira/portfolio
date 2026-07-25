@@ -1,16 +1,10 @@
 import { render, screen } from "@testing-library/react";
-import Resume from "./Resume";
 import Projects from "./Projects";
 import Uses from "./Uses";
 import Now from "./Now";
 
-// About and Contact were migrated in 10.2 (real content, tested via
-// App.test.tsx). Remaining stubs: Resume, Projects, Uses, Now.
-
-test("Resume renders its placeholder heading", () => {
-  render(<Resume />);
-  expect(screen.getByRole("heading", { name: "Resume" })).toBeInTheDocument();
-});
+// About, Contact (10.2), and Resume (10.3) have real content now, tested
+// via their own dedicated test files. Remaining stubs: Projects, Uses, Now.
 
 test("Projects renders its placeholder heading", () => {
   render(<Projects />);
