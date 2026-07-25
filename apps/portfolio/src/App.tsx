@@ -1,29 +1,36 @@
 import "./App.css";
 import { useEffect } from "react";
+import { HashRouter, Routes, Route } from "react-router";
 import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-import About from "./components/About";
-import Habilidades from "./components/Habilidades";
-import Experiencia from "./components/Experiencia";
-import Certs from "./components/Certs";
 import Footer from "./components/Footer";
-import Contact from "./components/Contact";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Resume from "./pages/Resume";
+import Projects from "./pages/Projects";
+import Uses from "./pages/Uses";
+import Now from "./pages/Now";
+import Contact from "./pages/Contact";
 
 function App() {
   useEffect(() => {
     document.title = "Luann Curioso";
   }, []);
   return (
-    <div className="w-100 px-6 lg:px-20 xl:px-36 bg-dark-500">
-      <Navbar />
-      <Hero />
-      <About />
-      <Habilidades />
-      <Experiencia />
-      <Certs />
-      <Contact />
-      <Footer />
-    </div>
+    <HashRouter>
+      <div className="w-100 px-6 lg:px-20 xl:px-36 bg-dark-500">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/resume" element={<Resume />} />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/uses" element={<Uses />} />
+          <Route path="/now" element={<Now />} />
+          <Route path="/contact" element={<Contact />} />
+        </Routes>
+        <Footer />
+      </div>
+    </HashRouter>
   );
 }
 

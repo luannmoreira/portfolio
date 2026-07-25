@@ -144,6 +144,9 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
+      react-router:
+        specifier: ^7.18.0
+        version: 7.18.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       web-vitals:
         specifier: ^2.1.4
         version: 2.1.4

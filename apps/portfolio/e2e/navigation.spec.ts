@@ -1,26 +1,28 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("anchor navigation", () => {
+test.describe("page navigation", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
   });
 
-  const sections = [
-    { link: "About", hash: "#home", sectionId: "home" },
-    { link: "Skills", hash: "#skills", sectionId: "skills" },
-    { link: "Experience", hash: "#honors", sectionId: "honors" },
-    { link: "Certificates", hash: "#certs", sectionId: "certs" },
-    { link: "Contact", hash: "#contact", sectionId: "contact" },
+  const pages = [
+    { link: "About", hash: "#/about", heading: "About" },
+    { link: "Projects", hash: "#/projects", heading: "Projects" },
+    { link: "Uses", hash: "#/uses", heading: "Uses" },
+    { link: "Now", hash: "#/now", heading: "Now" },
+    { link: "Contact", hash: "#/contact", heading: "Contact" },
   ];
 
-  for (const { link, hash, sectionId } of sections) {
-    test(`"${link}" nav link scrolls to its section`, async ({ page }) => {
+  for (const { link, hash, heading } of pages) {
+    test(`"${link}" nav link navigates to its page`, async ({ page }) => {
       await page
         .getByRole("navigation")
         .getByRole("link", { name: link })
         .click();
       await expect(page).toHaveURL(new RegExp(`${hash}$`));
-      await expect(page.locator(`#${sectionId}`)).toBeInViewport();
+      await expect(
+        page.getByRole("heading", { name: heading, level: 1 })
+      ).toBeVisible();
     });
   }
 });

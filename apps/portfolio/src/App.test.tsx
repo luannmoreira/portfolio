@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import App from "./App";
 
 test("renders every section's heading", () => {
@@ -19,4 +20,20 @@ test("renders every section's heading", () => {
   expect(
     screen.getByRole("heading", { name: "Be in touch!" })
   ).toBeInTheDocument();
+});
+
+test("navigating to a real route renders that page, not Home", async () => {
+  const user = userEvent.setup();
+  render(<App />);
+
+  // Both Navbar and Footer render an "About" link (both are always
+  // rendered, above/below the routed page) — the first is Navbar's.
+  await user.click(screen.getAllByRole("link", { name: "About" })[0]);
+
+  expect(
+    screen.getByRole("heading", { name: "About", level: 1 })
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole("heading", { name: "Luann Curioso" })
+  ).not.toBeInTheDocument();
 });

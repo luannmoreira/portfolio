@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import HrCurve from "./HrCurve";
 
 const today = new Date();
@@ -7,29 +8,29 @@ export default function Footer() {
     <footer className="mt-4 bg-dark-200 rounded-md text-white text-lg py-4 mt-10 sm:mt-0">
       <ul className="text-center font-bold pt-5 m-2 ">
         <li>
-          <a href="#home" className="hover:underline">
+          <Link to="/about" className="hover:underline">
             About
-          </a>
+          </Link>
         </li>
         <li>
-          <a href="#skills" className="hover:underline">
-            Skills
-          </a>
+          <Link to="/projects" className="hover:underline">
+            Projects
+          </Link>
         </li>
         <li>
-          <a href="#honors" className="hover:underline">
-            Experience
-          </a>
+          <Link to="/uses" className="hover:underline">
+            Uses
+          </Link>
         </li>
         <li>
-          <a href="#certs" className="hover:underline">
-            Certifications
-          </a>
+          <Link to="/now" className="hover:underline">
+            Now
+          </Link>
         </li>
         <li>
-          <a href="#contact" className="hover:underline">
+          <Link to="/contact" className="hover:underline">
             Contact
-          </a>
+          </Link>
         </li>
       </ul>
 

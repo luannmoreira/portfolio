@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import logo from "../assets/logo.png";
 import resume from "../assets/resume.pdf";
 
@@ -5,22 +6,24 @@ export default function Navbar() {
   return (
     <nav className="fixed z-50 bg-dark-500 w-full top-0 left-0 px-8 py-4 lg:px-20 xl:px-36">
       <div className="flex justify-between items-center text-white">
-        <img src={logo} className="App-logo w-12 rounded-full" alt="logo" />
+        <Link to="/">
+          <img src={logo} className="App-logo w-12 rounded-full" alt="logo" />
+        </Link>
         <ul className="hidden md:flex">
           <li className="p-4 font-mono text-white hover:text-blue">
-            01. <a href="#home">About</a>
+            01. <Link to="/about">About</Link>
           </li>
           <li className="p-4 font-mono text-white hover:text-blue">
-            02. <a href="#skills">Skills</a>
+            02. <Link to="/projects">Projects</Link>
           </li>
           <li className="p-4 font-mono text-white hover:text-blue">
-            03. <a href="#honors">Experience</a>
+            03. <Link to="/uses">Uses</Link>
           </li>
           <li className="p-4 font-mono text-white hover:text-blue">
-            04. <a href="#certs">Certificates</a>
+            04. <Link to="/now">Now</Link>
           </li>
           <li className="p-4 font-mono text-white hover:text-blue">
-            05. <a href="#contact">Contact</a>
+            05. <Link to="/contact">Contact</Link>
           </li>
         </ul>
         <a
