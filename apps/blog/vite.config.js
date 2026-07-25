@@ -7,6 +7,7 @@ import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypePrettyCode from "rehype-pretty-code";
+import rehypeMermaid from "rehype-mermaid";
 import { remarkReadingTime } from "./remark-reading-time.js";
 
 export default defineConfig({
@@ -28,6 +29,10 @@ export default defineConfig({
           remarkReadingTime,
         ],
         rehypePlugins: [
+          // Must run before rehype-pretty-code: it targets the same
+          // <pre><code class="language-mermaid"> shape rehype-pretty-code
+          // would otherwise syntax-highlight as if it were plain code.
+          [rehypeMermaid, { strategy: "inline-svg", colorScheme: "dark" }],
           rehypeSlug,
           [rehypeAutolinkHeadings, { behavior: "wrap" }],
           [rehypePrettyCode, { theme: "github-dark" }],
