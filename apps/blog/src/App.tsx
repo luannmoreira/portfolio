@@ -14,6 +14,17 @@ function App() {
           element={<ContentIndex type="post" basePath="/blog" heading="Blog" />}
         />
         <Route path="/blog/:slug" element={<Post />} />
+        <Route
+          path="/adr"
+          element={
+            <ContentIndex
+              type="adr"
+              basePath="/adr"
+              heading="Architecture Decision Records"
+            />
+          }
+        />
+        <Route path="/adr/:slug" element={<Post />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

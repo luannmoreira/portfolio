@@ -40,3 +40,21 @@ test("renders the given heading", () => {
 
   expect(screen.getByRole("heading", { name: "Blog" })).toBeInTheDocument();
 });
+
+test("works for a second content type (ADR), proving the generalization", () => {
+  render(
+    <MemoryRouter>
+      <ContentIndex
+        type="adr"
+        basePath="/adr"
+        heading="Architecture Decision Records"
+      />
+    </MemoryRouter>
+  );
+
+  expect(screen.getByRole("link", { name: "ADR Placeholder" })).toHaveAttribute(
+    "href",
+    "/adr/placeholder"
+  );
+  expect(screen.queryByText("Hello, Blog")).not.toBeInTheDocument();
+});

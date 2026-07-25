@@ -24,3 +24,16 @@ test("a heading's self-link navigates to its own anchor", async ({ page }) => {
 
   await expect(page).toHaveURL("/blog/hello-world#hello-blog");
 });
+
+test("ADR index lists ADRs and links to the ADR page", async ({ page }) => {
+  await page.goto("/adr");
+  await expect(
+    page.getByRole("heading", { name: "Architecture Decision Records" })
+  ).toBeVisible();
+
+  await page.getByRole("link", { name: "ADR Placeholder" }).click();
+  await expect(page).toHaveURL("/adr/placeholder");
+  await expect(
+    page.getByRole("heading", { name: "ADR Placeholder" })
+  ).toBeVisible();
+});
