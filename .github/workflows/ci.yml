@@ -21,6 +21,8 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - run: pnpm format:check
+
       - run: pnpm --filter portfolio lint
 
       - run: pnpm --filter portfolio typecheck
