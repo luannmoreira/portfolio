@@ -7,6 +7,7 @@ import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypePrettyCode from "rehype-pretty-code";
+import { remarkReadingTime } from "./remark-reading-time.js";
 
 export default defineConfig({
   plugins: [
@@ -19,7 +20,13 @@ export default defineConfig({
         // frontmatter plugins must run first: remarkFrontmatter parses the
         // YAML block, remarkMdxFrontmatter turns it into a `frontmatter`
         // named export the content loader reads via import.meta.glob.
-        remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter, remarkGfm],
+        // remarkReadingTime adds a sibling `readingTime` export the same way.
+        remarkPlugins: [
+          remarkFrontmatter,
+          remarkMdxFrontmatter,
+          remarkGfm,
+          remarkReadingTime,
+        ],
         rehypePlugins: [
           rehypeSlug,
           [rehypeAutolinkHeadings, { behavior: "wrap" }],

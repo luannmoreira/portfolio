@@ -6,6 +6,7 @@ export type ContentType = "post" | "project" | "adr";
 export interface ContentEntry extends Frontmatter {
   slug: string;
   type: ContentType;
+  readingTime: string;
 }
 
 function deriveType(path: string): ContentType {
@@ -22,24 +23,33 @@ function deriveSlug(path: string): string {
     .replace(/\.mdx$/, "");
 }
 
-// Metadata-only glob: `import: "frontmatter"` pulls just that named export
-// per file. Intent is to avoid bundling every post's full compiled component
-// into the index page's JS — but because the same files are also lazily
-// imported below, Rollup currently keeps them in the main chunk anyway
-// (logs an INEFFECTIVE_DYNAMIC_IMPORT warning at build time). Harmless at
-// today's content volume; real code-splitting is deferred to ROADMAP.md's
-// Phase 12.3 ("code-split routes"), which exists for exactly this.
-const modules = import.meta.glob("/content/{blog,projects,adr}/*.mdx", {
-  eager: true,
-  import: "frontmatter",
-}) as Record<string, unknown>;
+// Metadata-only globs: `import: "<name>"` pulls just that named export per
+// file, without bundling each post's full compiled component into the index
+// page's JS. Two separate globs (not one unfiltered eager glob) — intent is
+// to avoid bundling every post's entire compiled component just to list
+// titles, though see the note above the lazy glob below: that's not fully
+// achieved yet. `readingTime` is computed at compile time by
+// remark-reading-time.js (wired into vite.config.js) — it can't be read via
+// a `?raw` import of the same file, since @mdx-js/rollup's transform filter
+// strips query strings before matching, so that path gets compiled as MDX
+// too rather than served as plain text.
+const frontmatterModules = import.meta.glob(
+  "/content/{blog,projects,adr}/*.mdx",
+  { eager: true, import: "frontmatter" }
+) as Record<string, unknown>;
+
+const readingTimeModules = import.meta.glob(
+  "/content/{blog,projects,adr}/*.mdx",
+  { eager: true, import: "readingTime" }
+) as Record<string, string>;
 
 export function loadContent(): ContentEntry[] {
-  return Object.entries(modules)
+  return Object.entries(frontmatterModules)
     .map(([path, frontmatter]) => ({
       ...parseFrontmatter(frontmatter),
       slug: deriveSlug(path),
       type: deriveType(path),
+      readingTime: readingTimeModules[path],
     }))
     .sort((a, b) => b.date.localeCompare(a.date));
 }

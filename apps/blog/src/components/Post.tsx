@@ -1,18 +1,20 @@
 import { Suspense } from "react";
 import { useParams } from "react-router";
-import { getPostComponent } from "../content/loader";
+import { getPostComponent, loadContent } from "../content/loader";
 import NotFound from "./NotFound";
 
 function Post() {
   const { slug } = useParams();
   const PostBody = slug ? getPostComponent(slug) : undefined;
+  const entry = slug ? loadContent().find((e) => e.slug === slug) : undefined;
 
-  if (!PostBody) {
+  if (!PostBody || !entry) {
     return <NotFound />;
   }
 
   return (
     <div className="min-h-screen bg-dark-500 px-6 py-12 text-white">
+      <p className="text-sm text-dark-50">{entry.readingTime}</p>
       <Suspense fallback={<p>Loading…</p>}>
         {/* eslint-disable-next-line react-hooks/static-components -- getPostComponent
             caches by slug (loader.ts), so this reference is stable across

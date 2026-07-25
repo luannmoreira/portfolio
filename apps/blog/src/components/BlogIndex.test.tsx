@@ -28,3 +28,9 @@ test("links to the post's /blog/:slug route", () => {
     "/blog/hello-world"
   );
 });
+
+test("shows each post's reading time", () => {
+  renderBlogIndex();
+
+  expect(screen.getByText(/read$/i)).toBeInTheDocument();
+});

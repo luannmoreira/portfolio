@@ -25,3 +25,9 @@ test("shows a not-found message for an unknown slug", () => {
 
   expect(screen.getByText(/page not found/i)).toBeInTheDocument();
 });
+
+test("shows the post's reading time", async () => {
+  renderAtSlug("hello-world");
+
+  expect(await screen.findByText(/read$/i)).toBeInTheDocument();
+});

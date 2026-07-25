@@ -18,6 +18,7 @@ function BlogIndex() {
             >
               {post.title}
             </Link>
+            <p className="text-sm text-dark-50">{post.readingTime}</p>
             <p>{post.excerpt}</p>
           </li>
         ))}

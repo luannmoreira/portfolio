@@ -15,3 +15,12 @@ test("an unknown route shows the not-found page", async ({ page }) => {
   await page.goto("/does-not-exist");
   await expect(page.getByText(/page not found/i)).toBeVisible();
 });
+
+test("a heading's self-link navigates to its own anchor", async ({ page }) => {
+  await page.goto("/blog/hello-world");
+
+  const heading = page.getByRole("heading", { name: "Hello, Blog" });
+  await heading.getByRole("link").click();
+
+  await expect(page).toHaveURL("/blog/hello-world#hello-blog");
+});

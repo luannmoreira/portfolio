@@ -40,6 +40,15 @@ test("sorts entries by date, newest first", () => {
   expect(dates).toEqual(expectedOrder);
 });
 
+test("computes a reading time estimate for every entry", () => {
+  const entries = loadContent();
+
+  expect(entries.length).toBeGreaterThan(0);
+  entries.forEach((entry) => {
+    expect(entry.readingTime).toMatch(/read$/i);
+  });
+});
+
 test("loadPostBody returns a lazy loader resolving to the matching MDX component", async () => {
   const loader = loadPostBody("hello-world");
   expect(loader).toBeTypeOf("function");
