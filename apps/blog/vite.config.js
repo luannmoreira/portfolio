@@ -18,6 +18,11 @@ export default defineConfig({
     {
       enforce: "pre",
       ...mdx({
+        // Without this, compiled MDX never calls useMDXComponents() at
+        // all, so MDXProvider (9.8) has zero effect regardless of what's
+        // passed to it — the compiled output just uses local/no-op
+        // components unless told to source them from @mdx-js/react.
+        providerImportSource: "@mdx-js/react",
         // frontmatter plugins must run first: remarkFrontmatter parses the
         // YAML block, remarkMdxFrontmatter turns it into a `frontmatter`
         // named export the content loader reads via import.meta.glob.
