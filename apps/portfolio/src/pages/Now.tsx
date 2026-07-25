@@ -1,8 +1,20 @@
+import { nowItems, nowLastUpdated } from "../content/now";
+
+// Convention: https://nownownow.com — what I'm actually focused on right
+// now, manually updated (not auto-generated) when it goes stale.
 function Now() {
   return (
     <div className="min-h-screen text-white">
       <h1 className="text-3xl font-bold">Now</h1>
-      <p>Content coming soon.</p>
+      <p className="font-light text-gray-400">Last updated: {nowLastUpdated}</p>
+      <ul className="mt-6 flex flex-col gap-6">
+        {nowItems.map((item) => (
+          <li key={item.title}>
+            <h2 className="font-bold md:text-xl">{item.title}</h2>
+            <p className="font-light text-gray-400">{item.description}</p>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

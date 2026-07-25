@@ -50,6 +50,16 @@ test.describe("page navigation", () => {
     await expect(page.getByText("VS Code")).toBeVisible();
     await expect(page.getByText("Two monitors")).toBeVisible();
   });
+
+  test("Now page renders the real current focus", async ({ page }) => {
+    await page.goto("/#/now");
+    await expect(
+      page.getByText("Rebranding as a software engineer")
+    ).toBeVisible();
+    await expect(
+      page.getByText('"The Most Boring Project Ever"')
+    ).toBeVisible();
+  });
 });
 
 test.describe("outbound links", () => {
