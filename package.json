@@ -6,10 +6,14 @@
   },
   "packageManager": "pnpm@11.17.0",
   "scripts": {
-    "dev": "pnpm --filter portfolio dev",
-    "build": "pnpm --filter portfolio build",
-    "preview": "pnpm --filter portfolio preview",
-    "lint": "pnpm --filter portfolio lint",
+    "dev:portfolio": "pnpm --filter portfolio dev",
+    "dev:blog": "pnpm --filter blog dev",
+    "build:portfolio": "pnpm --filter portfolio build",
+    "build:blog": "pnpm --filter blog build",
+    "preview:portfolio": "pnpm --filter portfolio preview",
+    "preview:blog": "pnpm --filter blog preview",
+    "lint:portfolio": "pnpm --filter portfolio lint",
+    "lint:blog": "pnpm --filter blog lint",
     "deploy": "pnpm --filter portfolio deploy",
     "format": "prettier --write .",
     "format:check": "prettier --check ."

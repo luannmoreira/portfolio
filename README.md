@@ -10,9 +10,9 @@ This is a pnpm workspace monorepo:
 
 ```
 apps/
-  portfolio/   personal site (currently CRA — migrating to Vite + TypeScript)
-  blog/        engineering blog (planned — MDX-based, see ROADMAP.md)
-packages/      shared config (typescript/eslint/tailwind) — added once blog exists
+  portfolio/   personal site (Vite + React + TypeScript)
+  blog/        engineering blog (scaffolded — MDX content pipeline pending, see ROADMAP.md)
+packages/      shared config: config-typescript, config-eslint, config-tailwind
 ```
 
 Each app is independently runnable and deployable; they share tooling
@@ -24,9 +24,13 @@ Node version is pinned in `.node-version` (works with `fnm`/`nvm`/`volta`).
 
 ```sh
 pnpm install
-pnpm start     # runs the portfolio app
-pnpm build     # builds the portfolio app
-pnpm deploy    # publishes the portfolio app to GitHub Pages
+pnpm dev:portfolio       # run the portfolio app
+pnpm dev:blog            # run the blog app
+pnpm build:portfolio     # build the portfolio app
+pnpm build:blog          # build the blog app
+pnpm deploy              # publish the portfolio app to GitHub Pages (blog has no deploy target yet)
+pnpm format              # format the whole repo with Prettier
 ```
 
-To target a specific app directly: `pnpm --filter portfolio <script>`.
+To run any other script directly against one app: `pnpm --filter <portfolio|blog> <script>`
+(e.g. `pnpm --filter portfolio test`, `pnpm --filter blog typecheck`).

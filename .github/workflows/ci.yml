@@ -6,8 +6,8 @@ on:
   pull_request:
 
 jobs:
-  portfolio:
-    name: Portfolio (lint, typecheck, test, build)
+  format:
+    name: Format (repo-wide)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,6 +23,21 @@ jobs:
 
       - run: pnpm format:check
 
+  portfolio:
+    name: Portfolio (lint, typecheck, test, build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
       - run: pnpm --filter portfolio lint
 
       - run: pnpm --filter portfolio typecheck
@@ -31,7 +46,7 @@ jobs:
 
       - run: pnpm --filter portfolio build
 
-  e2e:
+  portfolio-e2e:
     name: Portfolio (e2e)
     runs-on: ubuntu-latest
     steps:
@@ -53,6 +68,55 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: playwright-report
+          name: portfolio-playwright-report
           path: apps/portfolio/playwright-report/
+          retention-days: 7
+
+  blog:
+    name: Blog (lint, typecheck, test, build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm --filter blog lint
+
+      - run: pnpm --filter blog typecheck
+
+      - run: pnpm --filter blog test
+
+      - run: pnpm --filter blog build
+
+  blog-e2e:
+    name: Blog (e2e)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm --filter blog exec playwright install --with-deps chromium
+
+      - run: pnpm --filter blog e2e
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: blog-playwright-report
+          path: apps/blog/playwright-report/
           retention-days: 7
