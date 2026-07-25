@@ -34,6 +34,16 @@ test.describe("page navigation", () => {
     await expect(page.getByText(/ShellHub/)).toBeVisible();
     await expect(page.getByRole("button", { name: /print/i })).toBeVisible();
   });
+
+  test("Projects page renders real project entries and links out", async ({
+    page,
+  }) => {
+    await page.goto("/#/projects");
+    await expect(page.getByRole("heading", { name: "ShellHub" })).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: /SEDEC \/ Invest MT/ })
+    ).toHaveAttribute("href", "https://www.investmt.com.br/pt-br");
+  });
 });
 
 test.describe("outbound links", () => {

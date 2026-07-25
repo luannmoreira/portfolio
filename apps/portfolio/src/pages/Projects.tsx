@@ -1,8 +1,19 @@
+import CardProjects from "../components/CardProjects";
+import { projects } from "../content/projects";
+
 function Projects() {
   return (
     <div className="min-h-screen text-white">
       <h1 className="text-3xl font-bold">Projects</h1>
-      <p>Content coming soon.</p>
+      <p className="font-light text-gray-400">
+        Production engineering work — architecture, maintainability, and
+        long-term thinking, not just UI.
+      </p>
+      <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-3">
+        {projects.map((project) => (
+          <CardProjects key={project.name} {...project} />
+        ))}
+      </div>
     </div>
   );
 }
