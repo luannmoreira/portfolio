@@ -36,6 +36,7 @@
   "devDependencies": {
     "@playwright/test": "^1.61.1",
     "@portfolio/config-eslint": "workspace:*",
+    "@portfolio/config-tailwind": "workspace:*",
     "@portfolio/config-typescript": "workspace:*",
     "@testing-library/jest-dom": "^7.0.0",
     "@testing-library/react": "^16.3.2",

@@ -30,6 +30,9 @@ importers:
       '@portfolio/config-eslint':
         specifier: workspace:*
         version: link:../../packages/config-eslint
+      '@portfolio/config-tailwind':
+        specifier: workspace:*
+        version: link:../../packages/config-tailwind
       '@portfolio/config-typescript':
         specifier: workspace:*
         version: link:../../packages/config-typescript
@@ -108,6 +111,8 @@ importers:
       typescript-eslint:
         specifier: ^8.65.0
         version: 8.65.0(eslint@9.39.5(jiti@1.21.7)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@6.0.3)
+
+  packages/config-tailwind: {}
 
   packages/config-typescript: {}
 
