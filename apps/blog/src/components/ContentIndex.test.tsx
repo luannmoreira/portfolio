@@ -1,16 +1,16 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import BlogIndex from "./BlogIndex";
+import ContentIndex from "./ContentIndex";
 
 function renderBlogIndex() {
   return render(
     <MemoryRouter>
-      <BlogIndex />
+      <ContentIndex type="post" basePath="/blog" heading="Blog" />
     </MemoryRouter>
   );
 }
 
-test("lists published posts, excluding other content types", () => {
+test("lists published entries of the given type, excluding other types", () => {
   renderBlogIndex();
 
   expect(screen.getByRole("link", { name: "Hello, Blog" })).toBeInTheDocument();
@@ -20,7 +20,7 @@ test("lists published posts, excluding other content types", () => {
   expect(screen.queryByText("ADR Placeholder")).not.toBeInTheDocument();
 });
 
-test("links to the post's /blog/:slug route", () => {
+test("links to the entry's basePath/:slug route", () => {
   renderBlogIndex();
 
   expect(screen.getByRole("link", { name: "Hello, Blog" })).toHaveAttribute(
@@ -29,8 +29,14 @@ test("links to the post's /blog/:slug route", () => {
   );
 });
 
-test("shows each post's reading time", () => {
+test("shows each entry's reading time", () => {
   renderBlogIndex();
 
   expect(screen.getByText(/read$/i)).toBeInTheDocument();
+});
+
+test("renders the given heading", () => {
+  renderBlogIndex();
+
+  expect(screen.getByRole("heading", { name: "Blog" })).toBeInTheDocument();
 });

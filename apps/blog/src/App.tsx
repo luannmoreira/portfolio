@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router";
 import Home from "./components/Home";
-import BlogIndex from "./components/BlogIndex";
+import ContentIndex from "./components/ContentIndex";
 import Post from "./components/Post";
 import NotFound from "./components/NotFound";
 
@@ -9,7 +9,10 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/blog" element={<BlogIndex />} />
+        <Route
+          path="/blog"
+          element={<ContentIndex type="post" basePath="/blog" heading="Blog" />}
+        />
         <Route path="/blog/:slug" element={<Post />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
