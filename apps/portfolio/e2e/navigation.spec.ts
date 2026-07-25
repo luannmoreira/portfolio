@@ -44,6 +44,12 @@ test.describe("page navigation", () => {
       page.getByRole("link", { name: /SEDEC \/ Invest MT/ })
     ).toHaveAttribute("href", "https://www.investmt.com.br/pt-br");
   });
+
+  test("Uses page renders the real setup", async ({ page }) => {
+    await page.goto("/#/uses");
+    await expect(page.getByText("VS Code")).toBeVisible();
+    await expect(page.getByText("Two monitors")).toBeVisible();
+  });
 });
 
 test.describe("outbound links", () => {
