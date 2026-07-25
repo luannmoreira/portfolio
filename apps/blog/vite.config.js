@@ -42,6 +42,7 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     globals: true,
+    clearMocks: true,
     setupFiles: "./src/test-setup.ts",
     // Scoped to src/ so Vitest never tries to run Playwright's e2e specs
     // as its own tests (same fix as portfolio's vite.config.js).
