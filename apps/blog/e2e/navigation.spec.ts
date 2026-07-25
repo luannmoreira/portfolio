@@ -37,3 +37,36 @@ test("ADR index lists ADRs and links to the ADR page", async ({ page }) => {
     page.getByRole("heading", { name: "ADR Placeholder" })
   ).toBeVisible();
 });
+
+test("the real post exercises every MDX authoring component (9.8)", async ({
+  page,
+}) => {
+  await page.goto("/blog/building-this-blogs-content-pipeline");
+
+  // Callout wrappers (9.2), via MDXProvider (9.8)
+  await expect(
+    page.getByText("pnpm workspaces, not Turborepo or Nx")
+  ).toBeVisible();
+  await expect(
+    page.getByText("Code-splitting doesn't fully work yet")
+  ).toBeVisible();
+  await expect(
+    page.getByText("A dependency that crashes in the browser")
+  ).toBeVisible();
+  await expect(
+    page.getByText("Reuse proven AST-injection utilities")
+  ).toBeVisible();
+  await expect(page.getByText("type is derived, not authored")).toBeVisible();
+
+  // FileTree (9.5)
+  await expect(page.getByText("config-tailwind")).toBeVisible();
+
+  // Terminal (9.6), reusing Pre's copy button (9.4)
+  await expect(page.getByText("pnpm --filter blog dev")).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: /copy/i }).first()
+  ).toBeVisible();
+
+  // Mermaid diagram, build-time SVG (9.7)
+  await expect(page.locator("svg.flowchart")).toBeVisible();
+});

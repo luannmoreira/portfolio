@@ -32,7 +32,7 @@ test("links to the entry's basePath/:slug route", () => {
 test("shows each entry's reading time", () => {
   renderBlogIndex();
 
-  expect(screen.getByText(/read$/i)).toBeInTheDocument();
+  expect(screen.getAllByText(/read$/i).length).toBeGreaterThan(0);
 });
 
 test("renders the given heading", () => {
