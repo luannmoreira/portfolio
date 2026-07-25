@@ -1,7 +1,7 @@
 {
   "extends": "@portfolio/config-typescript/base.json",
   "compilerOptions": {
-    "types": ["vitest/globals"]
+    "types": ["vitest/globals", "mdx"]
   },
   "include": ["src"]
 }
