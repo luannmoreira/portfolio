@@ -1,4 +1,4 @@
-import { loadContent } from "./loader";
+import { loadContent, loadPostBody, getPostComponent } from "./loader";
 
 // Exercised against the real placeholder files in content/{blog,projects,adr}/
 // — import.meta.glob resolves patterns against the actual filesystem at
@@ -38,4 +38,26 @@ test("sorts entries by date, newest first", () => {
   const expectedOrder = [...dates].sort().reverse();
 
   expect(dates).toEqual(expectedOrder);
+});
+
+test("loadPostBody returns a lazy loader resolving to the matching MDX component", async () => {
+  const loader = loadPostBody("hello-world");
+  expect(loader).toBeTypeOf("function");
+
+  const mod = await loader!();
+  expect(mod.default).toBeTypeOf("function");
+});
+
+test("loadPostBody returns undefined for an unknown slug", () => {
+  expect(loadPostBody("does-not-exist")).toBeUndefined();
+});
+
+test("getPostComponent returns the same component reference on repeated calls", () => {
+  // Same reference matters: a React component created fresh each call would
+  // reset its Suspense boundary's state every render.
+  expect(getPostComponent("hello-world")).toBe(getPostComponent("hello-world"));
+});
+
+test("getPostComponent returns undefined for an unknown slug", () => {
+  expect(getPostComponent("does-not-exist")).toBeUndefined();
 });
