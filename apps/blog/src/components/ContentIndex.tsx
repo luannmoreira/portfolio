@@ -27,7 +27,7 @@ function ContentIndex({ type, basePath, heading }: ContentIndexProps) {
             >
               {entry.title}
             </Link>
-            <p className="text-sm text-dark-50">{entry.readingTime}</p>
+            <p className="text-sm text-gray-400">{entry.readingTime}</p>
             <p>{entry.excerpt}</p>
           </li>
         ))}

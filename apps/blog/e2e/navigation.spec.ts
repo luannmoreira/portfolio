@@ -7,7 +7,7 @@ test("blog index lists posts and links to the post page", async ({ page }) => {
   await page.getByRole("link", { name: "Hello, Blog" }).click();
   await expect(page).toHaveURL("/blog/hello-world");
   await expect(
-    page.getByRole("heading", { name: "Hello, Blog" })
+    page.getByRole("heading", { name: "Hello, Blog", level: 1 })
   ).toBeVisible();
 });
 
@@ -19,7 +19,10 @@ test("an unknown route shows the not-found page", async ({ page }) => {
 test("a heading's self-link navigates to its own anchor", async ({ page }) => {
   await page.goto("/blog/hello-world");
 
-  const heading = page.getByRole("heading", { name: "Hello, Blog" });
+  // level: 2 — the MDX content's own heading (autolinked by
+  // rehype-autolink-headings), distinct from Post.tsx's page-title <h1>,
+  // which isn't part of the MDX content and has no self-link.
+  const heading = page.getByRole("heading", { name: "Hello, Blog", level: 2 });
   await heading.getByRole("link").click();
 
   await expect(page).toHaveURL("/blog/hello-world#hello-blog");
@@ -34,7 +37,7 @@ test("ADR index lists ADRs and links to the ADR page", async ({ page }) => {
   await page.getByRole("link", { name: "ADR Placeholder" }).click();
   await expect(page).toHaveURL("/adr/placeholder");
   await expect(
-    page.getByRole("heading", { name: "ADR Placeholder" })
+    page.getByRole("heading", { name: "ADR Placeholder", level: 1 })
   ).toBeVisible();
 });
 
