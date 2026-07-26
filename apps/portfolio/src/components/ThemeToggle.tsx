@@ -11,7 +11,7 @@ export default function ThemeToggle() {
       type="button"
       onClick={toggleTheme}
       aria-label={`Switch to ${switchingTo} theme`}
-      className="rounded-full p-2 text-white hover:text-blue light:text-dark-500 light:hover:text-teal-700"
+      className="rounded-full p-2 text-on-surface transition-colors hover:text-primary"
     >
       {theme === "light" ? (
         <MoonIcon className="h-5 w-5" />

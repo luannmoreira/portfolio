@@ -20,6 +20,7 @@ function Projects() {
           long-term thinking, not just UI.
         </p>
       </section>
+      <h2 className="sr-only">All projects</h2>
       <div className="grid grid-cols-1 gap-stack-md md:grid-cols-3">
         {projects.map((project) => (
           <CardProjects key={project.name} {...project} />
