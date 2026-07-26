@@ -1,47 +1,151 @@
-import javascript from "../assets/skills/javascript.svg";
-import bash from "../assets/skills/bash.svg";
-import linux from "../assets/skills/linux.svg";
-import python from "../assets/skills/python.svg";
-import node from "../assets/skills/nodejs.svg";
-import reactIcon from "../assets/skills/react.svg";
-import tailwind from "../assets/skills/tailwind.svg";
-import windows from "../assets/skills/windows.svg";
-import docker from "../assets/skills/docker.svg";
-import git from "../assets/skills/git.svg";
-import express from "../assets/skills/express.svg";
-import gitlab from "../assets/skills/gitlab.svg";
-import html from "../assets/skills/html.svg";
-import vue from "../assets/skills/vue.svg";
-import csharp from "../assets/skills/csharp.svg";
+import {
+  siTypescript,
+  siJavascript,
+  siGo,
+  siNodedotjs,
+  siDeno,
+  siPython,
+  siGnubash,
+  siHtml5,
+  siReact,
+  siVuedotjs,
+  siTailwindcss,
+  siPinia,
+  siZod,
+  siVitest,
+  siJest,
+  siCypress,
+  siGit,
+  siDocker,
+  siKubernetes,
+  siPostgresql,
+  siMongodb,
+  siRabbitmq,
+  siGithubactions,
+  siLinux,
+  siGitlab,
+  siExpress,
+} from "simple-icons";
 
-export type SkillCategory = "Languages" | "Frameworks" | "Infrastructure";
+export type SkillCategory = "Languages" | "Front-end" | "Testing" | "Platform";
 
 export interface Skill {
   name: string;
-  experience: string;
-  img: string;
   category: SkillCategory;
+  iconPath?: string;
+  /** Not every tool has a tracked duration — absence just means none is
+   * called out, not zero experience. */
+  experience?: string;
 }
 
+// Single source of truth for the tech-stack chips on the About page
+// (merged from what used to be two separate sections: a skills-with-years
+// bento and an icon-only ecosystem row list). Icons from simple-icons;
+// C#, AWS, Windows Server, Zustand, and Playwright have no entry in that
+// package, so those render as text-only chips.
 export const skills: Skill[] = [
-  { name: "JavaScript", experience: "4 years", img: javascript, category: "Languages" },
-  { name: "Python", experience: "3 years", img: python, category: "Languages" },
+  { name: "TypeScript", category: "Languages", iconPath: siTypescript.path },
+  {
+    name: "JavaScript",
+    category: "Languages",
+    iconPath: siJavascript.path,
+    experience: "4 years",
+  },
+  { name: "Golang", category: "Languages", iconPath: siGo.path },
+  {
+    name: "Node.js",
+    category: "Languages",
+    iconPath: siNodedotjs.path,
+    experience: "2 years",
+  },
+  { name: "Deno", category: "Languages", iconPath: siDeno.path },
+  {
+    name: "Python",
+    category: "Languages",
+    iconPath: siPython.path,
+    experience: "3 years",
+  },
   {
     name: "C#",
-    experience: "I haven't worked with this language professionaly :)",
-    img: csharp,
     category: "Languages",
+    experience: "I haven't worked with this language professionaly :)",
   },
-  { name: "BASH", experience: "6 years", img: bash, category: "Languages" },
-  { name: "HTML", experience: "4 years", img: html, category: "Languages" },
-  { name: "React", experience: "2 years", img: reactIcon, category: "Frameworks" },
-  { name: "Vue", experience: "2 years", img: vue, category: "Frameworks" },
-  { name: "Tailwind", experience: "1 year", img: tailwind, category: "Frameworks" },
-  { name: "NodeJS", experience: "2 years", img: node, category: "Frameworks" },
-  { name: "express", experience: "2 years", img: express, category: "Frameworks" },
-  { name: "Docker", experience: "1 year", img: docker, category: "Infrastructure" },
-  { name: "GIT", experience: "3 years", img: git, category: "Infrastructure" },
-  { name: "GitLab", experience: "3 years", img: gitlab, category: "Infrastructure" },
-  { name: "Linux", experience: "6 years", img: linux, category: "Infrastructure" },
-  { name: "Windows Server", experience: "4 years", img: windows, category: "Infrastructure" },
+  {
+    name: "BASH",
+    category: "Languages",
+    iconPath: siGnubash.path,
+    experience: "6 years",
+  },
+  {
+    name: "HTML",
+    category: "Languages",
+    iconPath: siHtml5.path,
+    experience: "4 years",
+  },
+  {
+    name: "React",
+    category: "Front-end",
+    iconPath: siReact.path,
+    experience: "2 years",
+  },
+  {
+    name: "Vue.js",
+    category: "Front-end",
+    iconPath: siVuedotjs.path,
+    experience: "2 years",
+  },
+  {
+    name: "TailwindCSS",
+    category: "Front-end",
+    iconPath: siTailwindcss.path,
+    experience: "1 year",
+  },
+  { name: "Zustand", category: "Front-end" },
+  { name: "Pinia", category: "Front-end", iconPath: siPinia.path },
+  { name: "Zod", category: "Front-end", iconPath: siZod.path },
+  { name: "Vitest", category: "Testing", iconPath: siVitest.path },
+  { name: "Jest", category: "Testing", iconPath: siJest.path },
+  { name: "Cypress", category: "Testing", iconPath: siCypress.path },
+  { name: "Playwright", category: "Testing" },
+  {
+    name: "Git",
+    category: "Testing",
+    iconPath: siGit.path,
+    experience: "3 years",
+  },
+  {
+    name: "Docker",
+    category: "Platform",
+    iconPath: siDocker.path,
+    experience: "1 year",
+  },
+  { name: "Kubernetes", category: "Platform", iconPath: siKubernetes.path },
+  { name: "PostgreSQL", category: "Platform", iconPath: siPostgresql.path },
+  { name: "MongoDB", category: "Platform", iconPath: siMongodb.path },
+  { name: "RabbitMQ", category: "Platform", iconPath: siRabbitmq.path },
+  {
+    name: "GitHub Actions",
+    category: "Platform",
+    iconPath: siGithubactions.path,
+  },
+  {
+    name: "Linux",
+    category: "Platform",
+    iconPath: siLinux.path,
+    experience: "6 years",
+  },
+  { name: "AWS", category: "Platform" },
+  { name: "Windows Server", category: "Platform", experience: "4 years" },
+  {
+    name: "GitLab",
+    category: "Platform",
+    iconPath: siGitlab.path,
+    experience: "3 years",
+  },
+  {
+    name: "Express",
+    category: "Platform",
+    iconPath: siExpress.path,
+    experience: "2 years",
+  },
 ];

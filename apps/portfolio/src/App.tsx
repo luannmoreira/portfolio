@@ -7,13 +7,12 @@ import Home from "./pages/Home";
 
 // Lazy — Home is the landing route (loaded eagerly above so the first
 // paint isn't gated on a chunk fetch); the rest split into their own
-// chunks, fetched on navigation. /now and /uses folded into Home and
-// /certifications respectively (anchor sections, not routes) per the
-// Stitch redesign's IA.
+// chunks, fetched on navigation. /now, /uses, and /certifications all
+// folded into Home/About as anchor sections rather than routes — skills,
+// courses, and the uses/workspace section all live on /about now.
 const About = lazy(() => import("./pages/About"));
 const Resume = lazy(() => import("./pages/Resume"));
 const Projects = lazy(() => import("./pages/Projects"));
-const Certifications = lazy(() => import("./pages/Certifications"));
 const Contact = lazy(() => import("./pages/Contact"));
 
 function App() {
@@ -28,7 +27,6 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/resume" element={<Resume />} />
               <Route path="/projects" element={<Projects />} />
-              <Route path="/certifications" element={<Certifications />} />
               <Route path="/contact" element={<Contact />} />
             </Routes>
           </Suspense>
