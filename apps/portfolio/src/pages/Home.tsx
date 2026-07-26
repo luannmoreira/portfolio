@@ -1,20 +1,75 @@
+import { Link } from "react-router";
+
 import Hero from "../components/Hero";
-import Certs from "../components/Certs";
+import Now from "../components/Now";
+import CardProjects from "../components/CardProjects";
+import { projects } from "../content/projects";
 import { useDocumentMeta } from "../hooks/useDocumentMeta";
 
-// About/Habilidades/Experiencia moved to pages/About.tsx, Contact to
-// pages/Contact.tsx. Certs stays here until 10.4 builds the Projects page
-// that replaces its role.
 function Home() {
   useDocumentMeta(
     "Luann Curioso",
-    "Luann Curioso's portfolio — software engineer building for the web, from front-end interfaces to back-end programming and tests."
+    "Luann Curioso's portfolio — software engineer with production front-end experience and an infrastructure background, from ShellHub to government platforms."
   );
 
   return (
     <>
       <Hero />
-      <Certs />
+      <Now />
+      <section className="py-stack-lg">
+        <div className="mx-auto max-w-container-max px-margin-mobile md:px-gutter">
+          <div className="mb-stack-md">
+            <span className="mb-2 block font-label-mono text-label-mono uppercase tracking-widest text-secondary">
+              Portfolio
+            </span>
+            <h2 className="font-headline-lg text-headline-lg text-on-background">
+              Selected Engineering Work
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 gap-stack-md md:grid-cols-2">
+            {projects.slice(0, 2).map((project) => (
+              <CardProjects key={project.name} {...project} animate={false} />
+            ))}
+          </div>
+          <div className="mt-stack-md text-center">
+            <Link
+              to="/projects"
+              className="inline-flex items-center gap-2 font-headline-md text-primary transition-all hover:gap-4"
+            >
+              Explore all projects
+              <span className="material-symbols-outlined" aria-hidden="true">
+                arrow_forward
+              </span>
+            </Link>
+          </div>
+        </div>
+      </section>
+      <section className="bg-inverse-surface py-stack-lg text-inverse-on-surface">
+        <div className="mx-auto max-w-container-max px-margin-mobile text-center md:px-gutter">
+          <h2 className="mb-stack-sm font-headline-lg text-headline-lg">
+            Ready to scale your engineering?
+          </h2>
+          <p className="mx-auto mb-stack-md max-w-2xl font-body-lg text-body-lg opacity-80">
+            Always interested in hard technical problems — reach out if
+            you'd like to talk architecture, collaboration, or
+            opportunities.
+          </p>
+          <div className="flex flex-col justify-center gap-4 sm:flex-row">
+            <a
+              href="mailto:luannmcurioso@gmail.com"
+              className="rounded-lg bg-inverse-on-surface px-8 py-3 font-headline-md text-inverse-surface transition-colors hover:opacity-90"
+            >
+              Send an Email
+            </a>
+            <Link
+              to="/contact"
+              className="rounded-lg border border-inverse-on-surface/30 px-8 py-3 font-headline-md text-inverse-on-surface transition-colors hover:bg-inverse-on-surface/10"
+            >
+              More ways to reach me
+            </Link>
+          </div>
+        </div>
+      </section>
     </>
   );
 }

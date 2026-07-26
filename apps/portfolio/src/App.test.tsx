@@ -2,21 +2,18 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "./App";
 
-test("Home renders Hero and Certs, not the migrated sections", () => {
+test("Home renders the hero, Now section, and projects teaser", () => {
   render(<App />);
 
   expect(
-    screen.getByRole("heading", { name: "Luann Curioso" })
+    screen.getByRole("heading", { name: "Building systems that scale." })
   ).toBeInTheDocument();
-  expect(screen.getByRole("heading", { name: "Courses" })).toBeInTheDocument();
+  expect(screen.getByRole("heading", { name: "Now" })).toBeInTheDocument();
+  expect(
+    screen.getByRole("heading", { name: "Selected Engineering Work" })
+  ).toBeInTheDocument();
   expect(
     screen.queryByRole("heading", { name: "About me" })
-  ).not.toBeInTheDocument();
-  expect(
-    screen.queryByRole("heading", { name: "Skills" })
-  ).not.toBeInTheDocument();
-  expect(
-    screen.queryByRole("heading", { name: "Experience" })
   ).not.toBeInTheDocument();
   expect(
     screen.queryByRole("heading", { name: "Be in touch!" })

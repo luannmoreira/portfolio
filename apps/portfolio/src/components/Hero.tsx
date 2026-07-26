@@ -1,107 +1,46 @@
-import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 
-import profile from "../assets/frame.webp";
-import ArrowRightCircleIcon from "./icons/ArrowRightCircleIcon";
-import GithubIcon from "./icons/GithubIcon";
-import LinkedinIcon from "./icons/LinkedinIcon";
-import HrCurve from "./HrCurve";
-import Reveal from "./Reveal";
-import loading from "../assets/loading.svg";
-
 export default function Hero() {
-  const [isLoading, setIsLoading] = useState(true);
-  const profileImgRef = useRef<HTMLImageElement>(null);
-
-  useEffect(() => {
-    // If the browser already has this image cached, it can be "complete" by
-    // the time this effect runs — some browsers don't reliably fire onLoad
-    // for an already-cached image, which would otherwise leave the overlay
-    // stuck. onLoad below still handles the normal, not-yet-cached case.
-    if (profileImgRef.current?.complete) {
-      setIsLoading(false);
-    }
-  }, []);
-
   return (
-    <>
-      {isLoading ? (
-        <div className="fixed bg-dark-500 light:bg-light-500 text-white light:text-dark-500 top-0 left-0 right-0 bottom-0 w-full h-screen z-50 overflow-hidden bg-white flex flex-col items-center justify-center">
-          <img src={loading} alt="loading" />
-          <p>Loading...</p>
-        </div>
-      ) : null}
-      <section className="flex w-full lg:h-screen mt-20 flex-col md:flex-row gap-5 items-center justify-center text-white light:text-dark-500 relative">
-        <Reveal
-          variant="flip-right"
-          duration={1500}
-          offset={200}
-          className="w-full md:w-3/6"
-        >
-          <img
-            ref={profileImgRef}
-            src={profile}
-            alt="profile"
-            className="top-50"
-            width={1000}
-            height={568}
-            onLoad={() => setIsLoading(false)}
-          />
-        </Reveal>
-        <Reveal
-          variant="fade-right"
-          duration={1000}
-          offset={100}
-          className="md:w-3/6"
-        >
-          <div className="flex flex-col w-full mt-8">
-            <h1 className="text-2xl text-transparent font-bold bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-500 font-mono">
-              Howdy, Partner! I'm called
-            </h1>
-            <h1 className="text-5xl font-bold">Luann Curioso</h1>
-            <p className="text-2xl font-bold text-gray-200 light:text-gray-700">
-              And I build for the{" "}
-              <span className="font-extrabold text-transparent text-3xl bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-600">
-                web
-              </span>
-            </p>
-            <p className="text-lg font-light text-gray-300 light:text-gray-600">
-              With experience in web development, I started my career at
-              technology area just over 3 years ago and since then every day I'm
-              more sure I chose right. Today I'm qualified from the
-              creation/customization of graphic interfaces using the popular
-              technologies on the market to back-end programming + tests.
-            </p>
+    <section className="canvas-bg relative flex min-h-[70vh] items-center py-stack-lg">
+      <div className="mx-auto w-full max-w-container-max px-margin-mobile md:px-gutter">
+        <div className="max-w-3xl">
+          <p className="mb-stack-sm font-label-mono text-label-mono uppercase tracking-widest text-secondary">
+            Software Engineer
+          </p>
+          <h1 className="mb-stack-sm font-display text-display leading-[1.1] text-on-background">
+            Building systems that scale.
+          </h1>
+          <p className="mb-stack-md max-w-2xl font-body-lg text-body-lg leading-relaxed text-on-surface-variant">
+            I'm a Software Engineer with production experience across
+            front-end and infrastructure — from remote device management at
+            ShellHub to government platforms, and the servers underneath them
+            before that. I care about architecture, testing, and code that
+            lasts, not just how it looks.
+          </p>
+          <div className="flex flex-wrap gap-4">
+            <Link
+              to="/projects"
+              className="rounded-lg bg-primary px-6 py-3 font-headline-md text-on-primary transition-colors hover:opacity-90"
+            >
+              View Projects
+            </Link>
+            <Link
+              to="/contact"
+              className="rounded-lg border border-outline px-6 py-3 font-headline-md text-primary transition-colors hover:bg-surface-container"
+            >
+              Contact Me
+            </Link>
           </div>
-          <Link to="/resume" className="mt-2 block">
-            Check my resume{" "}
-            <ArrowRightCircleIcon className="ml-2 w-4 h-4 inline-block" />{" "}
-          </Link>
-          <ul className="flex mt-2 gap-3 items-center">
-            <li>
-              <a
-                href="https://github.com/luannmoreira"
-                rel="noreferrer"
-                target="_blank"
-                aria-label="GitHub"
-              >
-                <GithubIcon className="w-8 h-8" />
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://linkedin.com/in/luanncurioso"
-                rel="noreferrer"
-                target="_blank"
-                aria-label="LinkedIn"
-              >
-                <LinkedinIcon className="w-8 h-8" />
-              </a>
-            </li>
-          </ul>
-        </Reveal>
-        <HrCurve />
-      </section>
-    </>
+        </div>
+      </div>
+      <div
+        className="pointer-events-none absolute right-0 top-1/2 hidden h-full w-1/3 -translate-y-1/2 opacity-5 lg:block"
+        aria-hidden="true"
+      >
+        <div className="h-full w-full border-l border-t border-primary" />
+        <div className="absolute left-1/4 top-1/4 h-1/2 w-1/2 border-l border-t border-primary" />
+      </div>
+    </section>
   );
 }

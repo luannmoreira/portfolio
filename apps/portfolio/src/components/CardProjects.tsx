@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Reveal from "./Reveal";
 
 export interface CardProjectsProps {
@@ -5,6 +6,9 @@ export interface CardProjectsProps {
   description: string;
   tech: string[];
   link?: string;
+  /** Skip the scroll-reveal wrapper — used where the card already renders
+   * in view (e.g. the Home teaser, right below the hero). */
+  animate?: boolean;
 }
 
 export default function CardProjects({
@@ -12,37 +16,43 @@ export default function CardProjects({
   description,
   tech,
   link,
+  animate = true,
 }: CardProjectsProps) {
-  const card = (
-    <Reveal
-      variant="fade-up"
-      duration={500}
-      offset={100}
-      className="hover:bg-dark h-full w-full rounded-md bg-dark-200 light:bg-light-200 px-4 py-4"
-    >
-      <h1 className="font-bold md:text-xl">{name}</h1>
-      <p className="mt-2 font-light text-gray-400 light:text-gray-600">
+  const content = (
+    <div className="flex h-full flex-col gap-4 rounded-lg border border-outline-variant/30 bg-surface-container-lowest p-stack-sm transition-shadow hover:shadow-xl">
+      <h3 className="font-headline-md text-headline-md text-on-background transition-colors group-hover:text-primary">
+        {name}
+      </h3>
+      <p className="font-body-md text-body-md leading-relaxed text-on-surface-variant">
         {description}
       </p>
-      <ul className="mt-3 flex flex-wrap gap-2 text-xs">
+      <ul className="mt-auto flex flex-wrap gap-2">
         {tech.map((item) => (
           <li
             key={item}
-            className="rounded-full bg-dark-100 light:bg-light-100 px-2 py-1"
+            className="rounded bg-surface-container px-3 py-1 font-label-mono text-label-mono text-on-surface-variant"
           >
             {item}
           </li>
         ))}
       </ul>
+    </div>
+  );
+
+  const card: ReactNode = animate ? (
+    <Reveal variant="fade-up" duration={500} offset={100} className="h-full">
+      {content}
     </Reveal>
+  ) : (
+    content
   );
 
   if (!link) {
-    return card;
+    return <div className="group h-full">{card}</div>;
   }
 
   return (
-    <a href={link} target="_blank" rel="noreferrer">
+    <a href={link} target="_blank" rel="noreferrer" className="group block h-full">
       {card}
     </a>
   );

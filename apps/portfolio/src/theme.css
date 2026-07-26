@@ -111,3 +111,14 @@
   --color-inverse-on-surface: #eff1f3;
   --color-inverse-primary: #bec6e0;
 }
+
+/* Hero's dotted-grid backdrop, from Stitch's `.canvas-bg`. Uses the
+   surface-container-highest token directly (not a Tailwind utility) so it
+   reacts to the light/dark override above without duplicating the rule. */
+.canvas-bg {
+  background-image: radial-gradient(
+    var(--color-surface-container-highest) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
+}
