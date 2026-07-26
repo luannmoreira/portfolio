@@ -8,6 +8,7 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeMermaid from "rehype-mermaid";
+import tailwindcss from "@tailwindcss/vite";
 import { feedPlugin } from "./src/feed/plugin.ts";
 import { contentIndexPlugin } from "./src/content/contentIndexPlugin.ts";
 
@@ -43,6 +44,7 @@ export default defineConfig({
       }),
     },
     react({ include: /\.(js|jsx|md|mdx|ts|tsx)$/ }),
+    tailwindcss(),
     contentIndexPlugin(),
     feedPlugin(),
   ],

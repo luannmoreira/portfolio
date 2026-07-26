@@ -40,7 +40,7 @@ export default function About() {
           </p>
         </div>
       </Reveal>
-      <div className="w-100 md:w-1/5">
+      <div className="w-full md:w-1/5">
         <img
           src={profile}
           alt="profile"

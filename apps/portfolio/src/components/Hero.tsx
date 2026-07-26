@@ -36,7 +36,7 @@ export default function Hero() {
           variant="flip-right"
           duration={1500}
           offset={200}
-          className="w-100 md:w-3/6"
+          className="w-full md:w-3/6"
         >
           <img
             ref={profileImgRef}
