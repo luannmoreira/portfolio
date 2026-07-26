@@ -26,8 +26,8 @@ export default function Principles() {
             Core Engineering Principles
           </h2>
           <p className="font-body-md text-body-md text-on-surface-variant">
-            The frameworks and mental models I use to navigate complex
-            technical landscapes.
+            The frameworks and mental models I use to navigate complex technical
+            landscapes.
           </p>
         </div>
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:w-2/3">

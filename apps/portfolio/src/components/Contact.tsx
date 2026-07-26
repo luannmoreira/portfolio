@@ -11,8 +11,8 @@ export default function Contact() {
         </h1>
         <p className="max-w-xl font-body-lg text-body-lg text-on-surface-variant">
           Always open to discussing technical architecture, software
-          performance, or potential collaborations on complex systems. Reach
-          out via the channels below.
+          performance, or potential collaborations on complex systems. Reach out
+          via the channels below.
         </p>
       </section>
 

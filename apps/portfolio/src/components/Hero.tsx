@@ -12,11 +12,11 @@ export default function Hero() {
             Building systems that scale.
           </h1>
           <p className="mb-stack-md max-w-2xl font-body-lg text-body-lg leading-relaxed text-on-surface-variant">
-            I'm a Software Engineer with production experience across
-            front-end and infrastructure — from remote device management at
-            ShellHub to government platforms, and the servers underneath them
-            before that. I care about architecture, testing, and code that
-            lasts, not just how it looks.
+            I'm a Software Engineer with production experience across front-end
+            and infrastructure — from remote device management at ShellHub to
+            government platforms, and the servers underneath them before that. I
+            care about architecture, testing, and code that lasts, not just how
+            it looks.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link

@@ -19,23 +19,22 @@ export default function About() {
               five-plus years building production interfaces in TypeScript,
               React, and Vue. My path started in infrastructure: configuring
               servers, virtualization, and Active Directory before I ever
-              shipped a web interface, and that early exposure to systems
-              still shapes how I think about software today. Since then I've
-              worked across production, enterprise, and government
-              platforms — ShellHub's remote device management product, OS
-              Systems' infrastructure tooling, and a public-sector
-              application for the State of Mato Grosso — with a focus on
-              reusable architecture, automated testing, accessibility, and
-              code quality, not just UI.
+              shipped a web interface, and that early exposure to systems still
+              shapes how I think about software today. Since then I've worked
+              across production, enterprise, and government platforms —
+              ShellHub's remote device management product, OS Systems'
+              infrastructure tooling, and a public-sector application for the
+              State of Mato Grosso — with a focus on reusable architecture,
+              automated testing, accessibility, and code quality, not just UI.
             </p>
             <p className="font-body-lg text-body-lg text-on-surface">
               I'm an open-source contributor to ShellHub and UpdateHub, AWS
-              Certified Cloud Practitioner, and currently finishing a
-              Bachelor's in Information Systems. My interests keep expanding
-              past the browser, toward backend and platform engineering, but
-              the throughline has always been caring about how software is
-              actually built, not just how it looks. Outside of that, I
-              spend my free time cooking and hanging out with dogs.
+              Certified Cloud Practitioner, and currently finishing a Bachelor's
+              in Information Systems. My interests keep expanding past the
+              browser, toward backend and platform engineering, but the
+              throughline has always been caring about how software is actually
+              built, not just how it looks. Outside of that, I spend my free
+              time cooking and hanging out with dogs.
             </p>
           </div>
         </div>

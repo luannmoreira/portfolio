@@ -50,9 +50,8 @@ function Home() {
             Ready to scale your engineering?
           </h2>
           <p className="mx-auto mb-stack-md max-w-2xl font-body-lg text-body-lg opacity-80">
-            Always interested in hard technical problems — reach out if
-            you'd like to talk architecture, collaboration, or
-            opportunities.
+            Always interested in hard technical problems — reach out if you'd
+            like to talk architecture, collaboration, or opportunities.
           </p>
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
             <a

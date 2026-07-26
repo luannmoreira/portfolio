@@ -34,7 +34,9 @@ test("does nothing when there is no ?section= param", () => {
     </MemoryRouter>
   );
 
-  expect(document.getElementById("skills")?.scrollIntoView).not.toHaveBeenCalled();
+  expect(
+    document.getElementById("skills")?.scrollIntoView
+  ).not.toHaveBeenCalled();
 });
 
 test("does nothing when the section id doesn't match any element", () => {
@@ -44,5 +46,7 @@ test("does nothing when the section id doesn't match any element", () => {
     </MemoryRouter>
   );
 
-  expect(document.getElementById("skills")?.scrollIntoView).not.toHaveBeenCalled();
+  expect(
+    document.getElementById("skills")?.scrollIntoView
+  ).not.toHaveBeenCalled();
 });

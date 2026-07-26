@@ -52,7 +52,12 @@ export default function CardProjects({
   }
 
   return (
-    <a href={link} target="_blank" rel="noreferrer" className="group block h-full">
+    <a
+      href={link}
+      target="_blank"
+      rel="noreferrer"
+      className="group block h-full"
+    >
       {card}
     </a>
   );
