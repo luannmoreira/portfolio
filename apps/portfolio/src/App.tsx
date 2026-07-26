@@ -7,18 +7,19 @@ import Home from "./pages/Home";
 
 // Lazy — Home is the landing route (loaded eagerly above so the first
 // paint isn't gated on a chunk fetch); the rest split into their own
-// chunks, fetched on navigation.
+// chunks, fetched on navigation. /now and /uses folded into Home and
+// /certifications respectively (anchor sections, not routes) per the
+// Stitch redesign's IA.
 const About = lazy(() => import("./pages/About"));
 const Resume = lazy(() => import("./pages/Resume"));
 const Projects = lazy(() => import("./pages/Projects"));
-const Uses = lazy(() => import("./pages/Uses"));
-const Now = lazy(() => import("./pages/Now"));
+const Certifications = lazy(() => import("./pages/Certifications"));
 const Contact = lazy(() => import("./pages/Contact"));
 
 function App() {
   return (
     <HashRouter>
-      <div className="w-full px-6 lg:px-20 xl:px-36 bg-dark-500 light:bg-light-500">
+      <div className="w-full bg-background text-on-surface">
         <Navbar />
         <main>
           <Suspense fallback={null}>
@@ -27,8 +28,7 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/resume" element={<Resume />} />
               <Route path="/projects" element={<Projects />} />
-              <Route path="/uses" element={<Uses />} />
-              <Route path="/now" element={<Now />} />
+              <Route path="/certifications" element={<Certifications />} />
               <Route path="/contact" element={<Contact />} />
             </Routes>
           </Suspense>

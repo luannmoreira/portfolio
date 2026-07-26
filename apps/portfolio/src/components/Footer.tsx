@@ -1,43 +1,55 @@
-import { Link } from "react-router";
-import HrCurve from "./HrCurve";
+import GithubIcon from "./icons/GithubIcon";
+import LinkedinIcon from "./icons/LinkedinIcon";
+import WhatsappIcon from "./icons/WhatsappIcon";
 
-const today = new Date();
-const year = today.getFullYear();
+const year = new Date().getFullYear();
+
 export default function Footer() {
   return (
-    <footer className="mt-4 bg-dark-200 light:bg-light-200 rounded-md text-white light:text-dark-500 text-lg py-4 mt-10 sm:mt-0 print:hidden">
-      <ul className="text-center font-bold pt-5 m-2 ">
-        <li>
-          <Link to="/about" className="hover:underline">
-            About
-          </Link>
-        </li>
-        <li>
-          <Link to="/projects" className="hover:underline">
-            Projects
-          </Link>
-        </li>
-        <li>
-          <Link to="/uses" className="hover:underline">
-            Uses
-          </Link>
-        </li>
-        <li>
-          <Link to="/now" className="hover:underline">
-            Now
-          </Link>
-        </li>
-        <li>
-          <Link to="/contact" className="hover:underline">
-            Contact
-          </Link>
-        </li>
-      </ul>
-
-      <HrCurve />
-      <p className="text-sm font-light text-center">
-        Copyright © <span>{year}</span> Luann Curioso. All Rights Reserved.
-      </p>
+    <footer className="mt-stack-lg w-full border-t border-outline-variant/30 bg-surface py-stack-md print:hidden">
+      <div className="mx-auto flex max-w-container-max flex-col items-center justify-between gap-4 px-margin-mobile md:flex-row lg:px-gutter">
+        <p className="font-label-mono text-label-mono uppercase tracking-widest text-secondary">
+          Luann Curioso
+        </p>
+        <ul className="flex items-center gap-6">
+          <li>
+            <a
+              href="https://github.com/luannmoreira"
+              rel="noreferrer"
+              target="_blank"
+              aria-label="GitHub"
+              className="text-on-surface-variant opacity-80 transition-opacity hover:text-primary hover:opacity-100"
+            >
+              <GithubIcon className="h-6 w-6" />
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://linkedin.com/in/luanncurioso"
+              rel="noreferrer"
+              target="_blank"
+              aria-label="LinkedIn"
+              className="text-on-surface-variant opacity-80 transition-opacity hover:text-primary hover:opacity-100"
+            >
+              <LinkedinIcon className="h-6 w-6" />
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://wa.me/5565999722455?text=Ol%C3%A1%2C%20Luann!"
+              rel="noreferrer"
+              target="_blank"
+              aria-label="WhatsApp"
+              className="text-on-surface-variant opacity-80 transition-opacity hover:text-primary hover:opacity-100"
+            >
+              <WhatsappIcon className="h-6 w-6" />
+            </a>
+          </li>
+        </ul>
+        <p className="font-caption text-caption text-secondary">
+          © {year} Luann Curioso. Built with precision.
+        </p>
+      </div>
     </footer>
   );
 }

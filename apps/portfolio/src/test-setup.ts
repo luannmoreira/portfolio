@@ -14,3 +14,8 @@ class MockIntersectionObserver implements IntersectionObserver {
   takeRecords = () => [];
 }
 vi.stubGlobal("IntersectionObserver", MockIntersectionObserver);
+
+// jsdom doesn't implement scrollIntoView either — needed by
+// useScrollToSection (anchor nav links) and any test that renders a page
+// using it.
+Element.prototype.scrollIntoView = vi.fn();
