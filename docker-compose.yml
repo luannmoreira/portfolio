@@ -1,0 +1,29 @@
+services:
+  portfolio:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: portfolio-dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - node_modules_root:/app/node_modules
+      - node_modules_portfolio:/app/apps/portfolio/node_modules
+
+  blog:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: blog-dev
+    ports:
+      - "5174:5173"
+    volumes:
+      - .:/app
+      - node_modules_root:/app/node_modules
+      - node_modules_blog:/app/apps/blog/node_modules
+
+volumes:
+  node_modules_root:
+  node_modules_portfolio:
+  node_modules_blog:

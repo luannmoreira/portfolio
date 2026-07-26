@@ -1,0 +1,14 @@
+# Without this, `COPY . .` copies the host's own node_modules on top of
+# the image's freshly `pnpm install`-ed ones — stale/wrong package
+# versions, not what the lockfile actually specifies.
+node_modules
+**/node_modules
+
+dist
+build
+.git
+test-results
+playwright-report
+coverage
+ROADMAP.md
+.claude

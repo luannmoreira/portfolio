@@ -1,0 +1,22 @@
+# GHSA-qwww-vcr4-c8h2: React Router RSC (React Server Components) mode
+# CSRF bypass. Both apps use client-side routing only (BrowserRouter/
+# HashRouter, no server actions, no RSC) — this mode isn't reachable in
+# either codebase. Fixed in react-router@8.3.0, which requires React
+# >=19.2.7; upgrading is a separate, larger decision already deliberately
+# deferred (both apps are pinned to React 18.2.0 — see ROADMAP.md's
+# Phase 8/10 notes, pre-deletion, or git log). Revisit when that upgrade
+# actually happens, not by silently ignoring this forever.
+GHSA-qwww-vcr4-c8h2
+
+# CVE-2026-14257: brace-expansion ReDoS. This tree has two live major
+# lines of brace-expansion with incompatible APIs: 1.1.16 via the older
+# minimatch@3 (ESLint's own @eslint/config-array), and 5.x via
+# minimatch@10 (typescript-eslint) — the latter is patched via a
+# pnpm-workspace.yaml scoped override, but no fix was ever released
+# within the 1.x line itself (only in 5.x), so minimatch@3's copy can't
+# be patched without forcing an API-incompatible major bump onto code
+# that doesn't expect it — confirmed this breaks ESLint entirely by
+# testing it directly. Dev/lint-time only, parsing this repo's own
+# trusted glob patterns, never attacker-controlled input — not shipped
+# in either app's client bundle.
+CVE-2026-14257

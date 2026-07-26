@@ -125,3 +125,36 @@ jobs:
           name: blog-playwright-report
           path: apps/blog/playwright-report/
           retention-days: 7
+
+  docker-scan:
+    name: Docker image vulnerability scan
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [portfolio-dev, blog-dev]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build ${{ matrix.target }} image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: ${{ matrix.target }}
+          load: true
+          tags: ${{ matrix.target }}:ci
+
+      # Caught real findings this way before: node:24-alpine's bundled npm
+      # (removed in the Dockerfile since this project is pnpm-only) and a
+      # stale-transitive-dependency bug where COPY . . without a
+      # .dockerignore pulled the host's own node_modules into the image on
+      # top of the freshly pnpm-installed ones.
+      - name: Scan ${{ matrix.target }} with Trivy
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ matrix.target }}:ci
+          severity: CRITICAL,HIGH
+          scanners: vuln
+          trivyignores: .trivyignore
+          exit-code: "1"
