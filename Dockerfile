@@ -9,6 +9,16 @@
 FROM node:24-alpine AS base
 WORKDIR /app
 RUN corepack enable
+# Named volumes for node_modules (docker-compose.yml) persist across
+# `docker compose up --build` reruns — so whenever dependencies change,
+# the volume's content goes stale relative to the freshly built image.
+# pnpm's own dependency-status check then wants to interactively confirm
+# removing/reinstalling node_modules, which a container can never do
+# (ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY) — confirmed by reproducing
+# this directly. CI=true tells pnpm this is a non-interactive environment
+# so it proceeds instead of prompting, exactly as pnpm's own error message
+# for this recommends.
+ENV CI=true
 # The base image bundles npm, which we never use (this project is pnpm-only)
 # — its own dependency tree (tar, undici, brace-expansion) has known DoS
 # CVEs upstream in this image as of this writing (1 critical, 4 high; see
