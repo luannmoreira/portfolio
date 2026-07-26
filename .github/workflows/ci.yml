@@ -151,7 +151,7 @@ jobs:
       # .dockerignore pulled the host's own node_modules into the image on
       # top of the freshly pnpm-installed ones.
       - name: Scan ${{ matrix.target }} with Trivy
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ matrix.target }}:ci
           severity: CRITICAL,HIGH
