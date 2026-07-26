@@ -1,68 +1,130 @@
-import ArrowRightCircleIcon from "./icons/ArrowRightCircleIcon";
 import GithubIcon from "./icons/GithubIcon";
 import LinkedinIcon from "./icons/LinkedinIcon";
 import WhatsappIcon from "./icons/WhatsappIcon";
 
 export default function Contact() {
   return (
-    <section
-      id="contact"
-      className="flex w-full h-screen flex-col md:flex-column gap-5 items-center align-center justify-center text-white light:text-dark-500 relative"
-    >
-      <div className="flex flex-col align-center justify-center items-center w-full pl-5 pr-5">
-        <h1 className="text-3xl text-transparent font-bold bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-500 font-mono">
-          Did you like this website?
+    <div className="mx-auto max-w-container-max px-margin-mobile pb-stack-lg pt-32 md:px-gutter">
+      <section className="mb-stack-lg">
+        <h1 className="mb-stack-sm max-w-2xl font-display text-display">
+          Let's talk about engineering.
         </h1>
-        <h1 className="text-5xl font-bold">Be in touch!</h1>
-        <p className="text-xl text-justify font-light text-gray-300 light:text-gray-600 pt-2 sm:w-3/6">
-          I'm not looking for a job right now, but I am always listening new
-          people and I love to make contact and network, so feel free to check
-          my stuff out or be in touch, I'm sure there's always something new I'm
-          working torwards!
+        <p className="max-w-xl font-body-lg text-body-lg text-on-surface-variant">
+          Always open to discussing technical architecture, software
+          performance, or potential collaborations on complex systems. Reach
+          out via the channels below.
         </p>
-      </div>
-      <a
-        href="mailto:luannmcurioso@gmail.com"
-        className="bg-dark-100 light:bg-light-100 rounded-full px-5 py-2 border border-dark-100 light:border-light-100 hover:border-dark-50 light:hover:border-light-50 font-bold font-mono border border-4"
-      >
-        Send a hey!{" "}
-        <ArrowRightCircleIcon className="ml-2 w-4 h-4 inline-block" />{" "}
-      </a>
-      <p className="text-md font-light text-gray-300 light:text-gray-600 text-center">
-        Or, rather, visit my social medias or send me a WhatsApp message!
-      </p>
-      <ul className="flex mt-2 gap-3 items-center">
-        <li>
-          <a
-            href="https://github.com/luannmoreira"
-            rel="noreferrer"
-            target="_blank"
-            aria-label="GitHub"
-          >
-            <GithubIcon className="w-8 h-8" />
-          </a>
-        </li>
-        <li>
+      </section>
+
+      <section className="grid grid-cols-1 gap-stack-sm md:grid-cols-2">
+        <a
+          href="mailto:luannmcurioso@gmail.com"
+          className="group relative flex flex-col justify-between overflow-hidden border border-outline-variant/30 p-stack-md transition-all duration-300 hover:border-primary"
+        >
+          <div className="mb-stack-md">
+            <span className="mb-2 block font-label-mono text-label-mono uppercase text-secondary">
+              Primary Channel
+            </span>
+            <h2 className="font-headline-lg text-headline-lg text-primary">
+              Email
+            </h2>
+            <p className="mt-2 font-body-md text-body-md text-on-surface-variant">
+              Direct communication for inquiries and technical discussions.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 font-bold text-primary transition-transform duration-300 group-hover:translate-x-2">
+            <span className="font-body-md text-body-md">
+              luannmcurioso@gmail.com
+            </span>
+            <span className="material-symbols-outlined" aria-hidden="true">
+              arrow_forward
+            </span>
+          </div>
+        </a>
+
+        <div className="grid grid-cols-1 gap-stack-sm">
           <a
             href="https://linkedin.com/in/luanncurioso"
-            rel="noreferrer"
             target="_blank"
-            aria-label="LinkedIn"
+            rel="noreferrer"
+            className="group flex items-center justify-between border border-outline-variant/30 p-stack-sm transition-all duration-300 hover:border-primary"
           >
-            <LinkedinIcon className="w-8 h-8" />
+            <div className="flex items-center gap-stack-sm">
+              <div className="rounded-lg bg-secondary-container/30 p-4">
+                <LinkedinIcon className="h-5 w-5 text-secondary" />
+              </div>
+              <div>
+                <span className="block font-label-mono text-label-mono uppercase text-secondary">
+                  Professional
+                </span>
+                <h3 className="font-headline-md text-headline-md text-primary">
+                  LinkedIn
+                </h3>
+              </div>
+            </div>
+            <span
+              className="material-symbols-outlined text-outline transition-colors group-hover:text-primary"
+              aria-hidden="true"
+            >
+              open_in_new
+            </span>
           </a>
-        </li>
-        <li>
+
+          <a
+            href="https://github.com/luannmoreira"
+            target="_blank"
+            rel="noreferrer"
+            className="group flex items-center justify-between border border-outline-variant/30 p-stack-sm transition-all duration-300 hover:border-primary"
+          >
+            <div className="flex items-center gap-stack-sm">
+              <div className="rounded-lg bg-surface-container-high p-4">
+                <GithubIcon className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <span className="block font-label-mono text-label-mono uppercase text-secondary">
+                  Development
+                </span>
+                <h3 className="font-headline-md text-headline-md text-primary">
+                  GitHub
+                </h3>
+              </div>
+            </div>
+            <span
+              className="material-symbols-outlined text-outline transition-colors group-hover:text-primary"
+              aria-hidden="true"
+            >
+              open_in_new
+            </span>
+          </a>
+
           <a
             href="https://wa.me/5565999722455?text=Ol%C3%A1%2C%20Luann!"
-            rel="noreferrer"
             target="_blank"
-            aria-label="WhatsApp"
+            rel="noreferrer"
+            className="group flex items-center justify-between border border-outline-variant/30 p-stack-sm transition-all duration-300 hover:border-primary"
           >
-            <WhatsappIcon className="w-8 h-8" />
+            <div className="flex items-center gap-stack-sm">
+              <div className="rounded-lg bg-surface-container-high p-4">
+                <WhatsappIcon className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <span className="block font-label-mono text-label-mono uppercase text-secondary">
+                  Direct
+                </span>
+                <h3 className="font-headline-md text-headline-md text-primary">
+                  WhatsApp
+                </h3>
+              </div>
+            </div>
+            <span
+              className="material-symbols-outlined text-outline transition-colors group-hover:text-primary"
+              aria-hidden="true"
+            >
+              open_in_new
+            </span>
           </a>
-        </li>
-      </ul>
-    </section>
+        </div>
+      </section>
+    </div>
   );
 }

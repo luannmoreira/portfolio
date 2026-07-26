@@ -50,6 +50,11 @@ test("Contact page renders the contact section", async () => {
   await user.click(screen.getAllByRole("link", { name: "Contact" })[0]);
 
   expect(
-    await screen.findByRole("heading", { name: "Be in touch!" })
+    await screen.findByRole("heading", {
+      name: "Let's talk about engineering.",
+    })
   ).toBeInTheDocument();
+  expect(
+    screen.getByRole("link", { name: /luannmcurioso@gmail.com/ })
+  ).toHaveAttribute("href", "mailto:luannmcurioso@gmail.com");
 });
