@@ -4,6 +4,9 @@
 node_modules/
 .pnp
 .pnp.js
+# Leaked in here once from a Docker/pnpm interaction during Phase 11
+# testing — pure rebuildable cache, never meant to be tracked.
+.pnpm-store/
 
 # testing
 coverage/
