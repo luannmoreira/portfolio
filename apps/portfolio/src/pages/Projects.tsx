@@ -9,13 +9,18 @@ function Projects() {
   );
 
   return (
-    <div className="min-h-screen text-white light:text-dark-500">
-      <h1 className="text-3xl font-bold">Projects</h1>
-      <p className="font-light text-gray-400 light:text-gray-600">
-        Production engineering work — architecture, maintainability, and
-        long-term thinking, not just UI.
-      </p>
-      <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-3">
+    <div className="mx-auto max-w-container-max px-margin-mobile pb-stack-lg pt-32 md:px-gutter">
+      <section className="mb-stack-lg">
+        <span className="mb-2 block font-label-mono text-label-mono uppercase tracking-widest text-secondary">
+          Portfolio
+        </span>
+        <h1 className="mb-6 font-display text-display">Engineering Work</h1>
+        <p className="max-w-2xl font-body-lg text-body-lg text-on-surface-variant">
+          Production engineering work — architecture, maintainability, and
+          long-term thinking, not just UI.
+        </p>
+      </section>
+      <div className="grid grid-cols-1 gap-stack-md md:grid-cols-3">
         {projects.map((project) => (
           <CardProjects key={project.name} {...project} />
         ))}

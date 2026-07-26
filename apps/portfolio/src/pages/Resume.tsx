@@ -3,7 +3,7 @@ import { skills } from "../content/skills";
 import { certs } from "../content/certs";
 import { useDocumentMeta } from "../hooks/useDocumentMeta";
 
-// Printable-friendly, not a reskin of the dark-themed Card components used
+// Printable-friendly, not a reskin of the themed components used
 // elsewhere — print:* variants switch to plain black-on-white and drop the
 // print button, since none of that belongs in a printed/PDF resume.
 function Resume() {
@@ -13,21 +13,35 @@ function Resume() {
   );
 
   return (
-    <div className="min-h-screen bg-dark-500 light:bg-light-500 px-4 py-12 text-white light:text-dark-500 print:bg-white print:px-0 print:py-0 print:text-black">
+    <div className="min-h-screen bg-background px-4 pb-stack-lg pt-32 text-on-surface print:bg-white print:px-0 print:py-0 print:text-black">
       <div className="mx-auto max-w-3xl">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Luann Curioso</h1>
+          <h1 className="font-headline-lg text-headline-lg">Luann Curioso</h1>
           <button
             type="button"
             onClick={() => window.print()}
-            className="rounded-full border border-dark-100 light:border-light-100 px-4 py-2 font-mono font-bold hover:border-dark-50 light:hover:border-light-50 print:hidden"
+            className="rounded-lg border border-outline px-4 py-2 font-body-md font-bold text-primary transition-colors hover:bg-surface-container print:hidden"
           >
             Print / Save as PDF
           </button>
         </div>
 
-        <section className="mt-8">
-          <h2 className="text-xl font-bold">Experience</h2>
+        <section className="mt-stack-md">
+          <h2 className="font-headline-md text-headline-md">Summary</h2>
+          <p className="mt-4 font-body-md text-body-md text-on-surface-variant">
+            Software Engineer with 5+ years of experience building production
+            front-end systems in TypeScript, React, and Vue, plus hands-on
+            infrastructure background (network administration,
+            virtualization, Active Directory) from earlier in my career.
+            Focused on reusable architecture, automated testing,
+            accessibility, and developer experience across production,
+            enterprise, and government platforms. Open-source contributor to
+            ShellHub and UpdateHub, AWS Certified Cloud Practitioner.
+          </p>
+        </section>
+
+        <section className="mt-stack-md">
+          <h2 className="font-headline-md text-headline-md">Experience</h2>
           <ul className="mt-4 flex flex-col gap-4">
             {experience.map((entry) => (
               <li key={`${entry.issued}-${entry.anoEntrada}`}>
@@ -37,14 +51,16 @@ function Resume() {
                 <p className="text-sm opacity-80">
                   {entry.anoEntrada} till {entry.anoSaida}
                 </p>
-                <p className="mt-1 whitespace-pre-line text-sm">{entry.desc}</p>
+                <p className="mt-1 whitespace-pre-line text-sm">
+                  {entry.desc}
+                </p>
               </li>
             ))}
           </ul>
         </section>
 
-        <section className="mt-8">
-          <h2 className="text-xl font-bold">Skills</h2>
+        <section className="mt-stack-md">
+          <h2 className="font-headline-md text-headline-md">Skills</h2>
           <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm">
             {skills.map((skill) => (
               <li key={skill.name}>
@@ -54,8 +70,10 @@ function Resume() {
           </ul>
         </section>
 
-        <section className="mt-8">
-          <h2 className="text-xl font-bold">Certifications</h2>
+        <section className="mt-stack-md">
+          <h2 className="font-headline-md text-headline-md">
+            Certifications
+          </h2>
           <ul className="mt-4 flex flex-col gap-2 text-sm">
             {certs.map((cert) => (
               <li key={cert.name}>
