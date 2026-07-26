@@ -20,23 +20,26 @@ test("Home renders the hero, Now section, and projects teaser", () => {
   ).not.toBeInTheDocument();
 });
 
-test("About page renders About, Skills, and Experience content", async () => {
+test("About page renders philosophy, skills, principles, and experience content", async () => {
   const user = userEvent.setup();
   render(<App />);
 
-  // Both Navbar and Footer render an "About" link (both are always
-  // rendered, above/below the routed page) — the first is Navbar's.
   await user.click(screen.getAllByRole("link", { name: "About" })[0]);
 
   expect(
-    await screen.findByRole("heading", { name: "About me" })
+    await screen.findByRole("heading", { name: /sustainable systems/ })
   ).toBeInTheDocument();
-  expect(screen.getByRole("heading", { name: "Skills" })).toBeInTheDocument();
+  expect(
+    screen.getByRole("heading", { name: "Technical Expertise" })
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole("heading", { name: "Core Engineering Principles" })
+  ).toBeInTheDocument();
   expect(
     screen.getByRole("heading", { name: "Experience" })
   ).toBeInTheDocument();
   expect(
-    screen.queryByRole("heading", { name: "Luann Curioso" })
+    screen.queryByRole("heading", { name: "Building systems that scale." })
   ).not.toBeInTheDocument();
 });
 

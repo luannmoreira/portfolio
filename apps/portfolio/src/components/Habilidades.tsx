@@ -1,21 +1,45 @@
 import SkillCard from "./CardHabilidades";
-import HrCurve from "./HrCurve";
-import { skills } from "../content/skills";
+import { skills, type SkillCategory } from "../content/skills";
+
+const categories: { name: SkillCategory; icon: string }[] = [
+  { name: "Languages", icon: "code" },
+  { name: "Frameworks", icon: "layers" },
+  { name: "Infrastructure", icon: "terminal" },
+];
 
 export default function Habilidades() {
   return (
-    <section id="skills" className="mt-4 text-white light:text-dark-500">
-      <h1 className="text-2xl font-bold">Skills</h1>
-      <p className="font-light text-gray-400 light:text-gray-600">
-        Here are some of my tech skills!
-      </p>
-
-      <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        {skills.map((skill) => (
-          <SkillCard key={skill.name} {...skill} />
+    <section id="skills" className="mb-stack-lg">
+      <h2 className="mb-stack-md font-headline-lg text-headline-lg">
+        Technical Expertise
+      </h2>
+      <div className="grid grid-cols-1 gap-gutter md:grid-cols-3">
+        {categories.map((category) => (
+          <div
+            key={category.name}
+            className="border border-outline-variant/30 bg-surface-container-lowest p-stack-sm transition-all duration-300 hover:border-primary"
+          >
+            <div className="mb-6 flex items-center gap-3">
+              <span
+                className="material-symbols-outlined text-primary"
+                aria-hidden="true"
+              >
+                {category.icon}
+              </span>
+              <h3 className="font-headline-md text-headline-md">
+                {category.name}
+              </h3>
+            </div>
+            <ul className="space-y-4">
+              {skills
+                .filter((skill) => skill.category === category.name)
+                .map((skill) => (
+                  <SkillCard key={skill.name} {...skill} />
+                ))}
+            </ul>
+          </div>
         ))}
       </div>
-      <HrCurve />
     </section>
   );
 }

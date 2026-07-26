@@ -5,8 +5,8 @@ import Resume from "./Resume";
 test("renders each experience entry", () => {
   render(<Resume />);
 
-  expect(screen.getByText(/ShellHub/)).toBeInTheDocument();
-  expect(screen.getByText(/OS Systems/)).toBeInTheDocument();
+  expect(screen.getAllByText(/ShellHub/).length).toBeGreaterThan(0);
+  expect(screen.getAllByText(/OS Systems/).length).toBeGreaterThan(0);
 });
 
 test("renders each skill", () => {

@@ -1,5 +1,3 @@
-import Reveal from "./Reveal";
-
 export interface CardExperienciaProps {
   name: string;
   issued: string;
@@ -16,20 +14,17 @@ export default function CardExperiencia({
   anoSaida,
 }: CardExperienciaProps) {
   return (
-    <Reveal
-      variant="fade-up"
-      duration={500}
-      offset={100}
-      className="md:w-2/6 bg-dark-100 light:bg-light-100 rounded-md py-4 px-4"
-    >
-      <div className="mt-2">
-        <h1 className="font-bold md:text-xl">{name}</h1>
-        <p className="font-light md:text-lg">Company {issued}</p>
-        <p className="font-light text-gray-300 light:text-gray-600 md:text-md">
-          ({anoEntrada} till {anoSaida})
-        </p>
-        <p className="font-light text-gray-400 light:text-gray-600">{desc}</p>
-      </div>
-    </Reveal>
+    <li className="border-l-2 border-outline-variant/30 pl-6">
+      <p className="font-label-mono text-label-mono text-secondary">
+        {anoEntrada} — {anoSaida}
+      </p>
+      <h3 className="font-headline-md text-headline-md">{name}</h3>
+      <p className="font-body-md text-body-md text-on-surface-variant">
+        {issued}
+      </p>
+      <p className="mt-2 font-body-md text-body-md leading-relaxed text-on-surface-variant">
+        {desc}
+      </p>
+    </li>
   );
 }

@@ -15,7 +15,7 @@ test("renders role, company, dates, and description", () => {
   expect(
     screen.getByRole("heading", { name: "Front-end Developer" })
   ).toBeInTheDocument();
-  expect(screen.getByText("Company Acme Corp")).toBeInTheDocument();
-  expect(screen.getByText("(Jan 2020 till Present)")).toBeInTheDocument();
+  expect(screen.getByText("Acme Corp")).toBeInTheDocument();
+  expect(screen.getByText("Jan 2020 — Present")).toBeInTheDocument();
   expect(screen.getByText("Built things.")).toBeInTheDocument();
 });

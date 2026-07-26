@@ -1,5 +1,3 @@
-import Reveal from "./Reveal";
-
 export interface CardHabilidadesProps {
   name: string;
   experience: string;
@@ -12,23 +10,14 @@ export default function CardHabilidades({
   img,
 }: CardHabilidadesProps) {
   return (
-    <Reveal
-      variant="fade-up"
-      duration={500}
-      offset={100}
-      className="w-full p-4 text-center justify-center border-2 border-gray-900 light:border-gray-300 bg-dark-200 light:bg-light-200 rounded-md flex flex-col h-48"
-    >
-      <img
-        src={img}
-        className="w-20 max-h-20 mx-auto"
-        alt={name}
-        loading="lazy"
-        decoding="async"
-      />
-      <div className="mt-2">
-        <h1 className="font-bold md:text-xl">{name}</h1>
-        <p className="font-light md:text-lg">{experience} of experience</p>
-      </div>
-    </Reveal>
+    <li className="flex items-center justify-between gap-3">
+      <span className="flex items-center gap-2 font-label-mono text-label-mono">
+        <img src={img} alt="" aria-hidden="true" className="h-4 w-4" />
+        {name}
+      </span>
+      <span className="rounded bg-surface-container-high px-2 py-1 text-right text-[10px] font-bold uppercase tracking-tighter text-on-surface-variant">
+        {experience}
+      </span>
+    </li>
   );
 }
