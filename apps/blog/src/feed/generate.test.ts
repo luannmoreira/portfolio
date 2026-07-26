@@ -1,7 +1,7 @@
 import { buildRss, buildSitemap } from "./generate";
-import type { FeedEntry } from "./contentEntries";
+import type { ContentEntry } from "../content/schema";
 
-const post: FeedEntry = {
+const post: ContentEntry = {
   slug: "hello-world",
   type: "post",
   title: "Hello, Blog",
@@ -9,9 +9,10 @@ const post: FeedEntry = {
   tags: ["meta"],
   excerpt: "Placeholder entry.",
   draft: false,
+  readingTime: "1 min read",
 };
 
-const adr: FeedEntry = {
+const adr: ContentEntry = {
   slug: "0001-record",
   type: "adr",
   title: "First Decision",
@@ -19,9 +20,10 @@ const adr: FeedEntry = {
   tags: [],
   excerpt: "A decision record.",
   draft: false,
+  readingTime: "1 min read",
 };
 
-const project: FeedEntry = {
+const project: ContentEntry = {
   slug: "some-project",
   type: "project",
   title: "Some Project",
@@ -29,9 +31,10 @@ const project: FeedEntry = {
   tags: [],
   excerpt: "A project writeup.",
   draft: false,
+  readingTime: "1 min read",
 };
 
-const draftPost: FeedEntry = {
+const draftPost: ContentEntry = {
   ...post,
   slug: "draft-post",
   title: "Draft",
@@ -91,7 +94,7 @@ describe("buildRss", () => {
   });
 
   test("escapes XML-sensitive characters in title and description", () => {
-    const entry: FeedEntry = {
+    const entry: ContentEntry = {
       ...post,
       title: 'A "quoted" & <tricky> title',
       excerpt: "Tom & Jerry's <excerpt>",
@@ -104,8 +107,8 @@ describe("buildRss", () => {
   });
 
   test("orders items newest first", () => {
-    const older: FeedEntry = { ...post, slug: "older", date: "2026-01-01" };
-    const newer: FeedEntry = { ...post, slug: "newer", date: "2026-06-01" };
+    const older: ContentEntry = { ...post, slug: "older", date: "2026-01-01" };
+    const newer: ContentEntry = { ...post, slug: "newer", date: "2026-06-01" };
 
     const xml = buildRss([older, newer], "https://example.com");
 

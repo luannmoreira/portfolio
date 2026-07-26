@@ -50,11 +50,9 @@
     "autoprefixer": "^10.4.13",
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
-    "estree-util-value-to-estree": "^3.5.0",
     "globals": "^17.7.0",
     "gray-matter": "^4.0.3",
     "jsdom": "^29.1.1",
-    "mdast-util-to-string": "^4.0.0",
     "postcss": "^8.4.18",
     "rehype-autolink-headings": "^7.1.0",
     "rehype-mermaid": "^3.0.0",
@@ -67,7 +65,6 @@
     "tailwindcss": "^3.2.1",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.65.0",
-    "unist-util-mdx-define": "^1.1.2",
     "vite": "^8.1.5",
     "vitest": "^4.1.10"
   }

@@ -18,3 +18,11 @@ export type Frontmatter = z.infer<typeof frontmatterSchema>;
 export function parseFrontmatter(data: unknown): Frontmatter {
   return frontmatterSchema.parse(data);
 }
+
+export type ContentType = "post" | "project" | "adr";
+
+export interface ContentEntry extends Frontmatter {
+  slug: string;
+  type: ContentType;
+  readingTime: string;
+}

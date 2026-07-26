@@ -33,3 +33,12 @@ test("validates every entry's frontmatter against the schema", () => {
     expect(typeof entry.draft).toBe("boolean");
   });
 });
+
+test("computes a reading time estimate for every entry", () => {
+  const entries = readContentEntries();
+
+  expect(entries.length).toBeGreaterThan(0);
+  entries.forEach((entry) => {
+    expect(entry.readingTime).toMatch(/read$/i);
+  });
+});

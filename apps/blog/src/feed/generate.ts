@@ -1,4 +1,4 @@
-import type { FeedEntry } from "./contentEntries";
+import type { ContentEntry } from "../content/schema";
 
 // Only "post" and "adr" get a route that actually renders them
 // (App.tsx: /blog/:slug, /adr/:slug). "project" content exists in the
@@ -12,8 +12,8 @@ const ROUTE_BASE: Record<RoutableType, string> = {
 };
 
 function isRoutable(
-  entry: FeedEntry
-): entry is FeedEntry & { type: RoutableType } {
+  entry: ContentEntry
+): entry is ContentEntry & { type: RoutableType } {
   return !entry.draft && (entry.type === "post" || entry.type === "adr");
 }
 
@@ -30,7 +30,7 @@ function escapeXml(value: string): string {
     .replace(/'/g, "&apos;");
 }
 
-export function buildSitemap(entries: FeedEntry[], siteUrl: string): string {
+export function buildSitemap(entries: ContentEntry[], siteUrl: string): string {
   const base = stripTrailingSlash(siteUrl);
   const paths = [
     "/",
@@ -53,7 +53,7 @@ export function buildSitemap(entries: FeedEntry[], siteUrl: string): string {
   );
 }
 
-export function buildRss(entries: FeedEntry[], siteUrl: string): string {
+export function buildRss(entries: ContentEntry[], siteUrl: string): string {
   const base = stripTrailingSlash(siteUrl);
   const posts = entries
     .filter((entry) => entry.type === "post" && !entry.draft)

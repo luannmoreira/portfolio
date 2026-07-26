@@ -8,8 +8,8 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeMermaid from "rehype-mermaid";
-import { remarkReadingTime } from "./remark-reading-time.js";
 import { feedPlugin } from "./src/feed/plugin.ts";
+import { contentIndexPlugin } from "./src/content/contentIndexPlugin.ts";
 
 export default defineConfig({
   plugins: [
@@ -24,16 +24,13 @@ export default defineConfig({
         // passed to it — the compiled output just uses local/no-op
         // components unless told to source them from @mdx-js/react.
         providerImportSource: "@mdx-js/react",
-        // frontmatter plugins must run first: remarkFrontmatter parses the
-        // YAML block, remarkMdxFrontmatter turns it into a `frontmatter`
-        // named export the content loader reads via import.meta.glob.
-        // remarkReadingTime adds a sibling `readingTime` export the same way.
-        remarkPlugins: [
-          remarkFrontmatter,
-          remarkMdxFrontmatter,
-          remarkGfm,
-          remarkReadingTime,
-        ],
+        // remarkFrontmatter strips the YAML block out of the rendered
+        // content; remarkMdxFrontmatter also exposes it as a `frontmatter`
+        // named export (unused at runtime now — content/loader.ts reads
+        // metadata from virtual:content-index instead, see
+        // contentIndexPlugin.ts — but the stripping behavior is still
+        // load-bearing, so both plugins stay).
+        remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter, remarkGfm],
         rehypePlugins: [
           // Must run before rehype-pretty-code: it targets the same
           // <pre><code class="language-mermaid"> shape rehype-pretty-code
@@ -46,6 +43,7 @@ export default defineConfig({
       }),
     },
     react({ include: /\.(js|jsx|md|mdx|ts|tsx)$/ }),
+    contentIndexPlugin(),
     feedPlugin(),
   ],
   // No "base" yet — deploy target is deliberately undecided (see
