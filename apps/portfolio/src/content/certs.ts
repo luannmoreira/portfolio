@@ -1,14 +1,14 @@
 import type { CardCertsProps } from "../components/CardCerts";
 
-import matangular from "../assets/certs/matangular.jpg";
-import serfrontend from "../assets/certs/serfrontend.jpg";
-import serfrontend2 from "../assets/certs/serfrontend2.jpg";
-import harvardcs from "../assets/certs/harvardcs50.png";
-import nuxttailwind from "../assets/certs/nuxttailwind.jpg";
-import javascriptbible from "../assets/certs/javascriptbible.jpg";
-import matreact from "../assets/certs/matreact.jpg";
-import csharpcurso from "../assets/certs/csharpcurso.jpg";
-import pythoncurso from "../assets/certs/pythoncurso.jpeg";
+import matangular from "../assets/certs/matangular.webp";
+import serfrontend from "../assets/certs/serfrontend.webp";
+import serfrontend2 from "../assets/certs/serfrontend2.webp";
+import harvardcs from "../assets/certs/harvardcs50.webp";
+import nuxttailwind from "../assets/certs/nuxttailwind.webp";
+import javascriptbible from "../assets/certs/javascriptbible.webp";
+import matreact from "../assets/certs/matreact.webp";
+import csharpcurso from "../assets/certs/csharpcurso.webp";
+import pythoncurso from "../assets/certs/pythoncurso.webp";
 
 export const certs: CardCertsProps[] = [
   {

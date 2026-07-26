@@ -1,4 +1,4 @@
-import profile from "../assets/profilepic.jpg";
+import profile from "../assets/profilepic.webp";
 import HrCurve from "./HrCurve";
 import Reveal from "./Reveal";
 
@@ -41,7 +41,15 @@ export default function About() {
         </div>
       </Reveal>
       <div className="w-100 md:w-1/5">
-        <img src={profile} alt="profile" className="top-50 rounded" />
+        <img
+          src={profile}
+          alt="profile"
+          className="top-50 rounded"
+          width={600}
+          height={680}
+          loading="lazy"
+          decoding="async"
+        />
       </div>
       <HrCurve />
     </section>

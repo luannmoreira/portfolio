@@ -29,7 +29,9 @@ export default function CardCerts({
           src={img}
           className="w-full h-56 mx-auto object-cover"
           alt={name}
-        ></img>
+          loading="lazy"
+          decoding="async"
+        />
         <div className="mt-2">
           <h1 className="font-bold md:text-xl">{name}</h1>
           <p className="font-light md:text-lg">by {issued}</p>

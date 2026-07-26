@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 
-import profile from "../assets/frame.png";
+import profile from "../assets/frame.webp";
 import ArrowRightCircleIcon from "./icons/ArrowRightCircleIcon";
 import GithubIcon from "./icons/GithubIcon";
 import LinkedinIcon from "./icons/LinkedinIcon";
@@ -43,6 +43,8 @@ export default function Hero() {
             src={profile}
             alt="profile"
             className="top-50"
+            width={1000}
+            height={568}
             onLoad={() => setIsLoading(false)}
           />
         </Reveal>

@@ -31,7 +31,9 @@ test("About page renders About, Skills, and Experience content", async () => {
   // rendered, above/below the routed page) — the first is Navbar's.
   await user.click(screen.getAllByRole("link", { name: "About" })[0]);
 
-  expect(screen.getByRole("heading", { name: "About me" })).toBeInTheDocument();
+  expect(
+    await screen.findByRole("heading", { name: "About me" })
+  ).toBeInTheDocument();
   expect(screen.getByRole("heading", { name: "Skills" })).toBeInTheDocument();
   expect(
     screen.getByRole("heading", { name: "Experience" })
@@ -48,6 +50,6 @@ test("Contact page renders the contact section", async () => {
   await user.click(screen.getAllByRole("link", { name: "Contact" })[0]);
 
   expect(
-    screen.getByRole("heading", { name: "Be in touch!" })
+    await screen.findByRole("heading", { name: "Be in touch!" })
   ).toBeInTheDocument();
 });

@@ -6,7 +6,13 @@ export default function Navbar() {
     <nav className="fixed z-50 bg-dark-500 w-full top-0 left-0 px-8 py-4 lg:px-20 xl:px-36 print:hidden">
       <div className="flex justify-between items-center text-white">
         <Link to="/">
-          <img src={logo} className="App-logo w-12 rounded-full" alt="logo" />
+          <img
+            src={logo}
+            className="App-logo w-12 rounded-full"
+            alt="logo"
+            width={503}
+            height={414}
+          />
         </Link>
         <ul className="hidden md:flex">
           <li className="p-4 font-mono text-white hover:text-blue">
