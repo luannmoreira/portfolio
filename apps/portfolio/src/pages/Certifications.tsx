@@ -1,15 +1,9 @@
 import CardCerts from "../components/CardCerts";
 import Uses from "../components/Uses";
+import EcosystemSection from "../components/EcosystemSection";
 import { certs } from "../content/certs";
-import { skills } from "../content/skills";
 import { useDocumentMeta } from "../hooks/useDocumentMeta";
 import { useScrollToSection } from "../hooks/useScrollToSection";
-
-const ecosystemChips = skills
-  .filter((skill) =>
-    ["Frameworks", "Infrastructure"].includes(skill.category)
-  )
-  .map((skill) => skill.name);
 
 function Certifications() {
   useScrollToSection();
@@ -55,16 +49,7 @@ function Certifications() {
         <h3 className="mb-6 font-headline-md text-headline-md">
           Core Development Ecosystem
         </h3>
-        <div className="flex flex-wrap gap-3">
-          {ecosystemChips.map((name) => (
-            <span
-              key={name}
-              className="rounded border border-outline-variant/50 bg-surface-container-lowest px-4 py-2 font-label-mono text-label-mono text-secondary"
-            >
-              {name}
-            </span>
-          ))}
-        </div>
+        <EcosystemSection />
       </section>
 
       <section>
