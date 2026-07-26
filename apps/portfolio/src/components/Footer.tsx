@@ -5,7 +5,7 @@ const today = new Date();
 const year = today.getFullYear();
 export default function Footer() {
   return (
-    <footer className="mt-4 bg-dark-200 rounded-md text-white text-lg py-4 mt-10 sm:mt-0 print:hidden">
+    <footer className="mt-4 bg-dark-200 light:bg-light-200 rounded-md text-white light:text-dark-500 text-lg py-4 mt-10 sm:mt-0 print:hidden">
       <ul className="text-center font-bold pt-5 m-2 ">
         <li>
           <Link to="/about" className="hover:underline">

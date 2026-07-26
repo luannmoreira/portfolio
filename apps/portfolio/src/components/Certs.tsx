@@ -4,9 +4,9 @@ import { certs } from "../content/certs";
 
 export default function Certs() {
   return (
-    <section id="certs" className="mt-4 text-white">
+    <section id="certs" className="mt-4 text-white light:text-dark-500">
       <h1 className="text-2xl font-bold">Courses</h1>
-      <p className="font-light text-gray-400">
+      <p className="font-light text-gray-400 light:text-gray-600">
         I've done them and I'll always recomend!
       </p>
 

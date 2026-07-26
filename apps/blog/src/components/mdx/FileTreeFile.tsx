@@ -10,7 +10,7 @@ function FileTreeFile({ name }: FileTreeFileProps) {
           viewBox="0 0 20 20"
           fill="none"
           stroke="currentColor"
-          className="h-4 w-4 shrink-0 text-slate-400"
+          className="h-4 w-4 shrink-0 text-slate-400 light:text-slate-600"
           aria-hidden="true"
         >
           <path

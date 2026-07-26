@@ -6,7 +6,7 @@ export default function About() {
   return (
     <section
       id="home"
-      className="flex w-full lg:h-screen flex-col md:flex-row gap-5 items-center justify-center text-white relative"
+      className="flex w-full lg:h-screen flex-col md:flex-row gap-5 items-center justify-center text-white light:text-dark-500 relative"
     >
       <Reveal
         variant="fade-left"
@@ -18,7 +18,7 @@ export default function About() {
           <h1 className="text-3xl text-transparent font-bold bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-500 font-mono">
             About me
           </h1>
-          <p className="text-lg font-light text-gray-300">
+          <p className="text-lg font-light text-gray-300 light:text-gray-600">
             Hello! My name is Luann and I'm a developer passionate about
             programming, especially interfaces, UI/UX and CI/CD. Furthermore,
             I'm a big fan of cooking and I love to try new recipes in my free

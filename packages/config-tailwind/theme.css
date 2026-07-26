@@ -10,6 +10,22 @@
   --color-dark-800: #000000;
   --color-dark-900: #000000;
 
+  /* Light-theme counterparts, same shade numbers as their dark-* role
+     (border/hover accent, card surface, subtle surface, page background,
+     elevated chrome) — only the shades actually used anywhere get one. */
+  --color-light-50: #64748b;
+  --color-light-100: #f1f5f9;
+  --color-light-200: #f1f5f9;
+  --color-light-300: #e2e8f0;
+  --color-light-500: #ffffff;
+  --color-light-600: #e8eaed;
+
   --color-white: #ffffff;
   --color-blue: #14b8a6;
 }
+
+/* Dark is this site's default (unprefixed classes) — the toggle adds/removes
+   a `.light` class on <html>, so `light:` variants are the overrides, not
+   `dark:`. Kept as a single custom variant here (not per-app) so both apps'
+   toggle implementations share the exact same selector contract. */
+@custom-variant light (&:where(.light, .light *));

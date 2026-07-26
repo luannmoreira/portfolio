@@ -22,7 +22,7 @@ function Pre(props: ComponentPropsWithoutRef<"pre">) {
       <button
         type="button"
         onClick={handleCopy}
-        className="absolute right-2 top-2 rounded bg-dark-300 px-2 py-1 text-xs text-white"
+        className="absolute right-2 top-2 rounded bg-dark-300 light:bg-light-300 px-2 py-1 text-xs text-white light:text-dark-500"
       >
         <span aria-live="polite">{copied ? "Copied!" : "Copy"}</span>
       </button>

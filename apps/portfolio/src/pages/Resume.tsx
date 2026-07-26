@@ -13,14 +13,14 @@ function Resume() {
   );
 
   return (
-    <div className="min-h-screen bg-dark-500 px-4 py-12 text-white print:bg-white print:px-0 print:py-0 print:text-black">
+    <div className="min-h-screen bg-dark-500 light:bg-light-500 px-4 py-12 text-white light:text-dark-500 print:bg-white print:px-0 print:py-0 print:text-black">
       <div className="mx-auto max-w-3xl">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Luann Curioso</h1>
           <button
             type="button"
             onClick={() => window.print()}
-            className="rounded-full border border-dark-100 px-4 py-2 font-mono font-bold hover:border-dark-50 print:hidden"
+            className="rounded-full border border-dark-100 light:border-light-100 px-4 py-2 font-mono font-bold hover:border-dark-50 light:hover:border-light-50 print:hidden"
           >
             Print / Save as PDF
           </button>

@@ -9,9 +9,9 @@ function Projects() {
   );
 
   return (
-    <div className="min-h-screen text-white">
+    <div className="min-h-screen text-white light:text-dark-500">
       <h1 className="text-3xl font-bold">Projects</h1>
-      <p className="font-light text-gray-400">
+      <p className="font-light text-gray-400 light:text-gray-600">
         Production engineering work — architecture, maintainability, and
         long-term thinking, not just UI.
       </p>

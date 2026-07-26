@@ -39,7 +39,10 @@ export default defineConfig({
           [rehypeMermaid, { strategy: "inline-svg", colorScheme: "dark" }],
           rehypeSlug,
           [rehypeAutolinkHeadings, { behavior: "wrap" }],
-          [rehypePrettyCode, { theme: "github-dark" }],
+          [
+            rehypePrettyCode,
+            { theme: { dark: "github-dark", light: "github-light" } },
+          ],
         ],
       }),
     },

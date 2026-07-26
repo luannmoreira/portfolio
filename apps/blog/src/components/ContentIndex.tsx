@@ -16,7 +16,7 @@ function ContentIndex({ type, basePath, heading }: ContentIndexProps) {
   useDocumentMeta(`${heading} — Blog`);
 
   return (
-    <div className="min-h-screen bg-dark-500 px-6 py-12 text-white">
+    <div className="min-h-screen bg-dark-500 light:bg-light-500 px-6 py-12 text-white light:text-dark-500">
       <h1 className="text-3xl font-bold">{heading}</h1>
       <ul className="mt-6 flex flex-col gap-6">
         {entries.map((entry) => (
@@ -27,7 +27,9 @@ function ContentIndex({ type, basePath, heading }: ContentIndexProps) {
             >
               {entry.title}
             </Link>
-            <p className="text-sm text-gray-400">{entry.readingTime}</p>
+            <p className="text-sm text-gray-400 light:text-gray-600">
+              {entry.readingTime}
+            </p>
             <p>{entry.excerpt}</p>
           </li>
         ))}

@@ -16,7 +16,7 @@ export default function CardHabilidades({
       variant="fade-up"
       duration={500}
       offset={100}
-      className="w-full p-4 text-center justify-center border-2 border-gray-900 bg-dark-200 rounded-md flex flex-col h-48"
+      className="w-full p-4 text-center justify-center border-2 border-gray-900 light:border-gray-300 bg-dark-200 light:bg-light-200 rounded-md flex flex-col h-48"
     >
       <img
         src={img}

@@ -14,6 +14,21 @@
     />
     <link rel="apple-touch-icon" href="/logo192.png" />
     <title>Luann Curioso</title>
+    <script>
+      // Runs before first paint, synchronously — deciding after React
+      // mounts would flash the wrong theme for a frame. Dark is this site's
+      // default (unprefixed classes); this only ever needs to *add* a
+      // `light` class, never remove one.
+      (function () {
+        var stored = localStorage.getItem("theme");
+        var prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+        if (stored === "light" || (!stored && !prefersDark)) {
+          document.documentElement.classList.add("light");
+        }
+      })();
+    </script>
   </head>
 
   <body>

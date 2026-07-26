@@ -5,11 +5,15 @@ import Home from "./components/Home";
 import ContentIndex from "./components/ContentIndex";
 import Post from "./components/Post";
 import NotFound from "./components/NotFound";
+import ThemeToggle from "./components/ThemeToggle";
 
 function App() {
   return (
     <MDXProvider components={mdxComponents}>
       <BrowserRouter>
+        <div className="fixed right-4 top-4 z-50">
+          <ThemeToggle />
+        </div>
         <main>
           <Routes>
             <Route path="/" element={<Home />} />

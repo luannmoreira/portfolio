@@ -20,15 +20,15 @@ export default function CardExperiencia({
       variant="fade-up"
       duration={500}
       offset={100}
-      className="md:w-2/6 bg-dark-100 rounded-md py-4 px-4"
+      className="md:w-2/6 bg-dark-100 light:bg-light-100 rounded-md py-4 px-4"
     >
       <div className="mt-2">
         <h1 className="font-bold md:text-xl">{name}</h1>
         <p className="font-light md:text-lg">Company {issued}</p>
-        <p className="font-light text-gray-300 md:text-md">
+        <p className="font-light text-gray-300 light:text-gray-600 md:text-md">
           ({anoEntrada} till {anoSaida})
         </p>
-        <p className="font-light text-gray-400">{desc}</p>
+        <p className="font-light text-gray-400 light:text-gray-600">{desc}</p>
       </div>
     </Reveal>
   );

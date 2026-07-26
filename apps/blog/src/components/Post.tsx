@@ -19,9 +19,11 @@ function Post() {
   }
 
   return (
-    <div className="min-h-screen bg-dark-500 px-6 py-12 text-white">
+    <div className="min-h-screen bg-dark-500 light:bg-light-500 px-6 py-12 text-white light:text-dark-500">
       <h1 className="text-3xl font-bold">{entry.title}</h1>
-      <p className="text-sm text-gray-400">{entry.readingTime}</p>
+      <p className="text-sm text-gray-400 light:text-gray-600">
+        {entry.readingTime}
+      </p>
       <Suspense fallback={<p>Loading…</p>}>
         {/* eslint-disable-next-line react-hooks/static-components -- getPostComponent
             caches by slug (loader.ts), so this reference is stable across

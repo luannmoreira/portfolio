@@ -4,9 +4,9 @@ import { skills } from "../content/skills";
 
 export default function Habilidades() {
   return (
-    <section id="skills" className="mt-4 text-white">
+    <section id="skills" className="mt-4 text-white light:text-dark-500">
       <h1 className="text-2xl font-bold">Skills</h1>
-      <p className="font-light text-gray-400">
+      <p className="font-light text-gray-400 light:text-gray-600">
         Here are some of my tech skills!
       </p>
 

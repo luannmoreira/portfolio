@@ -26,12 +26,12 @@ export default function Hero() {
   return (
     <>
       {isLoading ? (
-        <div className="fixed bg-dark-500 text-white top-0 left-0 right-0 bottom-0 w-full h-screen z-50 overflow-hidden bg-white flex flex-col items-center justify-center">
+        <div className="fixed bg-dark-500 light:bg-light-500 text-white light:text-dark-500 top-0 left-0 right-0 bottom-0 w-full h-screen z-50 overflow-hidden bg-white flex flex-col items-center justify-center">
           <img src={loading} alt="loading" />
           <p>Loading...</p>
         </div>
       ) : null}
-      <section className="flex w-full lg:h-screen mt-20 flex-col md:flex-row gap-5 items-center justify-center text-white relative">
+      <section className="flex w-full lg:h-screen mt-20 flex-col md:flex-row gap-5 items-center justify-center text-white light:text-dark-500 relative">
         <Reveal
           variant="flip-right"
           duration={1500}
@@ -59,13 +59,13 @@ export default function Hero() {
               Howdy, Partner! I'm called
             </h1>
             <h1 className="text-5xl font-bold">Luann Curioso</h1>
-            <p className="text-2xl font-bold text-gray-200">
+            <p className="text-2xl font-bold text-gray-200 light:text-gray-700">
               And I build for the{" "}
               <span className="font-extrabold text-transparent text-3xl bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-600">
                 web
               </span>
             </p>
-            <p className="text-lg font-light text-gray-300 ">
+            <p className="text-lg font-light text-gray-300 light:text-gray-600">
               With experience in web development, I started my career at
               technology area just over 3 years ago and since then every day I'm
               more sure I chose right. Today I'm qualified from the

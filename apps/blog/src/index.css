@@ -3,6 +3,10 @@
 
 html {
   scroll-behavior: smooth;
+  background-color: #0a0d11;
+}
+html.light {
+  background-color: #ffffff;
 }
 
 body {
@@ -17,4 +21,37 @@ body {
 code {
   font-family:
     source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+/* rehype-pretty-code's dual-theme config (vite.config.js) makes Shiki emit
+   both --shiki-dark/--shiki-light (and *-bg) as inline custom properties
+   per token, rather than a hardcoded color — it deliberately leaves picking
+   one to the consuming CSS. Dark is this site's default, matching every
+   other unprefixed color here. */
+[data-rehype-pretty-code-figure] pre,
+[data-rehype-pretty-code-figure] span {
+  color: var(--shiki-dark);
+}
+[data-rehype-pretty-code-figure] pre {
+  background-color: var(--shiki-dark-bg);
+}
+.light [data-rehype-pretty-code-figure] pre,
+.light [data-rehype-pretty-code-figure] span {
+  color: var(--shiki-light);
+}
+.light [data-rehype-pretty-code-figure] pre {
+  background-color: var(--shiki-light-bg);
+}
+
+/* Mermaid diagrams are static SVGs baked at build time (rehype-mermaid,
+   colorScheme: "dark", vite.config.js) — unlike Shiki, rehype-mermaid has
+   no built-in dual-theme output, and rendering + shipping two full SVGs per
+   diagram to toggle between isn't worth it for the one diagram this site
+   currently has. Kept on a fixed dark card instead, in both themes, so it
+   never looks unstyled against a light page. */
+svg.flowchart {
+  display: block;
+  background-color: #0a0d11;
+  border-radius: 0.375rem;
+  padding: 1rem;
 }
