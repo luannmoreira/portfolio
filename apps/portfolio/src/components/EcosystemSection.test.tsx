@@ -14,11 +14,8 @@ test("renders every category and every skill name, grouped correctly", () => {
   }
 });
 
-test("shows the experience badge only when one is tracked", () => {
+test("does not render per-skill duration badges", () => {
   render(<EcosystemSection />);
 
-  expect(screen.getAllByText("4 years").length).toBeGreaterThan(0);
-  // TypeScript has no tracked duration and shouldn't get a badge at all —
-  // just confirm its chip renders without throwing.
-  expect(screen.getByText("TypeScript")).toBeInTheDocument();
+  expect(screen.queryByText(/year/i)).not.toBeInTheDocument();
 });

@@ -27,11 +27,6 @@ export default function EcosystemSection() {
                   <TechIcon path={skill.iconPath} className="h-3.5 w-3.5" />
                 )}
                 {skill.name}
-                {skill.experience && (
-                  <span className="rounded bg-surface-container-high px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-tighter text-on-surface-variant">
-                    {skill.experience}
-                  </span>
-                )}
               </span>
             ))}
         </div>

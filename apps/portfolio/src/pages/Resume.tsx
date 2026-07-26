@@ -63,9 +63,7 @@ function Resume() {
           <h2 className="font-headline-md text-headline-md">Skills</h2>
           <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm">
             {skills.map((skill) => (
-              <li key={skill.name}>
-                {skill.name} ({skill.experience})
-              </li>
+              <li key={skill.name}>{skill.name}</li>
             ))}
           </ul>
         </section>
