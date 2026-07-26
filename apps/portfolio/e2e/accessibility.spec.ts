@@ -1,15 +1,9 @@
 import AxeBuilder from "@axe-core/playwright";
 import { test, expect } from "@playwright/test";
 
-const routes = [
-  "/",
-  "/#/about",
-  "/#/resume",
-  "/#/projects",
-  "/#/uses",
-  "/#/now",
-  "/#/contact",
-];
+// /uses and /now are anchor sections on / and /about (not their own
+// routes), so their content is already covered by those two scans.
+const routes = ["/", "/#/about", "/#/resume", "/#/projects", "/#/contact"];
 
 // emulateMedia before navigating drives the inline FOUC-prevention script in
 // index.html (it reads prefers-color-scheme on first paint) — the more

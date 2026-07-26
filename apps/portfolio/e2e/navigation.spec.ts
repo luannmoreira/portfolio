@@ -6,12 +6,17 @@ test.describe("page navigation", () => {
   });
 
   const pages = [
-    { link: "About", hash: "#/about", heading: "About me" },
+    {
+      link: "About",
+      hash: "#/about",
+      heading: /solving problems and building/,
+    },
     { link: "Resume", hash: "#/resume", heading: "Luann Curioso" },
-    { link: "Projects", hash: "#/projects", heading: "Projects" },
-    { link: "Uses", hash: "#/uses", heading: "Uses" },
-    { link: "Now", hash: "#/now", heading: "Now" },
-    { link: "Contact", hash: "#/contact", heading: "Be in touch!" },
+    {
+      link: "Contact",
+      hash: "#/contact",
+      heading: "Let's talk about engineering.",
+    },
   ];
 
   for (const { link, hash, heading } of pages) {
@@ -27,11 +32,35 @@ test.describe("page navigation", () => {
     });
   }
 
+  // Uses and Now are anchor sections (?section=id) on About/Home, not their
+  // own routes, so they don't fit the generic h1-per-route loop above.
+  test('"Uses" nav link navigates to its section', async ({ page }) => {
+    await page
+      .getByRole("navigation")
+      .getByRole("link", { name: "Uses" })
+      .click();
+    await expect(page).toHaveURL(/#\/about\?section=uses$/);
+    await expect(
+      page.getByRole("heading", { name: "Hardware & Software", level: 2 })
+    ).toBeVisible();
+  });
+
+  test('"Now" nav link navigates to its section', async ({ page }) => {
+    await page
+      .getByRole("navigation")
+      .getByRole("link", { name: "Now" })
+      .click();
+    await expect(page).toHaveURL(/#\/\?section=now$/);
+    await expect(
+      page.getByRole("heading", { name: "Now", level: 2 })
+    ).toBeVisible();
+  });
+
   test("Resume page renders real experience content and a print button", async ({
     page,
   }) => {
     await page.goto("/#/resume");
-    await expect(page.getByText(/ShellHub/)).toBeVisible();
+    await expect(page.getByText(/ShellHub/).first()).toBeVisible();
     await expect(page.getByRole("button", { name: /print/i })).toBeVisible();
   });
 
@@ -45,14 +74,14 @@ test.describe("page navigation", () => {
     ).toHaveAttribute("href", "https://www.investmt.com.br/pt-br");
   });
 
-  test("Uses page renders the real setup", async ({ page }) => {
-    await page.goto("/#/uses");
-    await expect(page.getByText("VS Code")).toBeVisible();
+  test("Uses section renders the real setup", async ({ page }) => {
+    await page.goto("/#/about");
+    await expect(page.getByText("VS Code", { exact: true })).toBeVisible();
     await expect(page.getByText("Two monitors")).toBeVisible();
   });
 
-  test("Now page renders the real current focus", async ({ page }) => {
-    await page.goto("/#/now");
+  test("Now section renders the real current focus", async ({ page }) => {
+    await page.goto("/");
     await expect(
       page.getByText("Rebranding as a software engineer")
     ).toBeVisible();
@@ -63,12 +92,14 @@ test.describe("page navigation", () => {
 });
 
 test.describe("outbound links", () => {
-  // GitHub/LinkedIn appear once on Home (Hero) and once on the Contact
-  // page (its own route since 10.2) — not both on the same page anymore.
+  // Footer renders GitHub/LinkedIn/WhatsApp icon links (exact accessible
+  // name) on every page; Contact additionally has named channel cards for
+  // the same profiles ("Development GitHub", etc.), so match on exact name
+  // to avoid ambiguity between the two.
   test("every GitHub link points to the same profile", async ({ page }) => {
     for (const path of ["/", "/#/contact"]) {
       await page.goto(path);
-      const link = page.getByRole("link", { name: "GitHub" });
+      const link = page.getByRole("link", { name: "GitHub", exact: true });
       await expect(link).toHaveAttribute(
         "href",
         "https://github.com/luannmoreira"
@@ -80,7 +111,7 @@ test.describe("outbound links", () => {
   test("every LinkedIn link points to the same profile", async ({ page }) => {
     for (const path of ["/", "/#/contact"]) {
       await page.goto(path);
-      const link = page.getByRole("link", { name: "LinkedIn" });
+      const link = page.getByRole("link", { name: "LinkedIn", exact: true });
       await expect(link).toHaveAttribute(
         "href",
         "https://linkedin.com/in/luanncurioso"
@@ -91,7 +122,7 @@ test.describe("outbound links", () => {
 
   test("WhatsApp link opens the right chat", async ({ page }) => {
     await page.goto("/#/contact");
-    const link = page.getByRole("link", { name: "WhatsApp" });
+    const link = page.getByRole("link", { name: "WhatsApp", exact: true });
     await expect(link).toHaveAttribute("href", /wa\.me\/5565999722455/);
     await expect(link).toHaveAttribute("target", "_blank");
   });
