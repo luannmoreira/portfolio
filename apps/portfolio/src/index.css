@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "@portfolio/config-tailwind/theme.css";
+@import "./theme.css";
 
 body {
   margin: 0;
