@@ -1,5 +1,3 @@
-import Reveal from "./Reveal";
-
 export interface CardCertsProps {
   name: string;
   desc: string;
@@ -18,27 +16,31 @@ export default function CardCerts({
   linkCurso,
 }: CardCertsProps) {
   return (
-    <a href={linkCurso} target="_blank" rel="noreferrer">
-      <Reveal
-        variant="fade-up"
-        duration={500}
-        offset={100}
-        className="hover:bg-dark w-full h-full bg-dark-200 light:bg-light-200 rounded-md py-4 px-4"
-      >
-        <img
-          src={img}
-          className="w-full h-56 mx-auto object-cover"
-          alt={name}
-          loading="lazy"
-          decoding="async"
-        />
-        <div className="mt-2">
-          <h1 className="font-bold md:text-xl">{name}</h1>
-          <p className="font-light md:text-lg">by {issued}</p>
-          <p className="font-light text-gray-400 light:text-gray-600">{desc}</p>
-          <p className="font-light text-gray-400 light:text-gray-600">{date}</p>
+    <a
+      href={linkCurso}
+      target="_blank"
+      rel="noreferrer"
+      className="group flex h-full flex-col justify-between border border-outline-variant/30 bg-surface-container-lowest p-gutter transition-all hover:shadow-[0px_4px_20px_rgba(15,23,42,0.05)]"
+    >
+      <div>
+        <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-container">
+          <img
+            src={img}
+            alt=""
+            aria-hidden="true"
+            className="h-8 w-8 rounded object-contain"
+            loading="lazy"
+            decoding="async"
+          />
         </div>
-      </Reveal>
+        <h3 className="mb-2 font-headline-md text-headline-md">{name}</h3>
+        <p className="mb-4 font-caption text-caption text-secondary">
+          {issued} • {date}
+        </p>
+        <p className="whitespace-pre-line font-body-md text-body-md text-on-surface-variant">
+          {desc}
+        </p>
+      </div>
     </a>
   );
 }
