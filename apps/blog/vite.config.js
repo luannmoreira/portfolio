@@ -9,6 +9,7 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeMermaid from "rehype-mermaid";
 import { remarkReadingTime } from "./remark-reading-time.js";
+import { feedPlugin } from "./src/feed/plugin.ts";
 
 export default defineConfig({
   plugins: [
@@ -45,6 +46,7 @@ export default defineConfig({
       }),
     },
     react({ include: /\.(js|jsx|md|mdx|ts|tsx)$/ }),
+    feedPlugin(),
   ],
   // No "base" yet — deploy target is deliberately undecided (see
   // ROADMAP.md Phase 7), so this stays at Vite's "/" default until a host

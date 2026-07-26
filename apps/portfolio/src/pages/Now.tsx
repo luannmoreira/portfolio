@@ -1,8 +1,14 @@
 import { nowItems, nowLastUpdated } from "../content/now";
+import { useDocumentMeta } from "../hooks/useDocumentMeta";
 
 // Convention: https://nownownow.com — what I'm actually focused on right
 // now, manually updated (not auto-generated) when it goes stale.
 function Now() {
+  useDocumentMeta(
+    "Now — Luann Curioso",
+    `What I'm focused on right now. Last updated: ${nowLastUpdated}.`
+  );
+
   return (
     <div className="min-h-screen text-white">
       <h1 className="text-3xl font-bold">Now</h1>

@@ -1,5 +1,4 @@
 import "./App.css";
-import { useEffect } from "react";
 import { HashRouter, Routes, Route } from "react-router";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -12,9 +11,6 @@ import Now from "./pages/Now";
 import Contact from "./pages/Contact";
 
 function App() {
-  useEffect(() => {
-    document.title = "Luann Curioso";
-  }, []);
   return (
     <HashRouter>
       <div className="w-100 px-6 lg:px-20 xl:px-36 bg-dark-500">

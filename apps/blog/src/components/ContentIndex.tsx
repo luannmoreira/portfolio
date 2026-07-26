@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { loadContent, type ContentType } from "../content/loader";
+import { useDocumentMeta } from "../hooks/useDocumentMeta";
 
 interface ContentIndexProps {
   type: ContentType;
@@ -11,6 +12,8 @@ function ContentIndex({ type, basePath, heading }: ContentIndexProps) {
   const entries = loadContent().filter(
     (entry) => entry.type === type && !entry.draft
   );
+
+  useDocumentMeta(`${heading} — Blog`);
 
   return (
     <div className="min-h-screen bg-dark-500 px-6 py-12 text-white">

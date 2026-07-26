@@ -1,12 +1,18 @@
 import { Suspense } from "react";
 import { useParams } from "react-router";
 import { getPostComponent, loadContent } from "../content/loader";
+import { useDocumentMeta } from "../hooks/useDocumentMeta";
 import NotFound from "./NotFound";
 
 function Post() {
   const { slug } = useParams();
   const PostBody = slug ? getPostComponent(slug) : undefined;
   const entry = slug ? loadContent().find((e) => e.slug === slug) : undefined;
+
+  useDocumentMeta(
+    entry ? `${entry.title} — Blog` : "Not Found — Blog",
+    entry?.excerpt
+  );
 
   if (!PostBody || !entry) {
     return <NotFound />;

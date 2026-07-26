@@ -1,11 +1,17 @@
 import { experience } from "../content/experience";
 import { skills } from "../content/skills";
 import { certs } from "../content/certs";
+import { useDocumentMeta } from "../hooks/useDocumentMeta";
 
 // Printable-friendly, not a reskin of the dark-themed Card components used
 // elsewhere — print:* variants switch to plain black-on-white and drop the
 // print button, since none of that belongs in a printed/PDF resume.
 function Resume() {
+  useDocumentMeta(
+    "Resume — Luann Curioso",
+    "Luann Curioso's resume — experience, skills, and certifications."
+  );
+
   return (
     <div className="min-h-screen bg-dark-500 px-4 py-12 text-white print:bg-white print:px-0 print:py-0 print:text-black">
       <div className="mx-auto max-w-3xl">
