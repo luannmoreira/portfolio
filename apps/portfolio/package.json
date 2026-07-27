@@ -1,5 +1,4 @@
 {
-  "homepage": "https://luannmoreira.github.io/portfolio",
   "name": "portfolio",
   "version": "0.1.0",
   "private": true,
@@ -12,8 +11,6 @@
   },
   "scripts": {
     "dev": "vite",
-    "predeploy": "pnpm build",
-    "deploy": "gh-pages -d dist",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint .",
@@ -50,7 +47,6 @@
     "@vitejs/plugin-react": "^6.0.4",
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
-    "gh-pages": "^5.0.0",
     "globals": "^17.7.0",
     "jsdom": "^29.1.1",
     "tailwindcss": "^4.3.3",
