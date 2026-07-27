@@ -1,9 +1,13 @@
-import { useTheme } from "../hooks/useTheme";
+import type { Theme } from "../hooks/useTheme";
 import SunIcon from "./icons/SunIcon";
 import MoonIcon from "./icons/MoonIcon";
 
-export default function ThemeToggle() {
-  const [theme, toggleTheme] = useTheme();
+interface ThemeToggleProps {
+  theme: Theme;
+  toggleTheme: () => void;
+}
+
+export default function ThemeToggle({ theme, toggleTheme }: ThemeToggleProps) {
   const switchingTo = theme === "light" ? "dark" : "light";
 
   return (

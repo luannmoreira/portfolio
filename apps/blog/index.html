@@ -10,13 +10,29 @@
       content="Long-form engineering writing from Luann Curioso — architecture decisions, real bugs, and how this site itself gets built."
     />
     <title>Blog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
     <script>
       // Runs before first paint, synchronously — deciding after React
       // mounts would flash the wrong theme for a frame. Dark is this site's
       // default (unprefixed classes); this only ever needs to *add* a
       // `light` class, never remove one.
+      //
+      // localStorage is per-origin and this app + the portfolio are two
+      // separate deploys, so a `?theme=` query param carried on cross-site
+      // nav links (see Navbar.tsx's withTheme) is how the choice actually
+      // travels between them — read it here, before paint, and persist it
+      // so it sticks on this origin too.
       (function () {
-        var stored = localStorage.getItem("theme");
+        var fromLink = new URLSearchParams(location.search).get("theme");
+        if (fromLink === "light" || fromLink === "dark") {
+          localStorage.setItem("theme", fromLink);
+        }
+        var stored = fromLink || localStorage.getItem("theme");
         var prefersDark = window.matchMedia(
           "(prefers-color-scheme: dark)"
         ).matches;
