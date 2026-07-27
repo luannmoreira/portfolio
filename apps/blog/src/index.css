@@ -23,6 +23,65 @@ code {
     source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
+/* MDX bodies compile to plain h1/h2/p/blockquote/ul/a tags with no
+   per-element classes (only the registered components — Pre, Callout
+   family, FileTree, Terminal — get custom rendering, see
+   mdx/mdxComponents.tsx) — so headings/paragraphs/links need their own
+   styling here. Scoped to .prose (Post.tsx's MDX wrapper), hand-written
+   plain CSS rather than @tailwindcss/typography (no other use of that
+   dependency in this repo), same convention as the Shiki/Mermaid rules
+   below. Uses the shared theme's CSS custom properties directly so it
+   flips with the rest of the site under :root.light. */
+.prose h1,
+.prose h2,
+.prose h3 {
+  font-family: var(--font-headline);
+  color: var(--color-on-background);
+  font-weight: 600;
+}
+.prose h2 {
+  font-size: var(--text-headline-lg);
+  margin-top: var(--spacing-stack-md);
+  margin-bottom: var(--spacing-unit);
+}
+.prose h3 {
+  font-size: var(--text-headline-md);
+  margin-top: var(--spacing-stack-sm);
+  margin-bottom: var(--spacing-unit);
+}
+.prose p,
+.prose ul,
+.prose ol {
+  margin-bottom: var(--spacing-stack-sm);
+}
+.prose ul,
+.prose ol {
+  padding-left: 1.5em;
+}
+.prose li {
+  margin-bottom: calc(var(--spacing-unit) / 2);
+}
+.prose li::marker {
+  color: var(--color-outline);
+}
+.prose a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.prose blockquote {
+  margin: var(--spacing-stack-sm) 0;
+  padding: var(--spacing-stack-sm) var(--spacing-gutter);
+  border-left: 4px solid var(--color-primary);
+  background-color: var(--color-surface-container-low);
+  color: var(--color-on-surface);
+  font-style: italic;
+}
+.prose img {
+  max-width: 100%;
+  border-radius: var(--radius-md);
+}
+
 /* rehype-pretty-code's dual-theme config (vite.config.js) makes Shiki emit
    both --shiki-dark/--shiki-light (and *-bg) as inline custom properties
    per token, rather than a hardcoded color — it deliberately leaves picking

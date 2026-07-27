@@ -2,9 +2,9 @@ import { test, expect } from "@playwright/test";
 
 test("blog index lists posts and links to the post page", async ({ page }) => {
   await page.goto("/blog");
-  await expect(page.getByRole("heading", { name: "Blog" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Writing" })).toBeVisible();
 
-  await page.getByRole("link", { name: "Hello, Blog" }).click();
+  await page.getByRole("link", { name: /Hello, Blog/ }).click();
   await expect(page).toHaveURL("/blog/hello-world");
   await expect(
     page.getByRole("heading", { name: "Hello, Blog", level: 1 })
@@ -34,7 +34,7 @@ test("ADR index lists ADRs and links to the ADR page", async ({ page }) => {
     page.getByRole("heading", { name: "Architecture Decision Records" })
   ).toBeVisible();
 
-  await page.getByRole("link", { name: "ADR Placeholder" }).click();
+  await page.getByRole("link", { name: /ADR Placeholder/ }).click();
   await expect(page).toHaveURL("/adr/placeholder");
   await expect(
     page.getByRole("heading", { name: "ADR Placeholder", level: 1 })

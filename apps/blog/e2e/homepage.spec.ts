@@ -1,9 +1,10 @@
 import { test, expect } from "@playwright/test";
 
-test("homepage loads with the correct title and Home content", async ({
-  page,
-}) => {
+test("/ redirects to the blog archive", async ({ page }) => {
   await page.goto("/");
-  await expect(page).toHaveTitle("Blog");
-  await expect(page.getByRole("heading", { name: "Blog" })).toBeVisible();
+  await expect(page).toHaveURL(/\/blog$/);
+  await expect(page).toHaveTitle("Writing — Blog");
+  await expect(
+    page.getByRole("heading", { name: "Writing", level: 1 })
+  ).toBeVisible();
 });

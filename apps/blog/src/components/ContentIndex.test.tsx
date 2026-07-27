@@ -13,7 +13,7 @@ function renderBlogIndex() {
 test("lists published entries of the given type, excluding other types", () => {
   renderBlogIndex();
 
-  expect(screen.getByRole("link", { name: "Hello, Blog" })).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: /Hello, Blog/ })).toBeInTheDocument();
   expect(
     screen.queryByText("Project Write-Up Placeholder")
   ).not.toBeInTheDocument();
@@ -23,7 +23,7 @@ test("lists published entries of the given type, excluding other types", () => {
 test("links to the entry's basePath/:slug route", () => {
   renderBlogIndex();
 
-  expect(screen.getByRole("link", { name: "Hello, Blog" })).toHaveAttribute(
+  expect(screen.getByRole("link", { name: /Hello, Blog/ })).toHaveAttribute(
     "href",
     "/blog/hello-world"
   );
@@ -52,7 +52,7 @@ test("works for a second content type (ADR), proving the generalization", () => 
     </MemoryRouter>
   );
 
-  expect(screen.getByRole("link", { name: "ADR Placeholder" })).toHaveAttribute(
+  expect(screen.getByRole("link", { name: /ADR Placeholder/ })).toHaveAttribute(
     "href",
     "/adr/placeholder"
   );
