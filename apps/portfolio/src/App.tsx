@@ -18,9 +18,9 @@ const Contact = lazy(() => import("./pages/Contact"));
 function App() {
   return (
     <HashRouter>
-      <div className="w-full bg-background text-on-surface">
+      <div className="flex min-h-screen w-full flex-col bg-background text-on-surface">
         <Navbar />
-        <main>
+        <main className="flex flex-1 flex-col">
           <Suspense fallback={null}>
             <Routes>
               <Route path="/" element={<Home />} />

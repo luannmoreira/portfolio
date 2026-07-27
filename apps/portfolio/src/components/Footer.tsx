@@ -6,7 +6,7 @@ const year = new Date().getFullYear();
 
 export default function Footer() {
   return (
-    <footer className="mt-stack-lg w-full border-t border-outline-variant/30 bg-surface py-stack-md print:hidden">
+    <footer className="w-full border-t border-outline-variant/30 bg-surface py-stack-md print:hidden">
       <div className="mx-auto flex max-w-container-max flex-col items-center justify-between gap-4 px-margin-mobile md:flex-row lg:px-gutter">
         <p className="font-label-mono text-label-mono uppercase tracking-widest text-secondary">
           Luann Curioso
