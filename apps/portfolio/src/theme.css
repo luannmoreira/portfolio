@@ -1,124 +1,167 @@
-/* Portfolio-local design tokens, sourced from the Stitch project
-   "Monolithic Minimalist" (projects/1110986051761811461).
-   Dark values are the unprefixed default (matches this site's existing
-   convention — see useTheme.ts); light values override under `.light`,
-   the same convention used by @portfolio/config-tailwind/theme.css. */
-
-@theme {
-  --color-background: #101415;
-  --color-surface: #101415;
-  --color-surface-dim: #101415;
-  --color-surface-bright: #363a3b;
-  --color-surface-container-lowest: #0b0f10;
-  --color-surface-container-low: #191c1e;
-  --color-surface-container: #1d2022;
-  --color-surface-container-high: #272a2c;
-  --color-surface-container-highest: #323537;
-  --color-surface-variant: #323537;
-  --color-on-background: #e0e3e5;
-  --color-on-surface: #e0e3e5;
-  --color-on-surface-variant: #c6c6cd;
-  --color-outline: #909097;
-  --color-outline-variant: #45464d;
-
-  --color-primary: #bec6e0;
-  --color-on-primary: #283044;
-  --color-primary-container: #0f172a;
-  --color-on-primary-container: #798098;
-  --color-secondary: #b9c7e0;
-  --color-on-secondary: #233144;
-  --color-secondary-container: #3c4a5e;
-  --color-on-secondary-container: #abb9d2;
-  --color-tertiary: #dec29a;
-  --color-on-tertiary: #3e2d11;
-  --color-tertiary-container: #231500;
-  --color-on-tertiary-container: #957d5a;
-
-  --color-error: #ffb4ab;
-  --color-on-error: #690005;
-  --color-error-container: #93000a;
-  --color-on-error-container: #ffdad6;
-
-  --color-inverse-surface: #e0e3e5;
-  --color-inverse-on-surface: #2d3133;
-  --color-inverse-primary: #565e74;
-
-  --radius-sm: 0.125rem;
-  --radius-md: 0.25rem;
-  --radius-lg: 0.375rem;
-  --radius-xl: 0.5rem;
-  --radius-2xl: 0.75rem;
-
-  --spacing-unit: 8px;
-  --spacing-stack-sm: 24px;
-  --spacing-stack-md: 48px;
-  --spacing-stack-lg: 80px;
-  --spacing-gutter: 32px;
-  --spacing-margin-mobile: 20px;
-  --container-max: 1120px;
-
-  --font-display: "Hanken Grotesk", sans-serif;
-  --font-headline: "Hanken Grotesk", sans-serif;
-  --font-body: "Inter", sans-serif;
-  --font-label-mono: "JetBrains Mono", monospace;
-
-  --text-display: 48px;
-  --text-headline-lg: 32px;
-  --text-headline-lg-mobile: 24px;
-  --text-headline-md: 20px;
-  --text-body-lg: 18px;
-  --text-body-md: 16px;
-  --text-label-mono: 14px;
-  --text-caption: 12px;
-}
-
-:root.light {
-  --color-background: #f7f9fb;
-  --color-surface: #f7f9fb;
-  --color-surface-dim: #d8dadc;
-  --color-surface-bright: #f7f9fb;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f2f4f6;
-  --color-surface-container: #eceef0;
-  --color-surface-container-high: #e6e8ea;
-  --color-surface-container-highest: #e0e3e5;
-  --color-surface-variant: #e0e3e5;
-  --color-on-background: #191c1e;
-  --color-on-surface: #191c1e;
-  --color-on-surface-variant: #45464d;
-  --color-outline: #76777d;
-  --color-outline-variant: #c6c6cd;
-
-  --color-primary: #000000;
-  --color-on-primary: #ffffff;
-  --color-primary-container: #131b2e;
-  --color-on-primary-container: #7c839b;
-  --color-secondary: #515f74;
-  --color-on-secondary: #ffffff;
-  --color-secondary-container: #d5e3fd;
-  --color-on-secondary-container: #57657b;
-  --color-tertiary: #000000;
-  --color-on-tertiary: #ffffff;
-  --color-tertiary-container: #271901;
-  --color-on-tertiary-container: #98805d;
-
-  --color-error: #ba1a1a;
-  --color-on-error: #ffffff;
-  --color-error-container: #ffdad6;
-  --color-on-error-container: #93000a;
-
-  --color-inverse-surface: #2d3133;
-  --color-inverse-on-surface: #eff1f3;
-  --color-inverse-primary: #bec6e0;
-}
-
 /* Hero's dotted-grid backdrop, from Stitch's `.canvas-bg`. Uses the
    surface-container-highest token directly (not a Tailwind utility) so it
-   reacts to the light/dark override above without duplicating the rule. */
+   reacts to the light/dark override in @portfolio/config-tailwind/theme.css
+   without duplicating the rule. The ::before/::after dot layers below are
+   `position: absolute`, which — with no z-index — the CSS painting order
+   places above normal in-flow content regardless of DOM order. Both set
+   `z-index: -1` so they paint behind DotCanvas's actual children instead
+   of over the buttons/text sitting on top of them. `isolation: isolate`
+   makes .canvas-bg itself form a stacking context so those negative
+   z-indexes stay contained here — otherwise they escape to the nearest
+   ancestor stacking context and can end up painted behind an unrelated
+   sibling's opaque background, i.e. invisible. */
 .canvas-bg {
+  isolation: isolate;
   background-image: radial-gradient(
     var(--color-surface-container-highest) 1px,
     transparent 1px
   );
   background-size: 24px 24px;
+}
+
+/* Ambient "wave": three soft, independently-drifting blobs of the same
+   logo-colored dots (not a straight sweep — each blob wanders its own
+   loose path so the motion reads as organic rather than mechanical),
+   looped via an animated mask so it never needs JS or user input. Sits
+   below the hover shine (::after) so hovering still reads on top. */
+.canvas-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: radial-gradient(#22a39f 2px, transparent 2px);
+  background-size: 24px 24px;
+  -webkit-mask-image:
+    radial-gradient(circle, black 0%, transparent 70%),
+    radial-gradient(circle, black 0%, transparent 70%),
+    radial-gradient(circle, black 0%, transparent 70%);
+  mask-image:
+    radial-gradient(circle, black 0%, transparent 70%),
+    radial-gradient(circle, black 0%, transparent 70%),
+    radial-gradient(circle, black 0%, transparent 70%);
+  -webkit-mask-size:
+    38vmin 38vmin,
+    30vmin 30vmin,
+    24vmin 24vmin;
+  mask-size:
+    38vmin 38vmin,
+    30vmin 30vmin,
+    24vmin 24vmin;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  animation: dot-wave 22s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes dot-wave {
+  0%,
+  100% {
+    -webkit-mask-position:
+      -15% 10%,
+      110% 75%,
+      45% 115%;
+    mask-position:
+      -15% 10%,
+      110% 75%,
+      45% 115%;
+  }
+  25% {
+    -webkit-mask-position:
+      35% 85%,
+      65% 5%,
+      85% 35%;
+    mask-position:
+      35% 85%,
+      65% 5%,
+      85% 35%;
+  }
+  50% {
+    -webkit-mask-position:
+      85% 5%,
+      15% 60%,
+      5% 85%;
+    mask-position:
+      85% 5%,
+      15% 60%,
+      5% 85%;
+  }
+  75% {
+    -webkit-mask-position:
+      40% 90%,
+      90% 25%,
+      55% 5%;
+    mask-position:
+      40% 90%,
+      90% 25%,
+      55% 5%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .canvas-bg::before {
+    animation: none;
+  }
+}
+
+/* Engraved text: no visible plate/card — each text element (a heading,
+   a caption, a label) gets its own tightly-fitted, exactly-background-
+   colored backdrop via an inline wrapper span, so dots simply don't
+   exist in the shape of that text. `box-decoration-break: clone` makes
+   the backdrop resolve per line (not one rectangle sized to the widest
+   line), and the block-direction padding is generous enough that
+   adjacent wrapped lines' backdrops overlap with no gap for a dot to
+   show through between them. On top of that, a two-tone text-shadow
+   (light catching the bottom edge, dark sitting in the "groove" above)
+   makes the glyphs themselves read as pressed into the surface rather
+   than a flat sticker sitting on it. Both shadow layers carry blur —
+   a 0-blur offset shadow is a crisp, near-full-opacity duplicate of the
+   glyphs, which reads as literally doubled/ghosted text on a standard-
+   DPI display at 100% zoom instead of a soft emboss (this bit us: an
+   earlier version used `0 1.5px 0` with no blur on the light layer).
+   `.text-plate-inverse` is the variant for sections rendered with
+   inverted (bg-inverse-surface) colors — same idea, shadow direction
+   flipped for a dark backdrop. */
+.text-plate {
+  background-color: var(--color-background);
+  padding-inline: 0.2em;
+  margin-inline: -0.2em;
+  padding-block: 0.35em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  text-shadow:
+    0 1px 1px rgba(255, 255, 255, 0.6),
+    0 -1px 1px rgba(0, 0, 0, 0.3);
+}
+
+.text-plate-inverse {
+  background-color: var(--color-inverse-surface);
+  text-shadow:
+    0 -1px 1px rgba(0, 0, 0, 0.5),
+    0 1px 1px rgba(255, 255, 255, 0.12);
+}
+
+/* Cursor-follow "shine": a second dot layer, colored to match the logo
+   mark (#22a39f, sampled from assets/logo.png — not a design-system
+   token) and drawn slightly larger, revealed only in a radius around
+   the pointer via a mask. Hero.tsx keeps --dot-x/--dot-y in sync with
+   the mouse (and parks them off-screen on mouse leave), since a
+   background-image can't be :hover-ed dot-by-dot. */
+.canvas-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: radial-gradient(#22a39f 2px, transparent 2px);
+  background-size: 24px 24px;
+  -webkit-mask-image: radial-gradient(
+    circle 90px at var(--dot-x, -9999px) var(--dot-y, -9999px),
+    black 0%,
+    transparent 70%
+  );
+  mask-image: radial-gradient(
+    circle 90px at var(--dot-x, -9999px) var(--dot-y, -9999px),
+    black 0%,
+    transparent 70%
+  );
+  pointer-events: none;
 }
