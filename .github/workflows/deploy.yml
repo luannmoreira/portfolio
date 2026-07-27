@@ -29,6 +29,11 @@ jobs:
 
       - run: pnpm --filter portfolio build
 
+      # Needed at compile time, not just for e2e: rehype-mermaid renders
+      # Mermaid diagrams via a real headless browser during the MDX build,
+      # and this repo's content includes one — matches ci.yml's blog job.
+      - run: pnpm --filter blog exec playwright install --with-deps chromium
+
       - run: pnpm --filter blog build
 
       - name: Deploy portfolio
