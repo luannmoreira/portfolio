@@ -14,11 +14,13 @@
     "preview:blog": "pnpm --filter blog preview",
     "lint:portfolio": "pnpm --filter portfolio lint",
     "lint:blog": "pnpm --filter blog lint",
-    "deploy": "pnpm --filter portfolio deploy",
+    "deploy:portfolio": "pnpm --filter portfolio build && wrangler pages deploy apps/portfolio/dist --project-name luanncurioso-portfolio --branch main",
+    "deploy:blog": "pnpm --filter blog build && wrangler pages deploy apps/blog/dist --project-name luanncurioso-blog --branch main",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
   "devDependencies": {
-    "prettier": "^3.9.6"
+    "prettier": "^3.9.6",
+    "wrangler": "^4.114.0"
   }
 }

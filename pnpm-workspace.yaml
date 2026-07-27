@@ -4,6 +4,8 @@ packages:
 allowBuilds:
   core-js: false
   core-js-pure: false
+  esbuild: true
+  workerd: true
 overrides:
   # Scoped, not blanket: brace-expansion has two live major lines in this
   # tree (1.x via the older minimatch@3, used by @eslint/config-array; 5.x
