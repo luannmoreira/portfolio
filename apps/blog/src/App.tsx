@@ -6,13 +6,16 @@ import ContentIndex from "./components/ContentIndex";
 import Post from "./components/Post";
 import NotFound from "./components/NotFound";
 import ThemeToggle from "./components/ThemeToggle";
+import { useTheme } from "./hooks/useTheme";
 
 function App() {
+  const [theme, toggleTheme] = useTheme();
+
   return (
     <MDXProvider components={mdxComponents}>
       <BrowserRouter>
         <div className="fixed right-4 top-4 z-50">
-          <ThemeToggle />
+          <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
         </div>
         <main>
           <Routes>
