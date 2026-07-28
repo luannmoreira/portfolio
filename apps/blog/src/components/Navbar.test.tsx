@@ -10,12 +10,12 @@ test("renders portfolio anchor links and the internal Blog link", () => {
   );
 
   const expectedAnchorHrefFragments: [string, string][] = [
-    ["Home", "#/"],
-    ["About", "#/about"],
-    ["Skills", "#/about?section=skills"],
-    ["Uses", "#/about?section=uses"],
-    ["Now", "#/?section=now"],
-    ["Contact", "#/contact"],
+    ["Home", "/?theme="],
+    ["About", "/about?theme="],
+    ["Skills", "/about?section=skills&theme="],
+    ["Uses", "/about?section=uses&theme="],
+    ["Now", "/?section=now&theme="],
+    ["Contact", "/contact?theme="],
   ];
 
   // Each item now renders twice — once in the desktop <ul>, once in the
