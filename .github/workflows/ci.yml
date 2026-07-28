@@ -23,6 +23,27 @@ jobs:
 
       - run: pnpm format:check
 
+  ui:
+    name: UI package (lint, typecheck, test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm --filter @portfolio/ui lint
+
+      - run: pnpm --filter @portfolio/ui typecheck
+
+      - run: pnpm --filter @portfolio/ui test
+
   portfolio:
     name: Portfolio (lint, typecheck, test, build)
     runs-on: ubuntu-latest
