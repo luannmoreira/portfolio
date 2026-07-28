@@ -20,8 +20,8 @@ export default function CardProjects({
 }: CardProjectsProps) {
   // Hover affordances (shadow lift, title color shift) only make sense
   // when the card is actually a link — applying them unconditionally made
-  // non-interactive cards (no external `link`, e.g. ShellHub/OS Systems)
-  // look clickable when they weren't.
+  // non-interactive cards (no external `link`, e.g. OS Systems) look
+  // clickable when they weren't.
   const content = (
     <div
       className={`flex h-full flex-col gap-4 rounded-lg border border-outline-variant/30 bg-surface-container-lowest p-stack-sm transition-shadow ${

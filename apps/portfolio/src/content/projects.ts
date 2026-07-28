@@ -14,6 +14,7 @@ export const projects: Project[] = [
       "React",
       "Vue 3",
       "TypeScript",
+      "Golang",
       "Zustand",
       "Vuex",
       "Zod",
@@ -21,6 +22,7 @@ export const projects: Project[] = [
       "REST APIs",
       "Vitest",
     ],
+    link: "https://www.shellhub.io/",
   },
   {
     name: "OS Systems",
