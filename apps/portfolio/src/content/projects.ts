@@ -33,6 +33,7 @@ export const projects: Project[] = [
       "Vue",
       "Angular",
       "TypeScript",
+      "Golang",
       "Electron",
       "Docker",
       "Windows Server",
