@@ -1,6 +1,5 @@
 import { experience } from "../content/experience";
 import { skills } from "../content/skills";
-import { certs } from "../content/certs";
 import { useDocumentMeta } from "../hooks/useDocumentMeta";
 
 // Printable-friendly, not a reskin of the themed components used
@@ -30,13 +29,13 @@ function Resume() {
           <h2 className="font-headline-md text-headline-md">Summary</h2>
           <p className="mt-4 font-body-md text-body-md text-on-surface-variant">
             Software Engineer with 5+ years of experience building production
-            front-end systems in TypeScript, React, and Vue, plus hands-on
-            infrastructure background (network administration, virtualization,
-            Active Directory) from earlier in my career. Focused on reusable
-            architecture, automated testing, accessibility, and developer
-            experience across production, enterprise, and government platforms.
-            Open-source contributor to ShellHub and UpdateHub, AWS Certified
-            Cloud Practitioner.
+            front-end systems in TypeScript, React, Vue, Node.js, Deno, and
+            Golang, plus hands-on infrastructure background (network
+            administration, virtualization, Active Directory) from earlier in my
+            career. Focused on reusable architecture, automated testing,
+            accessibility, and developer experience across production,
+            enterprise, and government platforms. Open-source contributor to
+            ShellHub and UpdateHub, AWS Certified Cloud Practitioner.
           </p>
         </section>
 
@@ -62,17 +61,6 @@ function Resume() {
           <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm">
             {skills.map((skill) => (
               <li key={skill.name}>{skill.name}</li>
-            ))}
-          </ul>
-        </section>
-
-        <section className="mt-stack-md">
-          <h2 className="font-headline-md text-headline-md">Certifications</h2>
-          <ul className="mt-4 flex flex-col gap-2 text-sm">
-            {certs.map((cert) => (
-              <li key={cert.name}>
-                {cert.name} — {cert.issued} ({cert.date})
-              </li>
             ))}
           </ul>
         </section>

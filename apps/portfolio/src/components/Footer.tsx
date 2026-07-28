@@ -11,14 +11,14 @@ export default function Footer() {
         <p className="font-label-mono text-label-mono uppercase tracking-widest text-secondary">
           Luann Curioso
         </p>
-        <ul className="flex items-center gap-6">
+        <ul className="flex items-center gap-4">
           <li>
             <a
               href="https://github.com/luannmoreira"
               rel="noreferrer"
               target="_blank"
               aria-label="GitHub"
-              className="text-on-surface-variant opacity-80 transition-opacity hover:text-primary hover:opacity-100"
+              className="inline-flex items-center justify-center p-2.5 text-on-surface-variant opacity-80 transition-opacity hover:text-primary hover:opacity-100"
             >
               <GithubIcon className="h-6 w-6" />
             </a>
@@ -29,7 +29,7 @@ export default function Footer() {
               rel="noreferrer"
               target="_blank"
               aria-label="LinkedIn"
-              className="text-on-surface-variant opacity-80 transition-opacity hover:text-primary hover:opacity-100"
+              className="inline-flex items-center justify-center p-2.5 text-on-surface-variant opacity-80 transition-opacity hover:text-primary hover:opacity-100"
             >
               <LinkedinIcon className="h-6 w-6" />
             </a>
@@ -40,7 +40,7 @@ export default function Footer() {
               rel="noreferrer"
               target="_blank"
               aria-label="WhatsApp"
-              className="text-on-surface-variant opacity-80 transition-opacity hover:text-primary hover:opacity-100"
+              className="inline-flex items-center justify-center p-2.5 text-on-surface-variant opacity-80 transition-opacity hover:text-primary hover:opacity-100"
             >
               <WhatsappIcon className="h-6 w-6" />
             </a>
