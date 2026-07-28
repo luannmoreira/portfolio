@@ -1,5 +1,12 @@
 @import "tailwindcss";
+/* Tailwind v4's automatic content detection doesn't reach workspace
+   dependencies (packages/ui resolves through a pnpm symlink, outside this
+   app's own source tree) — without this, utility classes used only inside
+   @portfolio/ui's components (e.g. Navbar.tsx's `md:hidden`) never get
+   generated into this app's compiled CSS at all. */
+@source "../../../packages/ui/src";
 @import "@portfolio/config-tailwind/theme.css";
+@import "@portfolio/ui/navbar.css";
 @import "./theme.css";
 
 body {

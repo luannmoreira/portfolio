@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router";
+import { Navbar as SharedNavbar } from "@portfolio/ui";
 import logo from "../assets/logo.png";
 import ThemeToggle from "./ThemeToggle";
 import { useTheme } from "../hooks/useTheme";
@@ -47,9 +48,13 @@ export default function Navbar() {
   const { pathname } = useLocation();
   const [theme, toggleTheme] = useTheme();
 
+  function isActive(item: NavItem) {
+    return Boolean(item.activePath && pathname === item.activePath);
+  }
+
   return (
-    <nav className="fixed top-0 left-0 z-50 w-full border-b border-outline-variant/30 bg-surface/80 px-margin-mobile py-4 backdrop-blur-md lg:px-gutter print:hidden">
-      <div className="mx-auto flex h-16 max-w-container-max items-center justify-between text-on-surface">
+    <SharedNavbar
+      brand={
         <Link to="/" aria-label="Luann Curioso">
           <img
             src={logo}
@@ -59,6 +64,8 @@ export default function Navbar() {
             height={414}
           />
         </Link>
+      }
+      desktopNav={
         <ul className="hidden items-center gap-gutter md:flex">
           {navItems.map((item) =>
             item.external ? (
@@ -75,7 +82,7 @@ export default function Navbar() {
                 <Link
                   to={item.to}
                   className={
-                    item.activePath && pathname === item.activePath
+                    isActive(item)
                       ? "border-b-2 border-primary pb-1 font-bold text-primary"
                       : "text-on-surface-variant transition-colors duration-200 hover:text-primary"
                   }
@@ -86,16 +93,50 @@ export default function Navbar() {
             )
           )}
         </ul>
-        <div className="flex items-center gap-2">
-          <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+      }
+      mobileNav={
+        <div className="flex flex-1 flex-col items-center justify-center gap-8 text-center">
+          {navItems.map((item) =>
+            item.external ? (
+              <a
+                key={item.label}
+                href={withTheme(item.to, theme)}
+                className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface-variant hover:text-primary"
+              >
+                {item.label}
+              </a>
+            ) : (
+              <Link
+                key={item.label}
+                to={item.to}
+                className={
+                  isActive(item)
+                    ? "font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary"
+                    : "font-headline-lg-mobile text-headline-lg-mobile text-on-surface-variant hover:text-primary"
+                }
+              >
+                {item.label}
+              </Link>
+            )
+          )}
+          <div className="my-4 h-px w-full bg-outline-variant/30" />
           <Link
             to="/resume"
-            className="rounded-lg bg-primary px-6 py-2 font-bold text-on-primary transition-opacity hover:opacity-90"
+            className="w-full rounded-lg bg-primary py-4 text-center font-bold uppercase tracking-widest text-on-primary transition-opacity hover:opacity-90"
           >
             Resume
           </Link>
         </div>
-      </div>
-    </nav>
+      }
+      themeToggle={<ThemeToggle theme={theme} toggleTheme={toggleTheme} />}
+      desktopCta={
+        <Link
+          to="/resume"
+          className="rounded-lg bg-primary px-6 py-2 font-bold text-on-primary transition-opacity hover:opacity-90"
+        >
+          Resume
+        </Link>
+      }
+    />
   );
 }

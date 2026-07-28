@@ -15,7 +15,7 @@ function Resume() {
   return (
     <div className="min-h-screen bg-background px-4 pb-stack-lg pt-32 text-on-surface print:bg-white print:px-0 print:py-0 print:text-black">
       <div className="mx-auto max-w-3xl">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="font-headline-lg text-headline-lg">Luann Curioso</h1>
           <button
             type="button"

@@ -1,0 +1,30 @@
+/* Mobile nav overlay reveal, shared by every app's <Navbar>. Circle-clip
+   grows from the top-center (under the hamburger) to fill the viewport —
+   sourced from the Stitch project "Minimal Engineering Portfolio"
+   (projects/1110986051761811461), same mechanism, re-implemented as React
+   state instead of the exported vanilla-JS class toggling. */
+.nav-overlay {
+  clip-path: circle(0% at 50% 0%);
+  transition: clip-path 0.4s ease-in-out;
+}
+
+/* `vmax` here, not Stitch's original `150%` — a percentage <shape-radius>
+   on `circle()` resolves against `sqrt(width² + height²) / sqrt(2)`
+   (per spec), which on a tall, narrow phone viewport (short width, long
+   height) undershoots the actual bottom of the box: measured directly,
+   150% left real content (this overlay's own last few links) outside the
+   clipped, hit-testable area — confirmed via `elementFromPoint`, not just
+   visually. `150vmax` is 150% of the longer viewport axis, comfortably
+   exceeding the box's full diagonal at any aspect ratio. */
+.nav-overlay.active {
+  clip-path: circle(150vmax at 50% 0%);
+}
+
+/* Mirrors apps/portfolio/src/theme.css's .canvas-bg::before precedent:
+   disable the animated property entirely under reduced motion rather than
+   just shortening it. */
+@media (prefers-reduced-motion: reduce) {
+  .nav-overlay {
+    transition: none;
+  }
+}

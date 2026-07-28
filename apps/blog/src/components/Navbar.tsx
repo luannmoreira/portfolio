@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { Navbar as SharedNavbar } from "@portfolio/ui";
 import ThemeToggle from "./ThemeToggle";
 import { useTheme } from "../hooks/useTheme";
 import type { Theme } from "../hooks/useTheme";
@@ -35,7 +36,6 @@ const portfolioNavItems: PortfolioNavItem[] = [
   { label: "Home", to: "/" },
   { label: "About", to: "/about" },
   { label: "Skills", to: "/about?section=skills" },
-  { label: "Courses", to: "/about?section=courses" },
   { label: "Uses", to: "/about?section=uses" },
   { label: "Now", to: "/?section=now" },
   { label: "Contact", to: "/contact" },
@@ -45,14 +45,16 @@ export default function Navbar() {
   const [theme, toggleTheme] = useTheme();
 
   return (
-    <nav className="fixed top-0 left-0 z-50 w-full border-b border-outline-variant/30 bg-surface/80 px-margin-mobile py-4 backdrop-blur-md lg:px-gutter print:hidden">
-      <div className="mx-auto flex h-16 max-w-container-max items-center justify-between text-on-surface">
+    <SharedNavbar
+      brand={
         <Link
           to="/blog"
           className="font-headline-md text-headline-md font-bold text-primary"
         >
           Luann Curioso
         </Link>
+      }
+      desktopNav={
         <ul className="hidden items-center gap-gutter md:flex">
           {portfolioNavItems.map((item) => (
             <li key={item.label}>
@@ -73,10 +75,27 @@ export default function Navbar() {
             </Link>
           </li>
         </ul>
-        <div className="flex items-center gap-2">
-          <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+      }
+      mobileNav={
+        <div className="flex flex-1 flex-col items-center justify-center gap-8 text-center">
+          {portfolioNavItems.map((item) => (
+            <a
+              key={item.label}
+              href={`${withTheme(PORTFOLIO_URL, theme)}#${item.to}`}
+              className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface-variant hover:text-primary"
+            >
+              {item.label}
+            </a>
+          ))}
+          <Link
+            to="/blog"
+            className="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary"
+          >
+            Blog
+          </Link>
         </div>
-      </div>
-    </nav>
+      }
+      themeToggle={<ThemeToggle theme={theme} toggleTheme={toggleTheme} />}
+    />
   );
 }
