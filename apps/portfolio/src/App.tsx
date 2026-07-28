@@ -26,7 +26,11 @@ function App() {
           Skip to content
         </a>
         <Navbar />
-        <main id="main-content" className="flex flex-1 flex-col pt-32">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="flex flex-1 flex-col pt-32 focus:outline-none print:pt-0"
+        >
           <Suspense fallback={null}>
             <Routes>
               <Route path="/" element={<Home />} />

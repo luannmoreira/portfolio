@@ -11,7 +11,12 @@ test.describe("keyboard navigation", () => {
     await expect(skipLink).toBeFocused();
 
     await page.keyboard.press("Enter");
-    await expect(page.locator("#main-content")).toBeVisible();
+    // Visible is true regardless of whether the link actually worked (it's
+    // in the DOM either way) — assert keyboard focus itself moved there,
+    // which is the actual point of a skip link: without a focusable
+    // target (tabindex="-1"), fragment navigation scrolls but leaves focus
+    // wherever it was, so the very next Tab would jump back into the nav.
+    await expect(page.locator("#main-content")).toBeFocused();
   });
 
   test("a keyboard-focused link renders our token-colored focus ring, not just the UA default", async ({
