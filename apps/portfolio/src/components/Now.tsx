@@ -1,8 +1,16 @@
 import { nowItems, nowLastUpdated } from "../content/now";
+import MaterialIcon from "./icons/MaterialIcon";
+import type { MaterialIconName } from "./icons/MaterialIcon";
 
 // https://nownownow.com convention. First item spans 2 columns — it's the
 // meta one (why this site/rewrite exists), the rest are equal-weight.
-const icons = ["engineering", "hub", "cloud", "edit_note", "science"];
+const icons: MaterialIconName[] = [
+  "engineering",
+  "hub",
+  "cloud",
+  "edit_note",
+  "science",
+];
 
 export default function Now() {
   return (
@@ -30,12 +38,10 @@ export default function Now() {
               }`}
             >
               <div className="mb-stack-sm flex items-center gap-3">
-                <span
-                  className="material-symbols-outlined text-primary"
-                  aria-hidden="true"
-                >
-                  {icons[index] ?? "circle"}
-                </span>
+                <MaterialIcon
+                  name={icons[index] ?? "circle"}
+                  className="h-5 w-5 text-primary"
+                />
                 <h3 className="font-headline-md text-headline-md">
                   {item.title}
                 </h3>

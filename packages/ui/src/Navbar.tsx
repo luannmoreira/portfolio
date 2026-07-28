@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { MouseEvent as ReactMouseEvent, ReactNode } from "react";
 import { useFocusTrap } from "./useFocusTrap";
+import MenuIcon from "./MenuIcon";
 
 export interface NavbarProps {
   /** Logo/brand link, rendered first in the desktop row (after the
@@ -83,9 +84,7 @@ export default function Navbar({
           aria-label={isOpen ? "Close menu" : "Open menu"}
           onClick={() => setIsOpen((open) => !open)}
         >
-          <span className="material-symbols-outlined" aria-hidden="true">
-            {isOpen ? "close" : "menu"}
-          </span>
+          <MenuIcon open={isOpen} className="h-6 w-6" />
         </button>
         {brand}
         {desktopNav}

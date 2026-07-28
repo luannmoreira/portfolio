@@ -4,6 +4,7 @@ import Hero from "../components/Hero";
 import Now from "../components/Now";
 import CardProjects from "../components/CardProjects";
 import DotCanvas from "../components/DotCanvas";
+import MaterialIcon from "../components/icons/MaterialIcon";
 import { projects } from "../content/projects";
 import { useDocumentMeta } from "../hooks/useDocumentMeta";
 
@@ -38,9 +39,7 @@ function Home() {
               className="inline-flex items-center gap-2 font-headline-md text-primary transition-all hover:gap-4"
             >
               Explore all projects
-              <span className="material-symbols-outlined" aria-hidden="true">
-                arrow_forward
-              </span>
+              <MaterialIcon name="arrow_forward" className="h-5 w-5" />
             </Link>
           </div>
         </div>

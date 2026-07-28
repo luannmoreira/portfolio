@@ -2,6 +2,7 @@ import DotCanvas from "./DotCanvas";
 import GithubIcon from "./icons/GithubIcon";
 import LinkedinIcon from "./icons/LinkedinIcon";
 import WhatsappIcon from "./icons/WhatsappIcon";
+import MaterialIcon from "./icons/MaterialIcon";
 
 export default function Contact() {
   return (
@@ -40,9 +41,7 @@ export default function Contact() {
               <span className="font-body-md text-body-md">
                 luannmcurioso@gmail.com
               </span>
-              <span className="material-symbols-outlined" aria-hidden="true">
-                arrow_forward
-              </span>
+              <MaterialIcon name="arrow_forward" className="h-5 w-5" />
             </div>
           </a>
 
@@ -66,12 +65,10 @@ export default function Contact() {
                   </h3>
                 </div>
               </div>
-              <span
-                className="material-symbols-outlined text-outline transition-colors group-hover:text-primary"
-                aria-hidden="true"
-              >
-                open_in_new
-              </span>
+              <MaterialIcon
+                name="open_in_new"
+                className="h-5 w-5 text-outline transition-colors group-hover:text-primary"
+              />
             </a>
 
             <a
@@ -93,12 +90,10 @@ export default function Contact() {
                   </h3>
                 </div>
               </div>
-              <span
-                className="material-symbols-outlined text-outline transition-colors group-hover:text-primary"
-                aria-hidden="true"
-              >
-                open_in_new
-              </span>
+              <MaterialIcon
+                name="open_in_new"
+                className="h-5 w-5 text-outline transition-colors group-hover:text-primary"
+              />
             </a>
 
             <a
@@ -120,12 +115,10 @@ export default function Contact() {
                   </h3>
                 </div>
               </div>
-              <span
-                className="material-symbols-outlined text-outline transition-colors group-hover:text-primary"
-                aria-hidden="true"
-              >
-                open_in_new
-              </span>
+              <MaterialIcon
+                name="open_in_new"
+                className="h-5 w-5 text-outline transition-colors group-hover:text-primary"
+              />
             </a>
           </div>
         </section>
