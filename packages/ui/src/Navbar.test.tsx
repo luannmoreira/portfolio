@@ -56,6 +56,20 @@ test("overlay renders a blurred, translucent backdrop separating it from page co
   expect(overlay?.className).toMatch(/bg-surface\/\d{1,2}(?!\d)/);
 });
 
+test("header row stacks above the overlay so it stays visible and clickable while open", () => {
+  renderNavbar();
+  const toggle = screen.getByRole("button", { name: "Open menu" });
+  const headerRow = toggle.parentElement;
+  const overlay = document.getElementById("mobile-nav");
+
+  const headerZ = Number(headerRow?.className.match(/\bz-\[(\d+)\]/)?.[1]);
+  const overlayZ = Number(overlay?.className.match(/\bz-\[(\d+)\]/)?.[1]);
+
+  expect(Number.isNaN(headerZ)).toBe(false);
+  expect(Number.isNaN(overlayZ)).toBe(false);
+  expect(headerZ).toBeGreaterThan(overlayZ);
+});
+
 test("overlay is a labeled dialog for assistive tech", () => {
   renderNavbar();
   const overlay = document.getElementById("mobile-nav");

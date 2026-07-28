@@ -74,7 +74,11 @@ export default function Navbar({
 
   return (
     <nav className="fixed top-0 left-0 z-50 w-full border-b border-outline-variant/30 bg-surface/80 px-margin-mobile py-4 backdrop-blur-md lg:px-gutter print:hidden">
-      <div className="mx-auto flex h-16 max-w-container-max items-center justify-between text-on-surface">
+      {/* z-[95] keeps the hamburger/brand/theme-toggle row above the
+          overlay's z-[90] (Stitch source: header z-100 > overlay z-90) —
+          without this the overlay, painted later in DOM order, covers the
+          only control that can close it. */}
+      <div className="relative z-[95] mx-auto flex h-16 max-w-container-max items-center justify-between text-on-surface">
         <button
           ref={toggleRef}
           type="button"
