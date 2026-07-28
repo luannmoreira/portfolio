@@ -11,6 +11,10 @@ export function useScrollToSection() {
 
   useEffect(() => {
     if (!section) return;
-    document.getElementById(section)?.scrollIntoView({ behavior: "smooth" });
+    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)")
+      .matches
+      ? "auto"
+      : "smooth";
+    document.getElementById(section)?.scrollIntoView({ behavior });
   }, [section]);
 }

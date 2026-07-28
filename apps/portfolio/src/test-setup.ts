@@ -19,3 +19,20 @@ vi.stubGlobal("IntersectionObserver", MockIntersectionObserver);
 // useScrollToSection (anchor nav links) and any test that renders a page
 // using it.
 Element.prototype.scrollIntoView = vi.fn();
+
+// jsdom doesn't implement matchMedia — needed by usePrefersReducedMotion
+// (Reveal) and any test that mounts a component using it. Defaults to "no
+// preference" (matches: false); individual tests override via
+// vi.stubGlobal when they need the reduced-motion branch.
+window.matchMedia =
+  window.matchMedia ||
+  ((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    addListener: () => {},
+    removeListener: () => {},
+    dispatchEvent: () => false,
+  }));

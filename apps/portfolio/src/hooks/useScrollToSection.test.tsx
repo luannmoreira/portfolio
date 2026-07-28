@@ -50,3 +50,31 @@ test("does nothing when the section id doesn't match any element", () => {
     document.getElementById("skills")?.scrollIntoView
   ).not.toHaveBeenCalled();
 });
+
+test("jumps instantly instead of animating when the user prefers reduced motion", () => {
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn().mockImplementation((query: string) => ({
+      matches: query === "(prefers-reduced-motion: reduce)",
+      media: query,
+      onchange: null,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }))
+  );
+
+  render(
+    <MemoryRouter initialEntries={["/about?section=skills"]}>
+      <Page />
+    </MemoryRouter>
+  );
+
+  expect(
+    document.getElementById("skills")?.scrollIntoView
+  ).toHaveBeenCalledWith({ behavior: "auto" });
+
+  vi.unstubAllGlobals();
+});

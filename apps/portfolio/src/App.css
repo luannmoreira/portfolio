@@ -1,5 +1,4 @@
 html {
-  scroll-behavior: smooth;
   background-color: #0a0d11;
 }
 html.light {
@@ -9,6 +8,12 @@ html,
 body {
   max-width: 100%;
   overflow-x: hidden;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 /* Global keyboard-focus ring — token-driven so it stays correct in both
@@ -21,6 +26,3 @@ button:focus-visible,
   outline-offset: 2px;
   border-radius: 2px;
 }
-/* Global keyboard-focus ring — token-driven so it stays correct in both
-   themes, applied broadly rather than per-component since no interactive
-   element in this codebase had a designed focus style before this. */

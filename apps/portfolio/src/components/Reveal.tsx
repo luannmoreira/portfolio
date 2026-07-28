@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { useInView } from "../hooks/useInView";
+import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
 
 type RevealVariant = "fade-up" | "fade-left" | "fade-right" | "flip-right";
 
@@ -26,6 +27,19 @@ export default function Reveal({
   children,
 }: RevealProps) {
   const { ref, isInView } = useInView<HTMLDivElement>({ offset });
+  const prefersReducedMotion = usePrefersReducedMotion();
+
+  if (prefersReducedMotion) {
+    return (
+      <div
+        ref={ref}
+        className={className}
+        style={{ opacity: 1, transform: "none", transition: "none" }}
+      >
+        {children}
+      </div>
+    );
+  }
 
   return (
     <div
