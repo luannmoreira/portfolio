@@ -17,7 +17,7 @@ function About() {
   );
 
   return (
-    <div className="mx-auto max-w-container-max px-margin-mobile pt-32 md:px-gutter">
+    <div className="mx-auto max-w-container-max px-margin-mobile md:px-gutter">
       <AboutSection />
       <Habilidades />
       <Principles />

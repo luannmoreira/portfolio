@@ -5,7 +5,7 @@ import WhatsappIcon from "./icons/WhatsappIcon";
 
 export default function Contact() {
   return (
-    <DotCanvas className="flex-1 pb-stack-lg pt-32">
+    <DotCanvas className="flex-1 pb-stack-lg">
       <div className="mx-auto max-w-container-max px-margin-mobile md:px-gutter">
         <section className="mb-stack-lg">
           <h1 className="mb-stack-sm max-w-2xl font-display text-display">
