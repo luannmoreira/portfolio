@@ -1,6 +1,9 @@
 {
-  "name": "Portfolio LuannDev",
-  "short_name": "Portfolio",
+  "name": "Luann Curioso",
+  "short_name": "Luann",
+  "description": "Luann Curioso's portfolio — software engineer with production front-end experience and an infrastructure background.",
+  "start_url": "/",
+  "id": "/",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
@@ -13,7 +16,7 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
+  "theme_color": "#101415",
+  "background_color": "#101415",
   "display": "standalone"
 }

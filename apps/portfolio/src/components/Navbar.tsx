@@ -58,7 +58,7 @@ export default function Navbar() {
           <img
             src={logo}
             className="App-logo w-12 rounded-full"
-            alt="logo"
+            alt=""
             width={503}
             height={414}
           />

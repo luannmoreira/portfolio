@@ -60,9 +60,9 @@ export default function Contact() {
                   <span className="block font-label-mono text-label-mono uppercase text-secondary">
                     Professional
                   </span>
-                  <h3 className="font-headline-md text-headline-md text-primary">
+                  <h2 className="font-headline-md text-headline-md text-primary">
                     LinkedIn
-                  </h3>
+                  </h2>
                 </div>
               </div>
               <MaterialIcon
@@ -85,9 +85,9 @@ export default function Contact() {
                   <span className="block font-label-mono text-label-mono uppercase text-secondary">
                     Development
                   </span>
-                  <h3 className="font-headline-md text-headline-md text-primary">
+                  <h2 className="font-headline-md text-headline-md text-primary">
                     GitHub
-                  </h3>
+                  </h2>
                 </div>
               </div>
               <MaterialIcon
@@ -110,9 +110,9 @@ export default function Contact() {
                   <span className="block font-label-mono text-label-mono uppercase text-secondary">
                     Direct
                   </span>
-                  <h3 className="font-headline-md text-headline-md text-primary">
+                  <h2 className="font-headline-md text-headline-md text-primary">
                     WhatsApp
-                  </h3>
+                  </h2>
                 </div>
               </div>
               <MaterialIcon
