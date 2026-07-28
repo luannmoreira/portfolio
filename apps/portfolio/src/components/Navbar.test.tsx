@@ -13,7 +13,6 @@ test("renders route and anchor nav links with the expected destinations", () => 
     ["Home", "/"],
     ["About", "/about"],
     ["Skills", "/about?section=skills"],
-    ["Courses", "/about?section=courses"],
     ["Uses", "/about?section=uses"],
     ["Now", "/?section=now"],
     ["Contact", "/contact"],

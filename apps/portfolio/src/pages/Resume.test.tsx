@@ -16,12 +16,6 @@ test("renders each skill", () => {
   expect(screen.getByText(/Docker/)).toBeInTheDocument();
 });
 
-test("renders each certification", () => {
-  render(<Resume />);
-
-  expect(screen.getByText(/Harvard CS50/)).toBeInTheDocument();
-});
-
 test("offers a print button", () => {
   render(<Resume />);
 

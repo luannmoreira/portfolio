@@ -41,7 +41,6 @@ test("About page renders philosophy, skills, principles, and experience content"
   expect(
     screen.getByRole("heading", { name: "Hardware & Software" })
   ).toBeInTheDocument();
-  expect(screen.getByRole("heading", { name: "Courses" })).toBeInTheDocument();
   expect(
     screen.queryByRole("heading", { name: "Building systems that scale." })
   ).not.toBeInTheDocument();

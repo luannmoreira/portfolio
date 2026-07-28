@@ -8,8 +8,8 @@ import Home from "./pages/Home";
 // Lazy — Home is the landing route (loaded eagerly above so the first
 // paint isn't gated on a chunk fetch); the rest split into their own
 // chunks, fetched on navigation. /now, /uses, and /certifications all
-// folded into Home/About as anchor sections rather than routes — skills,
-// courses, and the uses/workspace section all live on /about now.
+// folded into Home/About as anchor sections rather than routes — skills
+// and the uses/workspace section live on /about now.
 const About = lazy(() => import("./pages/About"));
 const Resume = lazy(() => import("./pages/Resume"));
 const Projects = lazy(() => import("./pages/Projects"));

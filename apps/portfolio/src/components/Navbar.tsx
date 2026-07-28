@@ -37,7 +37,6 @@ const navItems: NavItem[] = [
   { label: "Home", to: "/", activePath: "/" },
   { label: "About", to: "/about", activePath: "/about" },
   { label: "Skills", to: "/about?section=skills" },
-  { label: "Courses", to: "/about?section=courses" },
   { label: "Uses", to: "/about?section=uses" },
   { label: "Now", to: "/?section=now" },
   { label: "Contact", to: "/contact", activePath: "/contact" },

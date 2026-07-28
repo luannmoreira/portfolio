@@ -5,9 +5,7 @@ import Habilidades from "../components/Habilidades";
 import Principles from "../components/Principles";
 import Experiencia from "../components/Experiencia";
 import Uses from "../components/Uses";
-import CardCerts from "../components/CardCerts";
 import DotCanvas from "../components/DotCanvas";
-import { certs } from "../content/certs";
 import { useDocumentMeta } from "../hooks/useDocumentMeta";
 import { useScrollToSection } from "../hooks/useScrollToSection";
 
@@ -50,22 +48,6 @@ function About() {
             {"\n"}
             {"}"};
           </pre>
-        </div>
-      </section>
-
-      <section id="courses" className="mb-stack-lg scroll-mt-32">
-        <div className="mb-stack-sm flex items-center gap-4">
-          <h2 className="font-headline-lg text-headline-lg">Courses</h2>
-          <div className="h-px flex-grow bg-outline-variant/30" />
-        </div>
-        <p className="mb-stack-sm max-w-2xl font-body-md text-body-md text-on-surface-variant">
-          Course completions, not professional certifications — a record of
-          self-directed learning along the way.
-        </p>
-        <div className="grid grid-cols-1 gap-gutter md:grid-cols-3">
-          {certs.map((cert) => (
-            <CardCerts key={cert.name} {...cert} />
-          ))}
         </div>
       </section>
 
