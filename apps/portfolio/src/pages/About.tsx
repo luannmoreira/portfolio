@@ -12,7 +12,7 @@ import { useScrollToSection } from "../hooks/useScrollToSection";
 function About() {
   useScrollToSection();
   useDocumentMeta(
-    "About — Luann Curioso",
+    "About • Luann Curioso",
     "Background, skills, experience, and the tools used day to day — from infrastructure and government systems to production front-end engineering at ShellHub and OS Systems."
   );
 

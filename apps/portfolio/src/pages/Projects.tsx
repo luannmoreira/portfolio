@@ -4,7 +4,7 @@ import { useDocumentMeta } from "../hooks/useDocumentMeta";
 
 function Projects() {
   useDocumentMeta(
-    "Projects — Luann Curioso",
+    "Projects • Luann Curioso",
     "Production engineering work — architecture, maintainability, and long-term thinking, not just UI."
   );
 

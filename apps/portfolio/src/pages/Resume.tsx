@@ -7,7 +7,7 @@ import { useDocumentMeta } from "../hooks/useDocumentMeta";
 // print button, since none of that belongs in a printed/PDF resume.
 function Resume() {
   useDocumentMeta(
-    "Resume — Luann Curioso",
+    "Resume • Luann Curioso",
     "Luann Curioso's resume — experience and skills, production front-end work with an infrastructure background."
   );
 
