@@ -1,6 +1,5 @@
 import { Link, useLocation } from "react-router";
 import { Navbar as SharedNavbar } from "@portfolio/ui";
-import logo from "../assets/logo.png";
 import ThemeToggle from "./ThemeToggle";
 import { useTheme } from "../hooks/useTheme";
 import type { Theme } from "../hooks/useTheme";
@@ -55,14 +54,11 @@ export default function Navbar() {
   return (
     <SharedNavbar
       brand={
-        <Link to="/" aria-label="Luann Curioso">
-          <img
-            src={logo}
-            className="App-logo w-12 rounded-full"
-            alt=""
-            width={503}
-            height={414}
-          />
+        <Link
+          to="/"
+          className="font-headline-md text-headline-md font-bold text-primary"
+        >
+          Luann Curioso
         </Link>
       }
       desktopNav={
