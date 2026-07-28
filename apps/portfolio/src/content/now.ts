@@ -30,4 +30,9 @@ export const nowItems: NowItem[] = [
     description:
       "A deliberately simple notification system — the twist is building it with genuinely cutting-edge, trending technology to show off architectural thinking on the simplest possible problem.",
   },
+  {
+    title: "Building a flexibility app for men",
+    description:
+      "A stretch and mobility app built around men's musculature specifically — most fitness apps treat flexibility as an afterthought, this one doesn't.",
+  },
 ];

@@ -10,6 +10,7 @@ const icons: MaterialIconName[] = [
   "cloud",
   "edit_note",
   "science",
+  "self_improvement",
 ];
 
 export default function Now() {
