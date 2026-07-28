@@ -50,24 +50,48 @@ test("overlay renders a blurred, translucent backdrop separating it from page co
   const overlay = document.getElementById("mobile-nav");
 
   expect(overlay?.className).toMatch(/backdrop-blur/);
-  // Fully opaque (no alpha channel, e.g. bg-surface/100) would mean no
-  // page content shows through at all — /\d{1,2}(?!\d)/ excludes that,
-  // matching only a genuine 1-99% alpha value.
-  expect(overlay?.className).toMatch(/bg-surface\/\d{1,2}(?!\d)/);
+  // Must be a genuinely elevated surface tone, not `bg-surface`/`bg-background`
+  // (identical hex values in packages/config-tailwind/theme.css) — painting
+  // the page's own background color over itself is visually indistinguishable
+  // from no backdrop at all, however translucent or blurred.
+  expect(overlay?.className).not.toMatch(/bg-surface\/\d/);
+  expect(overlay?.className).toMatch(/bg-surface-container\/\d{1,2}(?!\d)/);
 });
 
-test("header row stacks above the overlay so it stays visible and clickable while open", () => {
+test("the element carrying backdrop-blur also carries the z-index that beats the overlay", () => {
+  // backdrop-filter creates its own stacking context, so a z-index set on
+  // some *descendant* of the blurred element is scoped inside that context
+  // and never actually competes with the overlay's z-[90] sibling — the
+  // header would still paint under the overlay once open despite a
+  // technically-higher z-index somewhere inside it. The blur and the
+  // stacking z-index must live on the very same element.
   renderNavbar();
   const toggle = screen.getByRole("button", { name: "Open menu" });
-  const headerRow = toggle.parentElement;
   const overlay = document.getElementById("mobile-nav");
 
-  const headerZ = Number(headerRow?.className.match(/\bz-\[(\d+)\]/)?.[1]);
+  let blurredAncestor = toggle.parentElement;
+  while (blurredAncestor && !/\bbackdrop-blur/.test(blurredAncestor.className)) {
+    blurredAncestor = blurredAncestor.parentElement;
+  }
+
+  const headerZ = Number(blurredAncestor?.className.match(/\bz-\[(\d+)\]/)?.[1]);
   const overlayZ = Number(overlay?.className.match(/\bz-\[(\d+)\]/)?.[1]);
 
+  expect(blurredAncestor).not.toBeNull();
   expect(Number.isNaN(headerZ)).toBe(false);
   expect(Number.isNaN(overlayZ)).toBe(false);
   expect(headerZ).toBeGreaterThan(overlayZ);
+});
+
+test("<nav> itself carries no filter/backdrop-filter/transform", () => {
+  // Any of those on <nav> makes it the containing block for its
+  // position:fixed overlay child, so the overlay's `inset-0` resolves
+  // against <nav>'s own ~96px content box instead of the real viewport —
+  // collapsing the mobile menu to a sliver hidden behind the header instead
+  // of covering the screen.
+  renderNavbar();
+  const nav = document.querySelector("nav");
+  expect(nav?.className).not.toMatch(/\b(backdrop-blur|blur|transform|scale|rotate|translate)-/);
 });
 
 test("overlay is a labeled dialog for assistive tech", () => {
