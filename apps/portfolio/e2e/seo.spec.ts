@@ -10,15 +10,18 @@ test.describe("SEO metadata", () => {
       "href",
       "https://luanncurioso-portfolio.pages.dev/"
     );
-    await expect(
-      page.locator('meta[property="og:title"]')
-    ).toHaveAttribute("content", "Luann Curioso");
-    await expect(
-      page.locator('meta[property="og:type"]')
-    ).toHaveAttribute("content", "website");
-    await expect(
-      page.locator('meta[name="twitter:card"]')
-    ).toHaveAttribute("content", "summary_large_image");
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+      "content",
+      "Luann Curioso"
+    );
+    await expect(page.locator('meta[property="og:type"]')).toHaveAttribute(
+      "content",
+      "website"
+    );
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
+      "content",
+      "summary"
+    );
 
     const jsonLd = await page
       .locator('script[type="application/ld+json"]')

@@ -21,12 +21,18 @@
       property="og:description"
       content="Luann Curioso's portfolio — software engineer with production front-end experience and an infrastructure background, from ShellHub to government platforms."
     />
-    <meta property="og:url" content="https://luanncurioso-portfolio.pages.dev/" />
+    <meta
+      property="og:url"
+      content="https://luanncurioso-portfolio.pages.dev/"
+    />
     <meta
       property="og:image"
       content="https://luanncurioso-portfolio.pages.dev/apple-touch-icon.png"
     />
-    <meta name="twitter:card" content="summary_large_image" />
+    <!-- "summary", not "summary_large_image" — apple-touch-icon.png is
+         180x180, below Twitter's >=300x157 minimum for the large-image
+         card, but comfortably above the 144x144 minimum for "summary". -->
+    <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Luann Curioso" />
     <meta
       name="twitter:description"

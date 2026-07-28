@@ -12,7 +12,11 @@ const SITE_URL = "https://luanncurioso-portfolio.pages.dev";
 // crawlers actually see.
 const DEFAULT_OG_IMAGE = `${SITE_URL}/apple-touch-icon.png`;
 
-function setMetaByAttr(attr: "name" | "property", key: string, content: string) {
+function setMetaByAttr(
+  attr: "name" | "property",
+  key: string,
+  content: string
+) {
   let meta = document.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
   if (!meta) {
     meta = document.createElement("meta");
@@ -42,7 +46,15 @@ export function useDocumentMeta(title: string, description?: string) {
   }, [title]);
 
   useEffect(() => {
-    if (!description) return;
+    // Every current page passes a description, but a future route that
+    // doesn't shouldn't keep showing the *previous* route's description —
+    // clear all three tags rather than silently leaving stale content.
+    if (!description) {
+      document.querySelector('meta[name="description"]')?.remove();
+      document.querySelector('meta[property="og:description"]')?.remove();
+      document.querySelector('meta[name="twitter:description"]')?.remove();
+      return;
+    }
 
     let meta = document.querySelector<HTMLMetaElement>(
       'meta[name="description"]'
@@ -64,7 +76,10 @@ export function useDocumentMeta(title: string, description?: string) {
     setMetaByAttr("property", "og:url", url);
     setMetaByAttr("property", "og:type", "website");
     setMetaByAttr("property", "og:image", DEFAULT_OG_IMAGE);
-    setMetaByAttr("name", "twitter:card", "summary_large_image");
+    // "summary", not "summary_large_image" — matches index.html's static
+    // baseline tags: DEFAULT_OG_IMAGE is a 180x180 icon, below Twitter's
+    // large-image card minimum (300x157) but well above summary's (144x144).
+    setMetaByAttr("name", "twitter:card", "summary");
     setMetaByAttr("name", "twitter:image", DEFAULT_OG_IMAGE);
   }, [pathname]);
 }

@@ -50,10 +50,32 @@ test("updates an existing meta description tag's content", () => {
   );
 });
 
-test("leaves the meta description untouched when none is given", () => {
+test("leaves the meta description absent when none is given and none existed", () => {
   renderHook(() => useDocumentMeta("Resume"), { wrapper: wrapper() });
 
   expect(document.querySelector('meta[name="description"]')).toBeNull();
+});
+
+test("clears a stale description (and its og/twitter mirrors) when a later render omits it", () => {
+  const { rerender } = renderHook(
+    ({ description }: { description: string | undefined }) =>
+      useDocumentMeta("Resume", description),
+    {
+      wrapper: wrapper(),
+      initialProps: { description: "Old description." as string | undefined },
+    }
+  );
+
+  expect(document.querySelector('meta[name="description"]')).toHaveAttribute(
+    "content",
+    "Old description."
+  );
+
+  rerender({ description: undefined });
+
+  expect(document.querySelector('meta[name="description"]')).toBeNull();
+  expect(document.querySelector('meta[property="og:description"]')).toBeNull();
+  expect(document.querySelector('meta[name="twitter:description"]')).toBeNull();
 });
 
 test("sets Open Graph and Twitter Card tags from title and description", () => {
@@ -75,9 +97,10 @@ test("sets Open Graph and Twitter Card tags from title and description", () => {
   expect(
     document.querySelector('meta[name="twitter:description"]')
   ).toHaveAttribute("content", "My resume.");
-  expect(
-    document.querySelector('meta[name="twitter:card"]')
-  ).toHaveAttribute("content", "summary_large_image");
+  expect(document.querySelector('meta[name="twitter:card"]')).toHaveAttribute(
+    "content",
+    "summary"
+  );
 });
 
 test("sets a canonical link and og:url from the current route", () => {
