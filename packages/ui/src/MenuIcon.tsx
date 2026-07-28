@@ -4,8 +4,7 @@
 // the hamburger toggle's two glyphs.
 const PATHS = {
   menu: "M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z",
-  close:
-    "m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z",
+  back: "M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z",
 };
 
 interface MenuIconProps {
@@ -22,7 +21,7 @@ export default function MenuIcon({ open, className }: MenuIconProps) {
       aria-hidden="true"
       focusable="false"
     >
-      <path d={PATHS[open ? "close" : "menu"]} />
+      <path d={PATHS[open ? "back" : "menu"]} />
     </svg>
   );
 }
