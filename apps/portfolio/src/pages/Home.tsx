@@ -7,8 +7,10 @@ import DotCanvas from "../components/DotCanvas";
 import MaterialIcon from "../components/icons/MaterialIcon";
 import { projects } from "../content/projects";
 import { useDocumentMeta } from "../hooks/useDocumentMeta";
+import { useScrollToSection } from "../hooks/useScrollToSection";
 
 function Home() {
+  useScrollToSection();
   useDocumentMeta(
     "Luann Curioso",
     "Luann Curioso's portfolio — software engineer with production front-end experience and an infrastructure background, from ShellHub to government platforms."

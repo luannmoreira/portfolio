@@ -18,9 +18,21 @@ export default function CardProjects({
   link,
   animate = true,
 }: CardProjectsProps) {
+  // Hover affordances (shadow lift, title color shift) only make sense
+  // when the card is actually a link — applying them unconditionally made
+  // non-interactive cards (no external `link`, e.g. ShellHub/OS Systems)
+  // look clickable when they weren't.
   const content = (
-    <div className="flex h-full flex-col gap-4 rounded-lg border border-outline-variant/30 bg-surface-container-lowest p-stack-sm transition-shadow hover:shadow-xl">
-      <h3 className="font-headline-md text-headline-md text-on-background transition-colors group-hover:text-primary">
+    <div
+      className={`flex h-full flex-col gap-4 rounded-lg border border-outline-variant/30 bg-surface-container-lowest p-stack-sm transition-shadow ${
+        link ? "hover:shadow-xl" : ""
+      }`}
+    >
+      <h3
+        className={`font-headline-md text-headline-md text-on-background transition-colors ${
+          link ? "group-hover:text-primary" : ""
+        }`}
+      >
         {name}
       </h3>
       <p className="font-body-md text-body-md leading-relaxed text-on-surface-variant">
@@ -48,7 +60,7 @@ export default function CardProjects({
   );
 
   if (!link) {
-    return <div className="group h-full">{card}</div>;
+    return <div className="h-full">{card}</div>;
   }
 
   return (

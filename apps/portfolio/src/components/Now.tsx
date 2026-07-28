@@ -14,7 +14,10 @@ const icons: MaterialIconName[] = [
 
 export default function Now() {
   return (
-    <section id="now" className="bg-surface-container-lowest py-stack-lg">
+    <section
+      id="now"
+      className="scroll-mt-32 bg-surface-container-lowest py-stack-lg"
+    >
       <div className="mx-auto max-w-container-max px-margin-mobile md:px-gutter">
         <div className="mb-stack-md flex flex-col items-end justify-between gap-4 md:flex-row">
           <div>
@@ -33,7 +36,7 @@ export default function Now() {
           {nowItems.map((item, index) => (
             <div
               key={item.title}
-              className={`rounded-xl border border-outline-variant/30 bg-surface p-stack-sm transition-all hover:border-primary/20 ${
+              className={`rounded-xl border border-outline-variant/30 bg-surface p-stack-sm ${
                 index === 0 ? "md:col-span-2" : ""
               }`}
             >

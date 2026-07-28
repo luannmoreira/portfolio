@@ -54,6 +54,29 @@ test.describe("page navigation", () => {
     await expect(
       page.getByRole("heading", { name: "Now", level: 2 })
     ).toBeVisible();
+
+    // The heading is always technically "visible" whether or not the page
+    // actually scrolled to it — Now sits well below the fold on Home
+    // regardless, so a stale scroll position (still at the top) wouldn't
+    // fail a mere "is it on screen somewhere below the nav" check. Assert
+    // the browser actually scrolled, and that the heading landed inside
+    // the viewport near the top (not the initial y=0 position). Polls
+    // because scrollIntoView({ behavior: "smooth" }) animates over time —
+    // reading window.scrollY synchronously right after the click would
+    // race the animation's start.
+    await expect
+      .poll(() => page.evaluate(() => window.scrollY))
+      .toBeGreaterThan(0);
+
+    const navBox = await page.getByRole("navigation").boundingBox();
+    const headingBox = await page
+      .getByRole("heading", { name: "Now", level: 2 })
+      .boundingBox();
+    expect(navBox).not.toBeNull();
+    expect(headingBox).not.toBeNull();
+    expect(headingBox!.y).toBeGreaterThanOrEqual(navBox!.y + navBox!.height);
+    const viewportHeight = page.viewportSize()!.height;
+    expect(headingBox!.y).toBeLessThan(viewportHeight);
   });
 
   test("Resume page renders real experience content and a print button", async ({
