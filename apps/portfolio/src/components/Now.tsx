@@ -20,7 +20,11 @@ export default function Now() {
     >
       <div className="mx-auto max-w-container-max px-margin-mobile md:px-gutter">
         <div className="mb-stack-md flex flex-col items-end justify-between gap-4 md:flex-row">
-          <div>
+          {/* self-start overrides the row's items-end on mobile (flex-col),
+              where it was right-aligning this block along with "Last
+              updated" — self-auto at md: reverts to inheriting items-end
+              for the desktop row layout, unchanged. */}
+          <div className="self-start md:self-auto">
             <span className="mb-2 block font-label-mono text-label-mono uppercase tracking-widest text-secondary">
               Current Focus
             </span>
