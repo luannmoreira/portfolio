@@ -48,7 +48,8 @@ test.describe("mobile nav overlay", () => {
       const computed = getComputedStyle(el);
       return {
         backdropFilter:
-          computed.backdropFilter || computed.getPropertyValue("-webkit-backdrop-filter"),
+          computed.backdropFilter ||
+          computed.getPropertyValue("-webkit-backdrop-filter"),
         backgroundColor: computed.backgroundColor,
       };
     });
@@ -62,7 +63,11 @@ test.describe("mobile nav overlay", () => {
 
   test("overlay is a dialog with an accessible name", async ({ page }) => {
     await page.getByRole("button", { name: "Open menu" }).click();
-    await expect(page.getByRole("dialog")).toBeVisible();
+
+    // getByRole("dialog") with no `name` option would match any dialog
+    // regardless of whether it's actually labeled — pass the expected
+    // name so this fails if aria-label ever goes missing or empty.
+    await expect(page.getByRole("dialog", { name: "Main menu" })).toBeVisible();
   });
 
   test("Escape closes the overlay", async ({ page }) => {

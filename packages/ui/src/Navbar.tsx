@@ -100,7 +100,7 @@ export default function Navbar({
         id={id}
         ref={overlayRef}
         role="dialog"
-        aria-modal="true"
+        aria-modal={isOpen || undefined}
         aria-label="Main menu"
         className={`nav-overlay fixed inset-0 z-[90] flex flex-col bg-surface/95 px-margin-mobile pt-24 backdrop-blur-lg md:hidden ${
           isOpen ? "active" : ""
