@@ -30,12 +30,16 @@ module.exports = [
     // browser-facing src/ ruleset from the shared config (no React/JSX
     // here). Not extracted into @portfolio/config-eslint — this shape is
     // portfolio-specific until blog actually needs the identical thing.
+    // Both global sets: specs also pass page.evaluate() callbacks that
+    // execute in-browser (document, getComputedStyle, etc.), inline in
+    // the same file as the Node-side test code.
     files: ["playwright.config.ts", "e2e/**/*.ts"],
     languageOptions: {
       sourceType: "module",
       parser: tseslint.parser,
       globals: {
         ...globals.node,
+        ...globals.browser,
       },
     },
   },

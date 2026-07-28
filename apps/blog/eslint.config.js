@@ -28,13 +28,16 @@ module.exports = [
   {
     // playwright.config.ts and the e2e specs run under Node, not the
     // browser-facing src/ ruleset from the shared config (no React/JSX
-    // here).
+    // here). Both global sets: specs also pass page.evaluate() callbacks
+    // that execute in-browser (document, getComputedStyle, etc.), inline
+    // in the same file as the Node-side test code.
     files: ["playwright.config.ts", "e2e/**/*.ts"],
     languageOptions: {
       sourceType: "module",
       parser: tseslint.parser,
       globals: {
         ...globals.node,
+        ...globals.browser,
       },
     },
   },
