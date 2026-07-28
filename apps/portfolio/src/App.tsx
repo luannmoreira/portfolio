@@ -19,6 +19,12 @@ function App() {
   return (
     <BrowserRouter>
       <div className="flex min-h-screen w-full flex-col bg-background text-on-surface">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:font-bold focus:text-on-primary"
+        >
+          Skip to content
+        </a>
         <Navbar />
         <main id="main-content" className="flex flex-1 flex-col pt-32">
           <Suspense fallback={null}>
