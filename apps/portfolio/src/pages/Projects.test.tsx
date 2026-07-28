@@ -1,8 +1,17 @@
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router";
 import Projects from "./Projects";
 
+function renderProjects() {
+  return render(
+    <MemoryRouter>
+      <Projects />
+    </MemoryRouter>
+  );
+}
+
 test("renders every real project entry", () => {
-  render(<Projects />);
+  renderProjects();
 
   expect(screen.getByRole("heading", { name: "ShellHub" })).toBeInTheDocument();
   expect(
@@ -14,7 +23,7 @@ test("renders every real project entry", () => {
 });
 
 test("links out to Invest MT", () => {
-  render(<Projects />);
+  renderProjects();
 
   const link = screen.getByRole("link", { name: /SEDEC \/ Invest MT/ });
   expect(link).toHaveAttribute("href", "https://www.investmt.com.br/pt-br");
