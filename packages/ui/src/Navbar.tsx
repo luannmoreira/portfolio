@@ -96,11 +96,14 @@ export default function Navbar({
           ) : null}
         </div>
       </div>
-      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- this div isn't itself interactive; it only delegates bubbled clicks from its child <a> links (already natively keyboard-operable) to close the overlay. */}
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- this div isn't itself interactive; it only delegates bubbled clicks from its child <a> links (already natively keyboard-operable) to close the overlay. The dialog role is for AT semantics, not for direct interaction. */}
       <div
         id={id}
         ref={overlayRef}
-        className={`nav-overlay fixed inset-0 z-[90] flex flex-col bg-surface px-margin-mobile pt-24 md:hidden ${
+        role="dialog"
+        aria-modal="true"
+        aria-label="Main menu"
+        className={`nav-overlay fixed inset-0 z-[90] flex flex-col bg-surface/95 px-margin-mobile pt-24 backdrop-blur-lg md:hidden ${
           isOpen ? "active" : ""
         }`}
         onClick={handleOverlayClick}

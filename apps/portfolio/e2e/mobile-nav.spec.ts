@@ -32,10 +32,37 @@ test.describe("mobile nav overlay", () => {
       .getByRole("link", { name: "About", exact: true })
       .click();
 
-    await expect(page).toHaveURL(/#\/about$/);
+    await expect(page).toHaveURL(/\/about$/);
     await expect(
       page.getByRole("button", { name: "Open menu" })
     ).toHaveAttribute("aria-expanded", "false");
+  });
+
+  test("open overlay renders a blurred, translucent backdrop", async ({
+    page,
+  }) => {
+    await page.getByRole("button", { name: "Open menu" }).click();
+
+    const overlay = page.locator("#mobile-nav");
+    const style = await overlay.evaluate((el) => {
+      const computed = getComputedStyle(el);
+      return {
+        backdropFilter:
+          computed.backdropFilter || computed.getPropertyValue("-webkit-backdrop-filter"),
+        backgroundColor: computed.backgroundColor,
+      };
+    });
+
+    expect(style.backdropFilter).not.toBe("none");
+    // rgb(...) with no alpha channel would mean fully opaque — assert an
+    // alpha-carrying color (rgba(...) or color(... / N)) so page content
+    // genuinely shows through, not just a blurred solid panel.
+    expect(style.backgroundColor).toMatch(/rgba|\/\s*0?\.\d+\s*\)/);
+  });
+
+  test("overlay is a dialog with an accessible name", async ({ page }) => {
+    await page.getByRole("button", { name: "Open menu" }).click();
+    await expect(page.getByRole("dialog")).toBeVisible();
   });
 
   test("Escape closes the overlay", async ({ page }) => {
@@ -70,7 +97,7 @@ test.describe("mobile nav overlay", () => {
       .getByRole("link", { name: "Resume", exact: true })
       .click();
 
-    await expect(page).toHaveURL(/#\/resume$/);
+    await expect(page).toHaveURL(/\/resume$/);
   });
 
   test(".text-plate headings keep enough line-height to avoid clipping on wrap", async ({

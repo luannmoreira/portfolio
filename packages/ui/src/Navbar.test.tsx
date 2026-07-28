@@ -45,6 +45,25 @@ test("hamburger toggle flips aria-expanded and the overlay's active class", asyn
   expect(overlay).toHaveClass("active");
 });
 
+test("overlay renders a blurred, translucent backdrop separating it from page content", () => {
+  renderNavbar();
+  const overlay = document.getElementById("mobile-nav");
+
+  expect(overlay?.className).toMatch(/backdrop-blur/);
+  // Fully opaque (no alpha channel) would mean no page content shows
+  // through at all — this asserts it's translucent, not just blurred.
+  expect(overlay?.className).toMatch(/bg-surface\/\d+/);
+});
+
+test("overlay is a labeled dialog for assistive tech", () => {
+  renderNavbar();
+  const overlay = document.getElementById("mobile-nav");
+
+  expect(overlay).toHaveAttribute("role", "dialog");
+  expect(overlay).toHaveAttribute("aria-modal", "true");
+  expect(overlay).toHaveAccessibleName();
+});
+
 test("overlay is inert while closed, so its links are never keyboard-reachable", () => {
   renderNavbar();
   const overlay = document.getElementById("mobile-nav");
