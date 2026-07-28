@@ -8,7 +8,7 @@ import { useDocumentMeta } from "../hooks/useDocumentMeta";
 function Resume() {
   useDocumentMeta(
     "Resume — Luann Curioso",
-    "Luann Curioso's resume — experience, skills, and certifications."
+    "Luann Curioso's resume — experience and skills, production front-end work with an infrastructure background."
   );
 
   return (
