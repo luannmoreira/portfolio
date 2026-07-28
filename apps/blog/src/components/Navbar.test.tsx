@@ -12,9 +12,6 @@ test("renders portfolio anchor links and the internal Blog link", () => {
   const expectedAnchorHrefFragments: [string, string][] = [
     ["Home", "/?theme="],
     ["About", "/about?theme="],
-    ["Skills", "/about?section=skills&theme="],
-    ["Uses", "/about?section=uses&theme="],
-    ["Now", "/?section=now&theme="],
     ["Contact", "/contact?theme="],
   ];
 

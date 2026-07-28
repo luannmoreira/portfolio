@@ -33,12 +33,13 @@ interface NavItem {
   external?: boolean;
 }
 
+// Primary nav per prompt.MD's PRD (section 5.1, "Navigation (Standardized)")
+// and the Stitch source design: Home, About, Contact, Blog. Skills/Uses/Now
+// stay reachable as in-page anchors on About/Home, just not as top-level
+// nav items.
 const navItems: NavItem[] = [
   { label: "Home", to: "/", activePath: "/" },
   { label: "About", to: "/about", activePath: "/about" },
-  { label: "Skills", to: "/about?section=skills" },
-  { label: "Uses", to: "/about?section=uses" },
-  { label: "Now", to: "/?section=now" },
   { label: "Contact", to: "/contact", activePath: "/contact" },
   { label: "Blog", to: BLOG_URL, external: true },
 ];

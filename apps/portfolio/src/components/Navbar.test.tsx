@@ -12,9 +12,6 @@ test("renders route and anchor nav links with the expected destinations", () => 
   const expectedLinks: [string, string][] = [
     ["Home", "/"],
     ["About", "/about"],
-    ["Skills", "/about?section=skills"],
-    ["Uses", "/about?section=uses"],
-    ["Now", "/?section=now"],
     ["Contact", "/contact"],
     ["Resume", "/resume"],
   ];

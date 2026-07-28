@@ -41,13 +41,11 @@ function resolvePortfolioLink(to: string, theme: Theme): string {
 
 // Kept in sync by hand with apps/portfolio/src/components/Navbar.tsx's own
 // navItems — the two apps aren't part of the same build, so this list
-// can't be imported directly.
+// can't be imported directly. Primary nav per prompt.MD's PRD (section 5.1):
+// Home, About, Contact, Blog (Blog is appended separately below).
 const portfolioNavItems: PortfolioNavItem[] = [
   { label: "Home", to: "/" },
   { label: "About", to: "/about" },
-  { label: "Skills", to: "/about?section=skills" },
-  { label: "Uses", to: "/about?section=uses" },
-  { label: "Now", to: "/?section=now" },
   { label: "Contact", to: "/contact" },
 ];
 
