@@ -5,9 +5,7 @@ test("homepage loads with the correct title", async ({ page }) => {
   await expect(page).toHaveTitle("Luann Curioso");
 });
 
-test("Hero content renders fully below the fixed navbar", async ({
-  page,
-}) => {
+test("Hero content renders fully below the fixed navbar", async ({ page }) => {
   await page.goto("/");
 
   const navBox = await page.getByRole("navigation").boundingBox();

@@ -9,7 +9,10 @@ export default function Experiencia() {
       </h2>
       <ul className="flex flex-col gap-stack-sm">
         {experience.map((entry) => (
-          <CardExperiencia key={`${entry.issued}-${entry.anoEntrada}`} {...entry} />
+          <CardExperiencia
+            key={`${entry.issued}-${entry.anoEntrada}`}
+            {...entry}
+          />
         ))}
       </ul>
     </section>
