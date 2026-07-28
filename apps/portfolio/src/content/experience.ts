@@ -2,16 +2,9 @@ import type { CardExperienciaProps } from "../components/CardExperiencia";
 
 export const experience: CardExperienciaProps[] = [
   {
-    name: "Front-end Developer",
-    issued: "ShellHub, Pelotas/RS (Remote)",
-    desc: "Built and maintained production interfaces for ShellHub's remote device management platform in Vue, Vuetify, TypeScript, and React. Led front-end delivery on customer-facing features with a focus on reusable component architecture, automated testing, code review, and performance — production engineering, not just visual work.",
-    anoEntrada: "Mar 2023",
-    anoSaida: "Jul 2026",
-  },
-  {
     name: "Front-end Engineer",
     issued: "OS Systems, Pelotas/RS (Remote)",
-    desc: "Led front-end development for infrastructure platforms including ShellHub and UpdateHub, working across TypeScript, Go, Vue 3, and React. Owned UI architecture and reusable components, drove automated testing and accessibility improvements, and mentored junior developers.",
+    desc: "Started as a Front-end Developer and was promoted to Front-end Engineer, spending most of this time on ShellHub, OS Systems' remote device management platform, plus infrastructure tooling like UpdateHub — across Vue, Vuetify, TypeScript, Go, and React. Owned UI architecture and reusable components, drove automated testing and accessibility improvements, and mentored junior developers.",
     anoEntrada: "Mar 2023",
     anoSaida: "Jul 2026",
   },
