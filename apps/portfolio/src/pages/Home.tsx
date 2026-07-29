@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 
 import Hero from "../components/Hero";
-import Now from "../components/Now";
+import Timeline from "../components/Timeline";
 import CardProjects from "../components/CardProjects";
 import DotCanvas from "../components/DotCanvas";
 import MaterialIcon from "../components/icons/MaterialIcon";
@@ -19,7 +19,7 @@ function Home() {
   return (
     <>
       <Hero />
-      <Now />
+      <Timeline />
       <section className="py-stack-lg">
         <div className="mx-auto max-w-container-max px-margin-mobile md:px-gutter">
           <div className="mb-stack-md">

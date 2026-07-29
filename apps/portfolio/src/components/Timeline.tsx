@@ -1,0 +1,98 @@
+import { useEffect, useRef } from "react";
+import { useLocation } from "react-router";
+import TimelineItem from "./TimelineItem";
+import { useActiveTimelineItem } from "../hooks/useActiveTimelineItem";
+import { useMediaQuery } from "../hooks/useMediaQuery";
+import { timelineMilestones } from "../content/timeline";
+
+// Module scope, not per-render — useActiveTimelineItem depends on this
+// array's identity staying stable across renders.
+const milestoneIds = timelineMilestones.map((milestone) => milestone.id);
+const milestoneIdSet = new Set(milestoneIds);
+
+// Matches Tailwind's default `md` breakpoint — the track switches from a
+// vertical stack to a horizontally-scrolling row here, per prompt.md.
+const HORIZONTAL_BREAKPOINT = "(min-width: 768px)";
+
+export default function Timeline() {
+  const trackRef = useRef<HTMLOListElement>(null);
+  const isHorizontal = useMediaQuery(HORIZONTAL_BREAKPOINT);
+
+  // The scrollspy needs to measure against whichever axis is actually
+  // scrolling: the page itself when stacked vertically on mobile, or the
+  // track's own horizontal scroll on desktop/tablet (root: null would keep
+  // measuring vertical viewport position, which never changes as the user
+  // scrolls the row horizontally).
+  const activeId = useActiveTimelineItem(milestoneIds, {
+    trackRef,
+    rootMargin: isHorizontal ? "0px -45% 0px -45%" : "-45% 0px -45% 0px",
+    axis: isHorizontal ? "x" : "y",
+  });
+
+  // Derived straight from the URL on every render — no state needed, since
+  // it's a pure function of location.hash. Only the scroll itself (an
+  // external-system side effect) belongs in an effect.
+  const location = useLocation();
+  const rawHash = location.hash.replace(/^#/, "");
+  const hashTarget = milestoneIdSet.has(rawHash) ? rawHash : null;
+
+  useEffect(() => {
+    if (!hashTarget) return;
+    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)")
+      .matches
+      ? "auto"
+      : "smooth";
+    document
+      .getElementById(hashTarget)
+      ?.scrollIntoView({ behavior, block: "nearest", inline: "center" });
+  }, [hashTarget]);
+
+  // prompt.md: desktop supports wheel-to-horizontal scrolling on the track,
+  // on top of the native trackpad/touch horizontal gestures overflow-x
+  // already gives for free. Only active at the horizontal breakpoint — a
+  // narrow window or a mouse on a tablet must keep normal page scrolling.
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track || !isHorizontal) return;
+
+    const handleWheel = (event: WheelEvent) => {
+      if (event.deltaY === 0) return;
+      track.scrollLeft += event.deltaY;
+      event.preventDefault();
+    };
+    track.addEventListener("wheel", handleWheel, { passive: false });
+    return () => track.removeEventListener("wheel", handleWheel);
+  }, [isHorizontal]);
+
+  return (
+    <section
+      id="timeline"
+      className="scroll-mt-32 overflow-hidden bg-surface-container-lowest py-stack-lg"
+    >
+      <div className="mx-auto max-w-container-max px-margin-mobile md:px-gutter">
+        <div className="mb-stack-md">
+          <span className="mb-2 block font-label-mono text-label-mono uppercase tracking-widest text-secondary">
+            My Journey
+          </span>
+          <h2 className="font-headline-lg text-headline-lg text-on-background">
+            Engineering Timeline
+          </h2>
+        </div>
+        <ol
+          ref={trackRef}
+          className="scrollbar-hide flex flex-col md:flex-row md:items-end md:overflow-x-auto md:snap-x md:snap-mandatory md:pb-4"
+        >
+          {timelineMilestones.map((milestone) => (
+            <TimelineItem
+              key={milestone.id}
+              milestone={milestone}
+              isActive={activeId === milestone.id}
+              forceVisible={hashTarget === milestone.id}
+              forceExpanded={hashTarget === milestone.id}
+            />
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}

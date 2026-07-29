@@ -32,8 +32,8 @@ test.describe("page navigation", () => {
     });
   }
 
-  // Uses and Now are anchor sections (?section=id) on About/Home, not their
-  // own routes, so they don't fit the generic h1-per-route loop above.
+  // Uses is an anchor section (?section=id) on About, not its own route, so
+  // it doesn't fit the generic h1-per-route loop above.
   test('"Uses" nav link navigates to its section', async ({ page }) => {
     await page
       .getByRole("navigation")
@@ -45,38 +45,23 @@ test.describe("page navigation", () => {
     ).toBeVisible();
   });
 
-  test('"Now" nav link navigates to its section', async ({ page }) => {
-    await page
-      .getByRole("navigation")
-      .getByRole("link", { name: "Now" })
-      .click();
-    await expect(page).toHaveURL(/\/\?section=now$/);
-    await expect(
-      page.getByRole("heading", { name: "Now", level: 2 })
-    ).toBeVisible();
+  // The Engineering Timeline (Home) deep-links per milestone via a real
+  // #hash rather than a single top-level nav item — see Timeline.tsx.
+  test("a milestone hash deep link scrolls to and expands that milestone", async ({
+    page,
+  }) => {
+    await page.goto("/#shellhub");
 
-    // The heading is always technically "visible" whether or not the page
-    // actually scrolled to it — Now sits well below the fold on Home
-    // regardless, so a stale scroll position (still at the top) wouldn't
-    // fail a mere "is it on screen somewhere below the nav" check. Assert
-    // the browser actually scrolled, and that the heading landed inside
-    // the viewport near the top (not the initial y=0 position). Polls
-    // because scrollIntoView({ behavior: "smooth" }) animates over time —
-    // reading window.scrollY synchronously right after the click would
-    // race the animation's start.
     await expect
       .poll(() => page.evaluate(() => window.scrollY))
       .toBeGreaterThan(0);
-
-    const navBox = await page.getByRole("navigation").boundingBox();
-    const headingBox = await page
-      .getByRole("heading", { name: "Now", level: 2 })
-      .boundingBox();
-    expect(navBox).not.toBeNull();
-    expect(headingBox).not.toBeNull();
-    expect(headingBox!.y).toBeGreaterThanOrEqual(navBox!.y + navBox!.height);
-    const viewportHeight = page.viewportSize()!.height;
-    expect(headingBox!.y).toBeLessThan(viewportHeight);
+    await expect(
+      page.locator("#shellhub").getByRole("heading", { name: "ShellHub" })
+    ).toBeInViewport();
+    // Only visible once the deep-linked milestone auto-expands.
+    await expect(
+      page.getByRole("link", { name: "shellhub.io" })
+    ).toBeVisible();
   });
 
   test("Resume page renders real experience content and a print button", async ({
@@ -103,13 +88,18 @@ test.describe("page navigation", () => {
     await expect(page.getByText("Two monitors")).toBeVisible();
   });
 
-  test("Now section renders the real current focus", async ({ page }) => {
+  test("Engineering Timeline renders real milestones across past, present, and future", async ({
+    page,
+  }) => {
     await page.goto("/");
     await expect(
-      page.getByText("Rebranding as a software engineer")
+      page.getByRole("heading", { name: "Videplast" })
     ).toBeVisible();
     await expect(
-      page.getByText('"The Most Boring Project Ever"')
+      page.getByRole("heading", { name: "The Most Boring Project Ever" })
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Conference Talks" })
     ).toBeVisible();
   });
 });

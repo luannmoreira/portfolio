@@ -57,4 +57,29 @@ test.describe("keyboard navigation", () => {
     expect(parseFloat(outline!.width)).toBeGreaterThan(0);
     expect(outline!.color).toBe(outline!.tokenColor);
   });
+
+  test("a timeline milestone's Details toggle is operable from the keyboard", async ({
+    page,
+  }) => {
+    await page.goto("/");
+
+    const toggle = page.locator("#sedec").getByRole("button", {
+      name: "Details",
+    });
+    // Real Tab-order coverage lives in the skip-link/focus-ring tests above
+    // and the axe scans in accessibility.spec.ts — this focuses directly on
+    // whether the toggle itself responds correctly to keyboard activation.
+    await toggle.focus();
+    await expect(toggle).toBeFocused();
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+
+    await page.keyboard.press("Enter");
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
+    await expect(
+      page.getByRole("link", { name: "Invest-MT" })
+    ).toBeVisible();
+
+    await page.keyboard.press("Enter");
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  });
 });

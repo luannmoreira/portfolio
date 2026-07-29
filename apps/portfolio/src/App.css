@@ -26,3 +26,15 @@ button:focus-visible,
   outline-offset: 2px;
   border-radius: 2px;
 }
+
+/* Hides the scrollbar on the horizontally-scrolling Engineering Timeline
+   track (Timeline.tsx) without a Tailwind plugin — the track is still
+   fully scrollable via trackpad, touch, drag, or the wheel-to-horizontal
+   handler, this only hides the OS scrollbar chrome. */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

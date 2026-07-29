@@ -33,9 +33,10 @@ interface NavItem {
 }
 
 // Primary nav per prompt.MD's PRD (section 5.1, "Navigation (Standardized)")
-// and the Stitch source design: Home, About, Contact, Blog. Skills/Uses/Now
-// stay reachable as in-page anchors on About/Home, just not as top-level
-// nav items.
+// and the Stitch source design: Home, About, Contact, Blog. Skills/Uses stay
+// reachable as in-page anchors on About/Home, just not as top-level nav
+// items; the Engineering Timeline on Home has its own per-milestone hash
+// deep links (see Timeline.tsx) rather than a single top-level nav entry.
 const navItems: NavItem[] = [
   { label: "Home", to: "/", activePath: "/" },
   { label: "About", to: "/about", activePath: "/about" },
