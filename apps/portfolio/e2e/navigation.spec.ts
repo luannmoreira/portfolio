@@ -32,17 +32,16 @@ test.describe("page navigation", () => {
     });
   }
 
-  // Uses is an anchor section (?section=id) on About, not its own route, so
-  // it doesn't fit the generic h1-per-route loop above.
-  test('"Uses" nav link navigates to its section', async ({ page }) => {
-    await page
-      .getByRole("navigation")
-      .getByRole("link", { name: "Uses" })
-      .click();
-    await expect(page).toHaveURL(/\/about\?section=uses$/);
+  // Uses is an anchor section (?section=id) on About, not its own route or
+  // top-level nav item (see Navbar.tsx), so it's reached via direct deep
+  // link rather than the generic h1-per-route loop above.
+  test('"?section=uses" deep link scrolls to the Uses section', async ({
+    page,
+  }) => {
+    await page.goto("/about?section=uses");
     await expect(
       page.getByRole("heading", { name: "Hardware & Software", level: 2 })
-    ).toBeVisible();
+    ).toBeInViewport();
   });
 
   // The Engineering Timeline (Home) deep-links per milestone via a real
