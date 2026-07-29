@@ -44,9 +44,7 @@ export const timelineMilestones: TimelineMilestone[] = [
     details:
       "Developed public-facing government applications including Invest-MT, creating features used by businesses and citizens across Mato Grosso.",
     technologies: ["Vue", "Nuxt", "TypeScript"],
-    links: [
-      { label: "Invest-MT", href: "https://www.investmt.com.br/pt-br" },
-    ],
+    links: [{ label: "Invest-MT", href: "https://www.investmt.com.br/pt-br" }],
   },
   {
     id: "os-systems",

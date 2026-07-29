@@ -70,11 +70,16 @@ test("the element carrying backdrop-blur also carries the z-index that beats the
   const overlay = document.getElementById("mobile-nav");
 
   let blurredAncestor = toggle.parentElement;
-  while (blurredAncestor && !/\bbackdrop-blur/.test(blurredAncestor.className)) {
+  while (
+    blurredAncestor &&
+    !/\bbackdrop-blur/.test(blurredAncestor.className)
+  ) {
     blurredAncestor = blurredAncestor.parentElement;
   }
 
-  const headerZ = Number(blurredAncestor?.className.match(/\bz-\[(\d+)\]/)?.[1]);
+  const headerZ = Number(
+    blurredAncestor?.className.match(/\bz-\[(\d+)\]/)?.[1]
+  );
   const overlayZ = Number(overlay?.className.match(/\bz-\[(\d+)\]/)?.[1]);
 
   expect(blurredAncestor).not.toBeNull();
@@ -91,7 +96,9 @@ test("<nav> itself carries no filter/backdrop-filter/transform", () => {
   // of covering the screen.
   renderNavbar();
   const nav = document.querySelector("nav");
-  expect(nav?.className).not.toMatch(/\b(backdrop-blur|blur|transform|scale|rotate|translate)-/);
+  expect(nav?.className).not.toMatch(
+    /\b(backdrop-blur|blur|transform|scale|rotate|translate)-/
+  );
 });
 
 test("overlay is a labeled dialog for assistive tech", () => {

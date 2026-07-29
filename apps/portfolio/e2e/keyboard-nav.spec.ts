@@ -75,9 +75,7 @@ test.describe("keyboard navigation", () => {
 
     await page.keyboard.press("Enter");
     await expect(toggle).toHaveAttribute("aria-expanded", "true");
-    await expect(
-      page.getByRole("link", { name: "Invest-MT" })
-    ).toBeVisible();
+    await expect(page.getByRole("link", { name: "Invest-MT" })).toBeVisible();
 
     await page.keyboard.press("Enter");
     await expect(toggle).toHaveAttribute("aria-expanded", "false");

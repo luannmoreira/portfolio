@@ -154,9 +154,7 @@ test("starts hidden/offset, ready to scroll-reveal, when the user has no motion 
     </ol>
   );
 
-  const item = container.querySelector(
-    `#${milestone.id}`
-  ) as HTMLElement;
+  const item = container.querySelector(`#${milestone.id}`) as HTMLElement;
   expect(item.style.opacity).toBe("0");
   expect(item.style.transform).not.toBe("none");
 });
@@ -169,9 +167,7 @@ test("renders immediately, with no transition, when the user prefers reduced mot
     </ol>
   );
 
-  const item = container.querySelector(
-    `#${milestone.id}`
-  ) as HTMLElement;
+  const item = container.querySelector(`#${milestone.id}`) as HTMLElement;
   expect(item.style.opacity).toBe("1");
   expect(item.style.transform).toBe("none");
   expect(item.style.transition).toBe("none");

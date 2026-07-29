@@ -80,8 +80,8 @@ export default function TimelineItem({
 
   const hasExpandableContent = Boolean(
     milestone.details ||
-      milestone.technologies?.length ||
-      milestone.links?.length
+    milestone.technologies?.length ||
+    milestone.links?.length
   );
   const detailsId = `${milestone.id}-details`;
 
@@ -130,9 +130,7 @@ export default function TimelineItem({
         <span>{statusLabel[milestone.status]}</span>
       </div>
       <div className={cardStyle[milestone.status]}>
-        <h3 className="font-headline-md text-headline-md">
-          {milestone.title}
-        </h3>
+        <h3 className="font-headline-md text-headline-md">{milestone.title}</h3>
         {milestone.subtitle && (
           <p className="font-body-md text-body-md text-on-surface-variant">
             {milestone.subtitle}
@@ -158,18 +156,19 @@ export default function TimelineItem({
                 <p className="font-body-md text-body-md leading-relaxed text-on-surface-variant">
                   {milestone.details ?? milestone.summary}
                 </p>
-                {milestone.technologies && milestone.technologies.length > 0 && (
-                  <ul className="mt-2 flex flex-wrap gap-2">
-                    {milestone.technologies.map((technology) => (
-                      <li
-                        key={technology}
-                        className="rounded-full border border-outline-variant/30 px-3 py-1 font-label-mono text-label-mono text-on-surface-variant"
-                      >
-                        {technology}
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                {milestone.technologies &&
+                  milestone.technologies.length > 0 && (
+                    <ul className="mt-2 flex flex-wrap gap-2">
+                      {milestone.technologies.map((technology) => (
+                        <li
+                          key={technology}
+                          className="rounded-full border border-outline-variant/30 px-3 py-1 font-label-mono text-label-mono text-on-surface-variant"
+                        >
+                          {technology}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 {milestone.links && milestone.links.length > 0 && (
                   <ul className="mt-2 flex flex-wrap gap-4">
                     {milestone.links.map((link) => (
@@ -200,7 +199,10 @@ export default function TimelineItem({
           Timeline.tsx) aligns every item's bottom edge, and this strip is
           the last thing in the item, so the line lands at the same height
           for every card regardless of how tall its own content is. */}
-      <div aria-hidden="true" className="mt-4 hidden md:flex md:flex-col md:items-center">
+      <div
+        aria-hidden="true"
+        className="mt-4 hidden md:flex md:flex-col md:items-center"
+      >
         <span className="h-4 w-px bg-outline-variant/40" />
       </div>
       <div className="relative hidden md:block md:-mx-3 md:border-t-2 md:border-outline-variant/30">

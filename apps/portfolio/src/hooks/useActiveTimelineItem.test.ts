@@ -7,7 +7,10 @@ class FakeIntersectionObserver {
   options?: IntersectionObserverInit;
   observed: Element[] = [];
 
-  constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {
+  constructor(
+    callback: IntersectionObserverCallback,
+    options?: IntersectionObserverInit
+  ) {
     this.callback = callback;
     this.options = options;
     FakeIntersectionObserver.instances.push(this);

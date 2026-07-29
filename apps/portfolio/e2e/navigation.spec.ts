@@ -59,9 +59,7 @@ test.describe("page navigation", () => {
       page.locator("#shellhub").getByRole("heading", { name: "ShellHub" })
     ).toBeInViewport();
     // Only visible once the deep-linked milestone auto-expands.
-    await expect(
-      page.getByRole("link", { name: "shellhub.io" })
-    ).toBeVisible();
+    await expect(page.getByRole("link", { name: "shellhub.io" })).toBeVisible();
   });
 
   test("Resume page renders real experience content and a print button", async ({
