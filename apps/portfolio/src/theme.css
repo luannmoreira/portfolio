@@ -1,19 +1,24 @@
 /* Hero's dotted-grid backdrop, from Stitch's `.canvas-bg`. Uses the
-   surface-container-highest token directly (not a Tailwind utility) so it
-   reacts to the light/dark override in @portfolio/config-tailwind/theme.css
-   without duplicating the rule. The ::before/::after dot layers below are
-   `position: absolute`, which — with no z-index — the CSS painting order
-   places above normal in-flow content regardless of DOM order. Both set
-   `z-index: -1` so they paint behind DotCanvas's actual children instead
-   of over the buttons/text sitting on top of them. `isolation: isolate`
-   makes .canvas-bg itself form a stacking context so those negative
-   z-indexes stay contained here — otherwise they escape to the nearest
-   ancestor stacking context and can end up painted behind an unrelated
-   sibling's opaque background, i.e. invisible. */
+   outline-variant token directly (not a Tailwind utility) so it reacts to
+   the light/dark override in @portfolio/config-tailwind/theme.css without
+   duplicating the rule. outline-variant, not surface-container-highest:
+   the latter is only ~9% lighter than the light-theme background (vs. ~13%
+   darker than the dark-theme background), so on light sections (Hero,
+   Contact) the grid all but disappeared while it stayed clearly visible on
+   dark ones — the dots need a token whose contrast against `background`
+   holds up in both themes, not just dark. The ::before/::after dot layers
+   below are `position: absolute`, which — with no z-index — the CSS
+   painting order places above normal in-flow content regardless of DOM
+   order. Both set `z-index: -1` so they paint behind DotCanvas's actual
+   children instead of over the buttons/text sitting on top of them.
+   `isolation: isolate` makes .canvas-bg itself form a stacking context so
+   those negative z-indexes stay contained here — otherwise they escape to
+   the nearest ancestor stacking context and can end up painted behind an
+   unrelated sibling's opaque background, i.e. invisible. */
 .canvas-bg {
   isolation: isolate;
   background-image: radial-gradient(
-    var(--color-surface-container-highest) 1px,
+    var(--color-outline-variant) 1px,
     transparent 1px
   );
   background-size: 24px 24px;
