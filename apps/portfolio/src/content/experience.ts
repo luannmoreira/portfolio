@@ -20,7 +20,7 @@ export const experience: CardExperienciaProps[] = [
     name: "Operations Trainee",
     issued: "Videplast - Plastic Factory, Várzea Grande/MT",
     desc: "Assembled, configured, and maintained network and server infrastructure — virtualization (Hyper-V), Windows Server, and Active Directory — alongside front-end development in Angular 13. The first real exposure to how software and infrastructure intersect.",
-    anoEntrada: "Out 2020",
+    anoEntrada: "Oct 2020",
     anoSaida: "Jan 2022",
   },
 ];

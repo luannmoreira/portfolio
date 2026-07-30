@@ -4,7 +4,7 @@ import { useDocumentMeta } from "../hooks/useDocumentMeta";
 function Contact() {
   useDocumentMeta(
     "Contact • Luann Curioso",
-    "Get in touch — I love making contact and networking, even when I'm not job hunting."
+    "Get in touch about technical architecture, software performance, or potential collaborations on complex systems."
   );
 
   return <ContactSection />;

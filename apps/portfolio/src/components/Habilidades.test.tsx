@@ -10,7 +10,7 @@ test("renders an anchor target and the section heading", () => {
     screen.getByRole("heading", { name: "Technical Expertise" })
   ).toBeInTheDocument();
   expect(
-    screen.getByText("Technologies I've used for the last couple of years.")
+    screen.getByText("Technologies I use in production.")
   ).toBeInTheDocument();
 });
 

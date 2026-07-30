@@ -48,7 +48,7 @@ function Resume() {
                   {entry.name} — {entry.issued}
                 </p>
                 <p className="text-sm opacity-80">
-                  {entry.anoEntrada} till {entry.anoSaida}
+                  {entry.anoEntrada} — {entry.anoSaida}
                 </p>
                 <p className="mt-1 whitespace-pre-line text-sm">{entry.desc}</p>
               </li>

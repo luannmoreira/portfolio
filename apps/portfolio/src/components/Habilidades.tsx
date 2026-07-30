@@ -7,7 +7,7 @@ export default function Habilidades() {
         Technical Expertise
       </h2>
       <p className="mb-stack-md font-body-md text-body-md text-on-surface-variant">
-        Technologies I've used for the last couple of years.
+        Technologies I use in production.
       </p>
       <EcosystemSection />
     </section>

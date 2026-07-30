@@ -28,7 +28,7 @@ export const timelineMilestones: TimelineMilestone[] = [
     year: "2021",
     status: "completed",
     title: "Videplast",
-    subtitle: "Software Developer",
+    subtitle: "Operations Trainee",
     summary:
       "Built internal intranet applications supporting manufacturing operations, inventory management, and internal business workflows.",
     technologies: ["Angular", "TypeScript", "SQL Server"],
@@ -38,7 +38,7 @@ export const timelineMilestones: TimelineMilestone[] = [
     year: "2022",
     status: "completed",
     title: "SEDEC",
-    subtitle: "Software Developer",
+    subtitle: "Front-end Developer Trainee",
     summary:
       "Developed public-facing government applications, creating features used by businesses and citizens across Mato Grosso.",
     details:
@@ -51,9 +51,9 @@ export const timelineMilestones: TimelineMilestone[] = [
     year: "2023",
     status: "completed",
     title: "OS Systems",
-    subtitle: "Frontend Engineer",
+    subtitle: "Front-end Engineer",
     summary:
-      "Worked on enterprise applications using React and TypeScript while improving frontend architecture and developer experience.",
+      "Worked on enterprise applications using React and TypeScript while improving front-end architecture and developer experience.",
   },
   {
     id: "shellhub",
@@ -62,7 +62,7 @@ export const timelineMilestones: TimelineMilestone[] = [
     title: "ShellHub",
     subtitle: "Open Source Contributor",
     summary:
-      "Contributed to ShellHub's frontend ecosystem by implementing new features, improving architecture, and helping standardize testing practices.",
+      "Contributed to ShellHub's front-end ecosystem by implementing new features, improving architecture, and helping standardize testing practices.",
     links: [{ label: "shellhub.io", href: "https://www.shellhub.io/" }],
   },
   {
@@ -79,7 +79,7 @@ export const timelineMilestones: TimelineMilestone[] = [
     status: "completed",
     title: "Engineering Growth",
     summary:
-      "Focused on software architecture, frontend scalability, testing strategies, clean code, and engineering best practices.",
+      "Focused on software architecture, front-end scalability, testing strategies, clean code, and engineering best practices.",
   },
   {
     id: "portfolio-rebranding",
@@ -87,7 +87,7 @@ export const timelineMilestones: TimelineMilestone[] = [
     status: "in-progress",
     title: "Portfolio Rebranding",
     summary:
-      "Rebuilding my portfolio to better represent myself as a software engineer instead of simply a frontend developer.",
+      "Rebuilding my portfolio to better represent myself as a software engineer instead of simply a front-end developer.",
   },
   {
     id: "kubernetes-cka",

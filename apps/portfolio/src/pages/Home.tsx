@@ -40,7 +40,7 @@ function Home() {
               to="/projects"
               className="inline-flex items-center gap-2 font-headline-md text-primary transition-all hover:gap-4"
             >
-              Explore all projects
+              Explore All Projects
               <MaterialIcon name="arrow_forward" className="h-5 w-5" />
             </Link>
           </div>
@@ -73,7 +73,7 @@ function Home() {
               to="/contact"
               className="rounded-lg border border-inverse-on-surface/30 bg-inverse-surface/60 px-8 py-3 font-headline-md text-inverse-on-surface backdrop-blur-md transition-colors hover:bg-inverse-on-surface/10"
             >
-              More ways to reach me
+              More Ways to Reach Me
             </Link>
           </div>
         </div>

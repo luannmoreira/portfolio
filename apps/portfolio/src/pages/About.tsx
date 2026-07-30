@@ -71,7 +71,7 @@ function About() {
             to="/contact"
             className="rounded-lg bg-inverse-on-surface px-8 py-3 font-headline-md text-inverse-surface transition-colors hover:opacity-90"
           >
-            Get In Touch
+            Get in Touch
           </Link>
           <Link
             to="/resume"
