@@ -10,7 +10,10 @@ interface TerminalProps {
 function Terminal({ children }: TerminalProps) {
   return (
     <div className="overflow-hidden rounded-md border border-slate-700 light:border-slate-300 bg-black light:bg-white">
-      <div className="flex gap-1.5 border-b border-slate-700 light:border-slate-300 bg-surface-container px-3 py-2">
+      <div
+        aria-hidden="true"
+        className="flex gap-1.5 border-b border-slate-700 light:border-slate-300 bg-surface-container px-3 py-2"
+      >
         <span className="h-3 w-3 rounded-full bg-red-500" />
         <span className="h-3 w-3 rounded-full bg-amber-500" />
         <span className="h-3 w-3 rounded-full bg-green-500" />

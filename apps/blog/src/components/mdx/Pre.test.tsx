@@ -1,21 +1,22 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderWithI18n } from "../../test-i18n";
 import Pre from "./Pre";
 
 test("renders the pre content unchanged", () => {
-  render(<Pre>const answer = 42;</Pre>);
+  renderWithI18n(<Pre>const answer = 42;</Pre>);
   expect(screen.getByText("const answer = 42;")).toBeInTheDocument();
 });
 
 test("shows a copy button", () => {
-  render(<Pre>code</Pre>);
+  renderWithI18n(<Pre>code</Pre>);
   expect(screen.getByRole("button", { name: /copy/i })).toBeInTheDocument();
 });
 
 test("copies the pre's text content when clicked", async () => {
   const user = userEvent.setup();
   const writeText = vi.spyOn(navigator.clipboard, "writeText");
-  render(<Pre>const x = 1;</Pre>);
+  renderWithI18n(<Pre>const x = 1;</Pre>);
 
   await user.click(screen.getByRole("button", { name: /copy/i }));
 
@@ -24,7 +25,7 @@ test("copies the pre's text content when clicked", async () => {
 
 test("shows 'Copied!' feedback after a successful copy, then reverts", async () => {
   const user = userEvent.setup();
-  render(<Pre>const x = 1;</Pre>);
+  renderWithI18n(<Pre>const x = 1;</Pre>);
 
   await user.click(screen.getByRole("button", { name: /copy/i }));
   expect(screen.getByText("Copied!")).toBeInTheDocument();

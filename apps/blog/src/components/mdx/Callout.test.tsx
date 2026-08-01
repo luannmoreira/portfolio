@@ -1,8 +1,9 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithI18n } from "../../test-i18n";
 import Callout, { type CalloutVariant } from "./Callout";
 
 test("renders its children", () => {
-  render(<Callout variant="note">Some content</Callout>);
+  renderWithI18n(<Callout variant="note">Some content</Callout>);
   expect(screen.getByText("Some content")).toBeInTheDocument();
 });
 
@@ -13,12 +14,12 @@ test.each<[CalloutVariant, string]>([
   ["tip", "Tip"],
   ["note", "Note"],
 ])("defaults the title to %s's label", (variant, expectedLabel) => {
-  render(<Callout variant={variant}>content</Callout>);
+  renderWithI18n(<Callout variant={variant}>content</Callout>);
   expect(screen.getByText(expectedLabel)).toBeInTheDocument();
 });
 
 test("uses a custom title when provided, instead of the variant default", () => {
-  render(
+  renderWithI18n(
     <Callout variant="decision" title="Use pnpm workspaces">
       content
     </Callout>
@@ -37,7 +38,7 @@ test("renders an icon for every variant", () => {
   ];
 
   variants.forEach((variant) => {
-    const { container, unmount } = render(
+    const { container, unmount } = renderWithI18n(
       <Callout variant={variant}>content</Callout>
     );
     expect(container.querySelector("svg")).not.toBeNull();
@@ -46,6 +47,6 @@ test("renders an icon for every variant", () => {
 });
 
 test("exposes an accessible note role for assistive tech", () => {
-  render(<Callout variant="tip">content</Callout>);
+  renderWithI18n(<Callout variant="tip">content</Callout>);
   expect(screen.getByRole("note")).toBeInTheDocument();
 });

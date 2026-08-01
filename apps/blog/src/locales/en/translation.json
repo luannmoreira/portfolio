@@ -20,6 +20,17 @@
   "languageSwitcher": {
     "groupLabel": "Language"
   },
+  "callout": {
+    "decision": "Decision",
+    "tradeoff": "Trade-off",
+    "warning": "Warning",
+    "tip": "Tip",
+    "note": "Note"
+  },
+  "pre": {
+    "copy": "Copy",
+    "copied": "Copied!"
+  },
   "notFound": {
     "metaTitle": "Not Found — Blog",
     "heading": "Not Found",
