@@ -232,7 +232,9 @@ function Post({ basePath }: PostProps) {
               >
                 schedule
               </span>
-              <span>{entry.readingTime}</span>
+              <span>
+                {t("post.readingTime", { count: entry.readingMinutes })}
+              </span>
             </div>
           </div>
         </header>

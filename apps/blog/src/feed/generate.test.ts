@@ -9,7 +9,7 @@ const post: ContentEntry = {
   tags: ["meta"],
   excerpt: "Placeholder entry.",
   draft: false,
-  readingTime: "1 min read",
+  readingMinutes: 1,
 };
 
 const adr: ContentEntry = {
@@ -20,7 +20,7 @@ const adr: ContentEntry = {
   tags: [],
   excerpt: "A decision record.",
   draft: false,
-  readingTime: "1 min read",
+  readingMinutes: 1,
 };
 
 const project: ContentEntry = {
@@ -31,7 +31,7 @@ const project: ContentEntry = {
   tags: [],
   excerpt: "A project writeup.",
   draft: false,
-  readingTime: "1 min read",
+  readingMinutes: 1,
 };
 
 const draftPost: ContentEntry = {

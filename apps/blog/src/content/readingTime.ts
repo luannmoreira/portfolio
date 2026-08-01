@@ -1,5 +1,4 @@
-export function estimateReadingTime(text: string): string {
+export function estimateReadingMinutes(text: string): number {
   const words = text.trim().split(/\s+/).filter(Boolean).length;
-  const minutes = Math.max(1, Math.ceil(words / 200));
-  return `${minutes} min read`;
+  return Math.max(1, Math.ceil(words / 200));
 }

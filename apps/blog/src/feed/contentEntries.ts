@@ -6,7 +6,7 @@ import {
   type ContentEntry,
   type ContentType,
 } from "../content/schema";
-import { estimateReadingTime } from "../content/readingTime";
+import { estimateReadingMinutes } from "../content/readingTime";
 
 // Runs at Vite-config/build time (Node), not through Vite's module graph —
 // import.meta.glob only resolves inside files Vite itself transforms, which
@@ -35,7 +35,7 @@ export function readContentEntries(): ContentEntry[] {
           ...parseFrontmatter(data),
           slug: file.replace(/\.mdx$/, ""),
           type,
-          readingTime: estimateReadingTime(content),
+          readingMinutes: estimateReadingMinutes(content),
         };
       });
   });

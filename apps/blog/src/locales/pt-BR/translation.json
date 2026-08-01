@@ -45,6 +45,8 @@
       "adr": "ADRs",
       "index": "Índice"
     },
+    "readingTime_one": "{{count}} min de leitura",
+    "readingTime_other": "{{count}} min de leitura",
     "shareThisEntry": "Compartilhar esta publicação",
     "twitter": "Twitter / X",
     "copyLink": "Copiar Link",

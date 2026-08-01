@@ -49,11 +49,13 @@ function FeaturedCard({
   basePath,
   latestEntryLabel,
   date,
+  readingTime,
 }: {
   entry: ContentEntry;
   basePath: string;
   latestEntryLabel: string;
   date: string;
+  readingTime: string;
 }) {
   return (
     <Link
@@ -69,7 +71,7 @@ function FeaturedCard({
             {date}
           </span>
           <span className="ml-4 font-label-mono text-caption text-secondary">
-            {entry.readingTime}
+            {readingTime}
           </span>
         </div>
       </div>
@@ -107,10 +109,12 @@ function SideCard({
   entry,
   basePath,
   date,
+  readingTime,
 }: {
   entry: ContentEntry;
   basePath: string;
   date: string;
+  readingTime: string;
 }) {
   return (
     <Link
@@ -121,7 +125,7 @@ function SideCard({
         {date}
       </span>
       <span className="mb-2 block font-label-mono text-caption text-secondary">
-        {entry.readingTime}
+        {readingTime}
       </span>
       <h3 className="mb-4 font-headline-md text-headline-md text-on-background">
         {entry.title}
@@ -206,6 +210,9 @@ function ContentIndex({ type, basePath }: ContentIndexProps) {
             basePath={basePath}
             latestEntryLabel={t("contentIndex.latestEntry")}
             date={formatDate(featured.date, locale, DATE_OPTIONS)}
+            readingTime={t("post.readingTime", {
+              count: featured.readingMinutes,
+            })}
           />
           {sideCards.map((entry) => (
             <SideCard
@@ -213,6 +220,9 @@ function ContentIndex({ type, basePath }: ContentIndexProps) {
               entry={entry}
               basePath={basePath}
               date={formatDate(entry.date, locale, DATE_OPTIONS)}
+              readingTime={t("post.readingTime", {
+                count: entry.readingMinutes,
+              })}
             />
           ))}
         </div>
@@ -246,7 +256,7 @@ function ContentIndex({ type, basePath }: ContentIndexProps) {
                     </span>
                   )}
                   <span className="ml-2 font-label-mono text-caption text-secondary">
-                    {entry.readingTime}
+                    {t("post.readingTime", { count: entry.readingMinutes })}
                   </span>
                 </div>
               </Link>

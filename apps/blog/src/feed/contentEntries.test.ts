@@ -39,6 +39,6 @@ test("computes a reading time estimate for every entry", () => {
 
   expect(entries.length).toBeGreaterThan(0);
   entries.forEach((entry) => {
-    expect(entry.readingTime).toMatch(/read$/i);
+    expect(entry.readingMinutes).toBeGreaterThanOrEqual(1);
   });
 });

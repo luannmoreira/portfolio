@@ -24,5 +24,7 @@ export type ContentType = "post" | "project" | "adr";
 export interface ContentEntry extends Frontmatter {
   slug: string;
   type: ContentType;
-  readingTime: string;
+  /** Minutes, not a pre-formatted string — "N min read" is locale-dependent
+   * phrasing, rendered at display time via t("post.readingTime", { count }). */
+  readingMinutes: number;
 }
