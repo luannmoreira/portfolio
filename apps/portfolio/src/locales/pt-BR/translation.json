@@ -10,6 +10,34 @@
     "closeMenu": "Fechar menu",
     "mainMenu": "Menu principal"
   },
+  "resume": {
+    "metaTitle": "Currículo • Luann Curioso",
+    "metaDescription": "Currículo de Luann Curioso — experiência e habilidades, trabalho front-end em produção com base em infraestrutura.",
+    "print": "Imprimir / Salvar como PDF",
+    "summaryHeading": "Resumo",
+    "summary": "Engenheiro de Software com mais de 5 anos de experiência construindo sistemas front-end em produção com TypeScript, React, Vue, Node.js, Deno e Golang, além de background prático em infraestrutura (administração de redes, virtualização, Active Directory) no início da carreira. Focado em arquitetura reutilizável, testes automatizados, acessibilidade e experiência do desenvolvedor em plataformas de produção, corporativas e governamentais. Contribuidor open-source do ShellHub e UpdateHub, AWS Certified Cloud Practitioner.",
+    "skillsHeading": "Habilidades"
+  },
+  "experience": {
+    "heading": "Experiência",
+    "entries": {
+      "os-systems": {
+        "name": "Engenheiro Front-end",
+        "issued": "OS Systems, Pelotas/RS (Remoto)",
+        "desc": "Comecei como Desenvolvedor Front-end e fui promovido a Engenheiro Front-end, dedicando a maior parte do tempo ao ShellHub, a plataforma de gerenciamento remoto de dispositivos da OS Systems, além de ferramentas de infraestrutura como o UpdateHub — usando Vue, Vuetify, TypeScript, Go e React. Fui responsável pela arquitetura de UI e por componentes reutilizáveis, impulsionei testes automatizados e melhorias de acessibilidade, e mentorei desenvolvedores juniores."
+      },
+      "sedec": {
+        "name": "Estagiário de Desenvolvimento Front-end",
+        "issued": "Secretaria de Estado de Desenvolvimento Econômico de Mato Grosso, Cuiabá/MT",
+        "desc": "Desenvolvi interfaces para aplicações governamentais em React, Electron, Vue.js e Nuxt, integrando APIs REST construídas com Express, Node.js e Spring Boot. Trabalhei diretamente com designers de UX em usabilidade e performance em um ambiente de produção do setor público."
+      },
+      "videplast": {
+        "name": "Estagiário de Operações",
+        "issued": "Videplast - Fábrica de Plásticos, Várzea Grande/MT",
+        "desc": "Montei, configurei e mantive infraestrutura de rede e servidores — virtualização (Hyper-V), Windows Server e Active Directory — junto com desenvolvimento front-end em Angular 13. A primeira exposição real a como software e infraestrutura se cruzam."
+      }
+    }
+  },
   "timeline": {
     "journeyLabel": "Minha Jornada",
     "heading": "Linha do Tempo de Engenharia",

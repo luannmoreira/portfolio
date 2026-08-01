@@ -1,10 +1,11 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
+import { renderWithI18n } from "../test-i18n";
 import Resume from "./Resume";
 
 function renderResume() {
-  return render(
+  return renderWithI18n(
     <MemoryRouter>
       <Resume />
     </MemoryRouter>

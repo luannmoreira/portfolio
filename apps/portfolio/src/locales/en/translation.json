@@ -10,6 +10,34 @@
     "closeMenu": "Close menu",
     "mainMenu": "Main menu"
   },
+  "resume": {
+    "metaTitle": "Resume • Luann Curioso",
+    "metaDescription": "Luann Curioso's resume — experience and skills, production front-end work with an infrastructure background.",
+    "print": "Print / Save as PDF",
+    "summaryHeading": "Summary",
+    "summary": "Software Engineer with 5+ years of experience building production front-end systems in TypeScript, React, Vue, Node.js, Deno, and Golang, plus hands-on infrastructure background (network administration, virtualization, Active Directory) from earlier in my career. Focused on reusable architecture, automated testing, accessibility, and developer experience across production, enterprise, and government platforms. Open-source contributor to ShellHub and UpdateHub, AWS Certified Cloud Practitioner.",
+    "skillsHeading": "Skills"
+  },
+  "experience": {
+    "heading": "Experience",
+    "entries": {
+      "os-systems": {
+        "name": "Front-end Engineer",
+        "issued": "OS Systems, Pelotas/RS (Remote)",
+        "desc": "Started as a Front-end Developer and was promoted to Front-end Engineer, spending most of this time on ShellHub, OS Systems' remote device management platform, plus infrastructure tooling like UpdateHub — across Vue, Vuetify, TypeScript, Go, and React. Owned UI architecture and reusable components, drove automated testing and accessibility improvements, and mentored junior developers."
+      },
+      "sedec": {
+        "name": "Front-end Developer Trainee",
+        "issued": "Department of Economic Development of the State of Mato Grosso, Cuiabá/MT",
+        "desc": "Built interfaces for government applications in React, Electron, Vue.js, and Nuxt, integrating REST APIs built with Express, Node.js, and Spring Boot. Worked directly with UX designers on usability and performance in a public-sector production environment."
+      },
+      "videplast": {
+        "name": "Operations Trainee",
+        "issued": "Videplast - Plastic Factory, Várzea Grande/MT",
+        "desc": "Assembled, configured, and maintained network and server infrastructure — virtualization (Hyper-V), Windows Server, and Active Directory — alongside front-end development in Angular 13. The first real exposure to how software and infrastructure intersect."
+      }
+    }
+  },
   "timeline": {
     "journeyLabel": "My Journey",
     "heading": "Engineering Timeline",
