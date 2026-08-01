@@ -1,0 +1,34 @@
+{
+  "skipToContent": "Skip to content",
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "blog": "Blog",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "mainMenu": "Main menu"
+  },
+  "themeToggle": {
+    "switchToLight": "Switch to light theme",
+    "switchToDark": "Switch to dark theme"
+  },
+  "languageSwitcher": {
+    "groupLabel": "Language"
+  },
+  "contentIndex": {
+    "heading": {
+      "post": "Writing",
+      "adr": "Architecture Decision Records"
+    },
+    "metaTitle": "{{heading}} — Blog",
+    "hero": {
+      "post": "Thoughts on software architecture, production systems, and the occasional real bug — written down as they happen.",
+      "adr": "Architecture decisions made on this project, and the reasoning behind them — a running log, not a retrospective."
+    },
+    "allTag": "All",
+    "latestEntry": "Latest Entry",
+    "earlierEntries": "Earlier Entries",
+    "empty": "Nothing here yet."
+  }
+}

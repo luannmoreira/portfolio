@@ -1,11 +1,12 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
+import { renderWithI18n } from "../test-i18n";
 import ContentIndex from "./ContentIndex";
 
 function renderBlogIndex() {
-  return render(
+  return renderWithI18n(
     <MemoryRouter>
-      <ContentIndex type="post" basePath="/blog" heading="Blog" />
+      <ContentIndex type="post" basePath="/blog" />
     </MemoryRouter>
   );
 }
@@ -35,23 +36,22 @@ test("shows each entry's reading time", () => {
   expect(screen.getAllByText(/read$/i).length).toBeGreaterThan(0);
 });
 
-test("renders the given heading", () => {
+test("renders the type's translated heading", () => {
   renderBlogIndex();
 
-  expect(screen.getByRole("heading", { name: "Blog" })).toBeInTheDocument();
+  expect(screen.getByRole("heading", { name: "Writing" })).toBeInTheDocument();
 });
 
 test("works for a second content type (ADR), proving the generalization", () => {
-  render(
+  renderWithI18n(
     <MemoryRouter>
-      <ContentIndex
-        type="adr"
-        basePath="/adr"
-        heading="Architecture Decision Records"
-      />
+      <ContentIndex type="adr" basePath="/adr" />
     </MemoryRouter>
   );
 
+  expect(
+    screen.getByRole("heading", { name: "Architecture Decision Records" })
+  ).toBeInTheDocument();
   expect(screen.getByRole("link", { name: /ADR Placeholder/ })).toHaveAttribute(
     "href",
     "/adr/placeholder"

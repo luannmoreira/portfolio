@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
+import { formatDate, useLocale } from "@portfolio/i18n";
 import {
   loadContent,
   type ContentEntry,
@@ -10,33 +12,13 @@ import { useDocumentMeta } from "../hooks/useDocumentMeta";
 interface ContentIndexProps {
   type: ContentType;
   basePath: string;
-  heading: string;
 }
 
-const HERO_COPY: Partial<Record<ContentType, string>> = {
-  post: "Thoughts on software architecture, production systems, and the occasional real bug — written down as they happen.",
-  adr: "Architecture decisions made on this project, and the reasoning behind them — a running log, not a retrospective.",
+const DATE_OPTIONS: Intl.DateTimeFormatOptions = {
+  day: "2-digit",
+  month: "short",
+  year: "numeric",
 };
-
-const MONTHS = [
-  "JAN",
-  "FEB",
-  "MAR",
-  "APR",
-  "MAY",
-  "JUN",
-  "JUL",
-  "AUG",
-  "SEP",
-  "OCT",
-  "NOV",
-  "DEC",
-];
-
-function formatDate(date: string): string {
-  const [year, month, day] = date.split("-");
-  return `${day} ${MONTHS[Number(month) - 1]} ${year}`;
-}
 
 function TagChip({
   tag,
@@ -65,9 +47,13 @@ function TagChip({
 function FeaturedCard({
   entry,
   basePath,
+  latestEntryLabel,
+  date,
 }: {
   entry: ContentEntry;
   basePath: string;
+  latestEntryLabel: string;
+  date: string;
 }) {
   return (
     <Link
@@ -76,11 +62,11 @@ function FeaturedCard({
     >
       <div className="mb-4 flex items-start justify-between">
         <span className="font-label-mono text-label-mono uppercase tracking-widest text-on-surface-variant">
-          Latest Entry
+          {latestEntryLabel}
         </span>
         <div>
           <span className="font-label-mono text-label-mono text-on-surface-variant">
-            {formatDate(entry.date)}
+            {date}
           </span>
           <span className="ml-4 font-label-mono text-caption text-secondary">
             {entry.readingTime}
@@ -120,9 +106,11 @@ function FeaturedCard({
 function SideCard({
   entry,
   basePath,
+  date,
 }: {
   entry: ContentEntry;
   basePath: string;
+  date: string;
 }) {
   return (
     <Link
@@ -130,7 +118,7 @@ function SideCard({
       className="flex flex-col border border-outline-variant bg-surface-container-lowest p-stack-sm transition-all duration-300 hover:border-primary md:col-span-4"
     >
       <span className="mb-2 font-label-mono text-label-mono text-on-surface-variant">
-        {formatDate(entry.date)}
+        {date}
       </span>
       <span className="mb-2 block font-label-mono text-caption text-secondary">
         {entry.readingTime}
@@ -152,14 +140,18 @@ function SideCard({
   );
 }
 
-function ContentIndex({ type, basePath, heading }: ContentIndexProps) {
+function ContentIndex({ type, basePath }: ContentIndexProps) {
+  const { t, i18n } = useTranslation();
+  const [locale] = useLocale();
+  const heading = t(`contentIndex.heading.${type}`);
+
   const entries = loadContent().filter(
     (entry) => entry.type === type && !entry.draft
   );
   const allTags = [...new Set(entries.flatMap((entry) => entry.tags))].sort();
   const [activeTag, setActiveTag] = useState<string | null>(null);
 
-  useDocumentMeta(`${heading} — Blog`);
+  useDocumentMeta(t("contentIndex.metaTitle", { heading }));
 
   const visible = activeTag
     ? entries.filter((entry) => entry.tags.includes(activeTag))
@@ -167,6 +159,8 @@ function ContentIndex({ type, basePath, heading }: ContentIndexProps) {
   const [featured, ...rest] = visible;
   const sideCards = rest.slice(0, 3);
   const archive = rest.slice(3);
+  const heroCopyKey = `contentIndex.hero.${type}`;
+  const hasHeroCopy = i18n.exists(heroCopyKey);
 
   return (
     <div className="mx-auto max-w-container-max px-margin-mobile pt-32 md:px-gutter">
@@ -174,9 +168,9 @@ function ContentIndex({ type, basePath, heading }: ContentIndexProps) {
         <h1 className="mb-stack-sm font-display text-display text-on-background">
           {heading}
         </h1>
-        {HERO_COPY[type] && (
+        {hasHeroCopy && (
           <p className="font-body-lg text-body-lg leading-relaxed text-on-surface-variant">
-            {HERO_COPY[type]}
+            {t(heroCopyKey)}
           </p>
         )}
       </header>
@@ -184,7 +178,7 @@ function ContentIndex({ type, basePath, heading }: ContentIndexProps) {
       {allTags.length > 0 && (
         <section className="mb-stack-md flex flex-wrap gap-4">
           <TagChip
-            tag="All"
+            tag={t("contentIndex.allTag")}
             active={activeTag === null}
             onClick={() => setActiveTag(null)}
           />
@@ -201,15 +195,25 @@ function ContentIndex({ type, basePath, heading }: ContentIndexProps) {
 
       {!featured && (
         <p className="py-stack-md font-body-md text-body-md text-on-surface-variant">
-          Nothing here yet.
+          {t("contentIndex.empty")}
         </p>
       )}
 
       {featured && (
         <div className="grid grid-cols-1 gap-gutter md:grid-cols-12">
-          <FeaturedCard entry={featured} basePath={basePath} />
+          <FeaturedCard
+            entry={featured}
+            basePath={basePath}
+            latestEntryLabel={t("contentIndex.latestEntry")}
+            date={formatDate(featured.date, locale, DATE_OPTIONS)}
+          />
           {sideCards.map((entry) => (
-            <SideCard key={entry.slug} entry={entry} basePath={basePath} />
+            <SideCard
+              key={entry.slug}
+              entry={entry}
+              basePath={basePath}
+              date={formatDate(entry.date, locale, DATE_OPTIONS)}
+            />
           ))}
         </div>
       )}
@@ -218,7 +222,7 @@ function ContentIndex({ type, basePath, heading }: ContentIndexProps) {
         <section className="mb-stack-lg mt-stack-lg">
           <div className="mb-stack-sm flex items-center gap-4">
             <h2 className="font-headline-lg text-headline-lg text-on-background">
-              Earlier Entries
+              {t("contentIndex.earlierEntries")}
             </h2>
             <div className="h-px flex-grow bg-outline-variant" />
           </div>
@@ -230,7 +234,7 @@ function ContentIndex({ type, basePath, heading }: ContentIndexProps) {
                 className="group flex flex-col border-b border-outline-variant px-2 py-6 transition-colors hover:bg-surface-container-low md:flex-row md:items-center"
               >
                 <span className="w-32 shrink-0 font-label-mono text-label-mono text-secondary">
-                  {formatDate(entry.date)}
+                  {formatDate(entry.date, locale, DATE_OPTIONS)}
                 </span>
                 <span className="flex-grow font-headline-md text-headline-md text-on-background transition-all group-hover:pl-4">
                   {entry.title}
