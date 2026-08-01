@@ -78,4 +78,35 @@ test.describe("language switcher", () => {
 
     await context.close();
   });
+
+  // Regression test: pt-BR strings run longer than their English source and
+  // can wrap a `.text-plate` heading (Hero's "Construindo sistemas que
+  // escalam.") at desktop widths where English never wrapped — a fixed
+  // `max-width: 767px` media query guarding .text-plate's anti-gap
+  // line-height used to assume headings only wrap below that breakpoint,
+  // which silently stopped holding once translated content could be
+  // longer than the English string the assumption was written against.
+  // Checked at a representative desktop width (768px, where this exact
+  // heading was observed wrapping in pt-BR but not en) — the underlying
+  // fix removed the viewport gate entirely, so this should hold at every
+  // width, but pinning one concrete desktop width here is what actually
+  // catches a reintroduced viewport gate.
+  test("text-plate headings keep their anti-clipping line-height at desktop widths too, in every locale", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 768, height: 900 });
+    await page.goto("/?lang=pt-BR");
+
+    const ratios = await page.$$eval(".text-plate", (elements) =>
+      elements.map((el) => {
+        const style = getComputedStyle(el);
+        return parseFloat(style.lineHeight) / parseFloat(style.fontSize);
+      })
+    );
+
+    expect(ratios.length).toBeGreaterThan(0);
+    for (const ratio of ratios) {
+      expect(ratio).toBeGreaterThanOrEqual(1.7);
+    }
+  });
 });

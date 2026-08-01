@@ -141,13 +141,17 @@
 /* `padding-block: 0.35em` needs line-height >= 1.7 (2x that padding, as a
    ratio of font-size) so two wrapped lines' opaque backdrops always meet
    with no gap for a dot to show through and never overlap into each
-   other's glyphs — font-size-independent, but only enforced below `md`,
-   where headings are forced to wrap in the first place (desktop's own
-   line-heights are left alone since nothing there currently wraps). */
-@media (max-width: 767px) {
-  .text-plate {
-    line-height: 1.75;
-  }
+   other's glyphs. Previously gated to `max-width: 767px` on the assumption
+   that desktop headings never wrap — that assumption broke once translated
+   (pt-BR) strings, which run longer than their English source, started
+   wrapping these same headings at desktop widths too (i18n added a second,
+   unpredictable variable — string length — to whether a given heading
+   wraps at a given width, so a fixed viewport-width heuristic can't reliably
+   predict it any more). Applied unconditionally now: correctness for
+   wrapped, multi-locale content matters more here than preserving each
+   heading's original tight single-line leading. */
+.text-plate {
+  line-height: 1.75;
 }
 
 .text-plate-inverse {
