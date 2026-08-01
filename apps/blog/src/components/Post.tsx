@@ -1,5 +1,7 @@
 import { Suspense, useState } from "react";
 import { Link, useParams } from "react-router";
+import { useTranslation } from "react-i18next";
+import { formatDate, useLocale } from "@portfolio/i18n";
 import {
   getPostComponent,
   loadContent,
@@ -12,32 +14,19 @@ interface PostProps {
   basePath: string;
 }
 
-const BASE_LABELS: Record<string, string> = {
-  "/blog": "Blog",
-  "/adr": "ADRs",
+const BASE_LABEL_KEY: Record<string, string> = {
+  "/blog": "blog",
+  "/adr": "adr",
 };
 
-const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-
-function formatDate(date: string): string {
-  const [year, month, day] = date.split("-");
-  return `${MONTHS[Number(month) - 1]} ${Number(day)}, ${year}`;
-}
+const DATE_OPTIONS: Intl.DateTimeFormatOptions = {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+};
 
 function ShareRow({ title }: { title: string }) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   const url = window.location.href;
 
@@ -50,7 +39,7 @@ function ShareRow({ title }: { title: string }) {
   return (
     <div className="mt-stack-md flex flex-col gap-4 border-t border-outline-variant pt-8">
       <span className="font-label-mono text-label-mono uppercase tracking-widest text-secondary">
-        Share this entry
+        {t("post.shareThisEntry")}
       </span>
       <div className="flex gap-6">
         <a
@@ -65,7 +54,7 @@ function ShareRow({ title }: { title: string }) {
           >
             share
           </span>
-          <span className="font-caption text-caption">Twitter / X</span>
+          <span className="font-caption text-caption">{t("post.twitter")}</span>
         </a>
         <a
           href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`}
@@ -93,7 +82,7 @@ function ShareRow({ title }: { title: string }) {
             content_copy
           </span>
           <span className="font-caption text-caption">
-            {copied ? "Copied!" : "Copy Link"}
+            {copied ? t("pre.copied") : t("post.copyLink")}
           </span>
         </button>
       </div>
@@ -108,6 +97,8 @@ function RelatedEntries({
   entries: ContentEntry[];
   basePath: string;
 }) {
+  const { t } = useTranslation();
+
   if (entries.length === 0) return null;
 
   return (
@@ -115,13 +106,13 @@ function RelatedEntries({
       <div className="mx-auto max-w-container-max px-margin-mobile py-stack-md md:px-gutter">
         <div className="mb-stack-sm flex items-end justify-between">
           <h2 className="font-headline-lg text-headline-lg text-on-background">
-            More Entries
+            {t("post.moreEntries")}
           </h2>
           <Link
             to={basePath}
             className="border-b border-secondary font-label-mono text-label-mono text-secondary transition-all hover:text-primary"
           >
-            View Archive
+            {t("post.viewArchive")}
           </Link>
         </div>
         <div className="grid gap-8 md:grid-cols-2">
@@ -143,7 +134,7 @@ function RelatedEntries({
                 {entry.excerpt}
               </p>
               <div className="mt-6 flex items-center gap-2 text-caption font-bold uppercase tracking-wider text-primary">
-                Read
+                {t("post.read")}
                 <span
                   className="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-1"
                   aria-hidden="true"
@@ -160,13 +151,17 @@ function RelatedEntries({
 }
 
 function Post({ basePath }: PostProps) {
+  const { t } = useTranslation();
+  const [locale] = useLocale();
   const { slug } = useParams();
   const allEntries = loadContent();
   const PostBody = slug ? getPostComponent(slug) : undefined;
   const entry = slug ? allEntries.find((e) => e.slug === slug) : undefined;
 
   useDocumentMeta(
-    entry ? `${entry.title} — Blog` : "Not Found — Blog",
+    entry
+      ? t("post.metaTitle", { title: entry.title })
+      : t("notFound.metaTitle"),
     entry?.excerpt
   );
 
@@ -183,10 +178,12 @@ function Post({ basePath }: PostProps) {
     )
     .slice(0, 2);
 
+  const baseLabel = t(`post.baseLabel.${BASE_LABEL_KEY[basePath] ?? "index"}`);
+
   return (
     <>
       <article className="mx-auto max-w-[800px] px-margin-mobile pb-stack-md pt-32 md:px-gutter">
-        <nav className="mb-stack-sm" aria-label="Breadcrumb">
+        <nav className="mb-stack-sm" aria-label={t("post.breadcrumbLabel")}>
           <Link
             to={basePath}
             className="group flex items-center gap-2 text-secondary transition-all duration-200 hover:text-primary"
@@ -198,7 +195,7 @@ function Post({ basePath }: PostProps) {
               arrow_back
             </span>
             <span className="font-label-mono text-label-mono uppercase tracking-tight">
-              Back to {BASE_LABELS[basePath] ?? "Index"}
+              {t("post.backTo", { label: baseLabel })}
             </span>
           </Link>
         </nav>
@@ -226,7 +223,7 @@ function Post({ basePath }: PostProps) {
               >
                 calendar_today
               </span>
-              <span>{formatDate(entry.date)}</span>
+              <span>{formatDate(entry.date, locale, DATE_OPTIONS)}</span>
             </div>
             <div className="flex items-center gap-2">
               <span
@@ -240,7 +237,7 @@ function Post({ basePath }: PostProps) {
           </div>
         </header>
         <section className="prose font-body-lg text-body-lg leading-relaxed text-on-surface-variant">
-          <Suspense fallback={<p>Loading…</p>}>
+          <Suspense fallback={<p>{t("post.loading")}</p>}>
             {/* eslint-disable-next-line react-hooks/static-components -- getPostComponent
                 caches by slug (loader.ts), so this reference is stable across
                 renders for a given slug; verified by loader.test.ts's

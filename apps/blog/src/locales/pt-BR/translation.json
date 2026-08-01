@@ -31,6 +31,23 @@
     "copy": "Copiar",
     "copied": "Copiado!"
   },
+  "post": {
+    "metaTitle": "{{title}} — Blog",
+    "loading": "Carregando…",
+    "breadcrumbLabel": "Trilha de navegação",
+    "backTo": "Voltar para {{label}}",
+    "baseLabel": {
+      "blog": "Blog",
+      "adr": "ADRs",
+      "index": "Índice"
+    },
+    "shareThisEntry": "Compartilhar esta publicação",
+    "twitter": "Twitter / X",
+    "copyLink": "Copiar Link",
+    "moreEntries": "Mais Publicações",
+    "viewArchive": "Ver Arquivo",
+    "read": "Ler"
+  },
   "notFound": {
     "metaTitle": "Não Encontrado — Blog",
     "heading": "Não Encontrado",
