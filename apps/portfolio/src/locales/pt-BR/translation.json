@@ -10,6 +10,38 @@
     "closeMenu": "Fechar menu",
     "mainMenu": "Menu principal"
   },
+  "hero": {
+    "eyebrow": "Engenheiro de Software",
+    "heading": "Construindo sistemas que escalam.",
+    "body": "Sou Engenheiro de Software com experiência em produção em front-end e infraestrutura — de gerenciamento remoto de dispositivos na ShellHub a plataformas governamentais, e os servidores por trás delas antes disso. Me importo com arquitetura, testes e código que dura, não apenas com a aparência.",
+    "viewProjects": "Ver Projetos",
+    "contactMe": "Fale Comigo"
+  },
+  "about": {
+    "metaTitle": "Sobre • Luann Curioso",
+    "metaDescription": "Background, habilidades, experiência e as ferramentas usadas no dia a dia — de infraestrutura e sistemas governamentais a engenharia front-end em produção na ShellHub e na OS Systems.",
+    "philosophyEyebrow": "Filosofia Profissional",
+    "philosophyHeading": "Engenharia de software é mais do que apenas escrever código; é sobre resolver problemas e construir <highlight>sistemas sustentáveis</highlight>.",
+    "bioParagraph1": "Sou Engenheiro de Software com um background focado em front-end — mais de cinco anos construindo interfaces de produção em TypeScript, React e Vue. Meu caminho começou na infraestrutura: configurando servidores, virtualização e Active Directory antes mesmo de lançar uma interface web, e essa exposição inicial a sistemas ainda molda como penso sobre software hoje. Desde então, trabalhei em plataformas de produção, corporativas e governamentais — o produto de gerenciamento remoto de dispositivos da ShellHub, ferramentas de infraestrutura da OS Systems e uma aplicação do setor público para o Estado de Mato Grosso — com foco em arquitetura reutilizável, testes automatizados, acessibilidade e qualidade de código, não apenas UI.",
+    "bioParagraph2": "Sou contribuidor open-source do ShellHub e do UpdateHub, AWS Certified Cloud Practitioner, e atualmente finalizando um Bacharelado em Sistemas de Informação. Meus interesses continuam se expandindo para além do navegador, rumo a backend e engenharia de plataforma, mas o fio condutor sempre foi me importar com como o software é realmente construído, não apenas com sua aparência. Fora isso, passo meu tempo livre cozinhando e com cachorros.",
+    "profileAlt": "Luann Curioso",
+    "ctaHeading": "Procurando um parceiro técnico?",
+    "ctaBody": "Sempre interessado em projetos colaborativos e posições de alto impacto onde a excelência técnica é um valor essencial.",
+    "getInTouch": "Entrar em Contato",
+    "viewResume": "Ver Currículo"
+  },
+  "contact": {
+    "metaTitle": "Contato • Luann Curioso",
+    "metaDescription": "Entre em contato sobre arquitetura técnica, performance de software ou possíveis colaborações em sistemas complexos.",
+    "heading": "Vamos falar sobre engenharia.",
+    "body": "Sempre aberto a discutir arquitetura técnica, performance de software ou possíveis colaborações em sistemas complexos. Entre em contato pelos canais abaixo.",
+    "primaryChannel": "Canal Principal",
+    "emailHeading": "E-mail",
+    "emailDesc": "Comunicação direta para dúvidas e discussões técnicas.",
+    "professional": "Profissional",
+    "development": "Desenvolvimento",
+    "direct": "Direto"
+  },
   "uses": {
     "heading": "Hardware e Software",
     "items": {

@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
 
 import AboutSection from "../components/About";
 import Habilidades from "../components/Habilidades";
@@ -10,11 +11,9 @@ import { useDocumentMeta } from "../hooks/useDocumentMeta";
 import { useScrollToSection } from "../hooks/useScrollToSection";
 
 function About() {
+  const { t } = useTranslation();
   useScrollToSection();
-  useDocumentMeta(
-    "About • Luann Curioso",
-    "Background, skills, experience, and the tools used day to day — from infrastructure and government systems to production front-end engineering at ShellHub and OS Systems."
-  );
+  useDocumentMeta(t("about.metaTitle"), t("about.metaDescription"));
 
   return (
     <div className="mx-auto max-w-container-max px-margin-mobile md:px-gutter">
@@ -29,7 +28,7 @@ function About() {
 
       <section className="mb-stack-lg">
         <div className="overflow-hidden rounded-lg border border-white/5 bg-[#1E293B] p-6 shadow-xl">
-          <div className="mb-4 flex gap-2">
+          <div aria-hidden="true" className="mb-4 flex gap-2">
             <div className="h-3 w-3 rounded-full bg-[#FF5F56]" />
             <div className="h-3 w-3 rounded-full bg-[#FFBD2E]" />
             <div className="h-3 w-3 rounded-full bg-[#27C93F]" />
@@ -57,13 +56,12 @@ function About() {
       >
         <h2 className="mb-6 font-headline-lg text-headline-lg">
           <span className="text-plate text-plate-inverse">
-            Looking for a technical partner?
+            {t("about.ctaHeading")}
           </span>
         </h2>
         <p className="mx-auto mb-8 max-w-xl font-body-lg text-body-lg">
           <span className="text-plate text-plate-inverse text-inverse-on-surface/80">
-            Always interested in collaborative projects and high-impact roles
-            where technical excellence is a core value.
+            {t("about.ctaBody")}
           </span>
         </p>
         <div className="flex flex-col justify-center gap-4 sm:flex-row">
@@ -71,13 +69,13 @@ function About() {
             to="/contact"
             className="rounded-lg bg-inverse-on-surface px-8 py-3 font-headline-md text-inverse-surface transition-colors hover:opacity-90"
           >
-            Get in Touch
+            {t("about.getInTouch")}
           </Link>
           <Link
             to="/resume"
             className="rounded-lg border border-inverse-on-surface/30 bg-inverse-surface/60 px-8 py-3 font-headline-md text-inverse-on-surface backdrop-blur-md transition-colors hover:bg-inverse-on-surface/10"
           >
-            View Resume
+            {t("about.viewResume")}
           </Link>
         </div>
       </DotCanvas>

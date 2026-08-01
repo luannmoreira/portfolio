@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import DotCanvas from "./DotCanvas";
 import GithubIcon from "./icons/GithubIcon";
 import LinkedinIcon from "./icons/LinkedinIcon";
@@ -5,19 +6,17 @@ import WhatsappIcon from "./icons/WhatsappIcon";
 import MaterialIcon from "./icons/MaterialIcon";
 
 export default function Contact() {
+  const { t } = useTranslation();
+
   return (
     <DotCanvas className="flex-1 pb-stack-lg">
       <div className="mx-auto max-w-container-max px-margin-mobile md:px-gutter">
         <section className="mb-stack-lg">
           <h1 className="mb-stack-sm max-w-2xl font-display text-display">
-            <span className="text-plate">Let's talk about engineering.</span>
+            <span className="text-plate">{t("contact.heading")}</span>
           </h1>
           <p className="max-w-xl font-body-lg text-body-lg text-on-surface-variant">
-            <span className="text-plate">
-              Always open to discussing technical architecture, software
-              performance, or potential collaborations on complex systems. Reach
-              out via the channels below.
-            </span>
+            <span className="text-plate">{t("contact.body")}</span>
           </p>
         </section>
 
@@ -28,13 +27,13 @@ export default function Contact() {
           >
             <div className="mb-stack-md">
               <span className="mb-2 block font-label-mono text-label-mono uppercase text-secondary">
-                Primary Channel
+                {t("contact.primaryChannel")}
               </span>
               <h2 className="font-headline-lg text-headline-lg text-primary">
-                Email
+                {t("contact.emailHeading")}
               </h2>
               <p className="mt-2 font-body-md text-body-md text-on-surface-variant">
-                Direct communication for inquiries and technical discussions.
+                {t("contact.emailDesc")}
               </p>
             </div>
             <div className="flex items-center gap-2 font-bold text-primary transition-transform duration-300 group-hover:translate-x-2">
@@ -58,7 +57,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <span className="block font-label-mono text-label-mono uppercase text-secondary">
-                    Professional
+                    {t("contact.professional")}
                   </span>
                   <h2 className="font-headline-md text-headline-md text-primary">
                     LinkedIn
@@ -83,7 +82,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <span className="block font-label-mono text-label-mono uppercase text-secondary">
-                    Development
+                    {t("contact.development")}
                   </span>
                   <h2 className="font-headline-md text-headline-md text-primary">
                     GitHub
@@ -108,7 +107,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <span className="block font-label-mono text-label-mono uppercase text-secondary">
-                    Direct
+                    {t("contact.direct")}
                   </span>
                   <h2 className="font-headline-md text-headline-md text-primary">
                     WhatsApp

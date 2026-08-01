@@ -10,6 +10,38 @@
     "closeMenu": "Close menu",
     "mainMenu": "Main menu"
   },
+  "hero": {
+    "eyebrow": "Software Engineer",
+    "heading": "Building systems that scale.",
+    "body": "I'm a Software Engineer with production experience across front-end and infrastructure — from remote device management at ShellHub to government platforms, and the servers underneath them before that. I care about architecture, testing, and code that lasts, not just how it looks.",
+    "viewProjects": "View Projects",
+    "contactMe": "Contact Me"
+  },
+  "about": {
+    "metaTitle": "About • Luann Curioso",
+    "metaDescription": "Background, skills, experience, and the tools used day to day — from infrastructure and government systems to production front-end engineering at ShellHub and OS Systems.",
+    "philosophyEyebrow": "Professional Philosophy",
+    "philosophyHeading": "Software engineering is more than just writing code; it's about solving problems and building <highlight>sustainable systems</highlight>.",
+    "bioParagraph1": "I'm a Software Engineer with a front-end-heavy background — five-plus years building production interfaces in TypeScript, React, and Vue. My path started in infrastructure: configuring servers, virtualization, and Active Directory before I ever shipped a web interface, and that early exposure to systems still shapes how I think about software today. Since then I've worked across production, enterprise, and government platforms — ShellHub's remote device management product, OS Systems' infrastructure tooling, and a public-sector application for the State of Mato Grosso — with a focus on reusable architecture, automated testing, accessibility, and code quality, not just UI.",
+    "bioParagraph2": "I'm an open-source contributor to ShellHub and UpdateHub, AWS Certified Cloud Practitioner, and currently finishing a Bachelor's in Information Systems. My interests keep expanding past the browser, toward backend and platform engineering, but the throughline has always been caring about how software is actually built, not just how it looks. Outside of that, I spend my free time cooking and hanging out with dogs.",
+    "profileAlt": "Luann Curioso",
+    "ctaHeading": "Looking for a technical partner?",
+    "ctaBody": "Always interested in collaborative projects and high-impact roles where technical excellence is a core value.",
+    "getInTouch": "Get in Touch",
+    "viewResume": "View Resume"
+  },
+  "contact": {
+    "metaTitle": "Contact • Luann Curioso",
+    "metaDescription": "Get in touch about technical architecture, software performance, or potential collaborations on complex systems.",
+    "heading": "Let's talk about engineering.",
+    "body": "Always open to discussing technical architecture, software performance, or potential collaborations on complex systems. Reach out via the channels below.",
+    "primaryChannel": "Primary Channel",
+    "emailHeading": "Email",
+    "emailDesc": "Direct communication for inquiries and technical discussions.",
+    "professional": "Professional",
+    "development": "Development",
+    "direct": "Direct"
+  },
   "uses": {
     "heading": "Hardware & Software",
     "items": {
