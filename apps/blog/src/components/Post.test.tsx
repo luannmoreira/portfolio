@@ -1,9 +1,10 @@
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router";
+import { renderWithI18n } from "../test-i18n";
 import Post from "./Post";
 
 function renderAtSlug(slug: string) {
-  return render(
+  return renderWithI18n(
     <MemoryRouter initialEntries={[`/blog/${slug}`]}>
       <Routes>
         <Route path="/blog/:slug" element={<Post basePath="/blog" />} />

@@ -20,6 +20,12 @@
   "languageSwitcher": {
     "groupLabel": "Language"
   },
+  "notFound": {
+    "metaTitle": "Not Found — Blog",
+    "heading": "Not Found",
+    "body": "Page not found.",
+    "backToBlog": "Back to Blog"
+  },
   "contentIndex": {
     "heading": {
       "post": "Writing",

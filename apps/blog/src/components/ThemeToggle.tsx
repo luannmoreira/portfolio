@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { Theme } from "../hooks/useTheme";
 
 const SUN_PATH =
@@ -12,13 +13,17 @@ interface ThemeToggleProps {
 }
 
 export default function ThemeToggle({ theme, toggleTheme }: ThemeToggleProps) {
-  const switchingTo = theme === "light" ? "dark" : "light";
+  const { t } = useTranslation();
+  const label =
+    theme === "light"
+      ? t("themeToggle.switchToDark")
+      : t("themeToggle.switchToLight");
 
   return (
     <button
       type="button"
       onClick={toggleTheme}
-      aria-label={`Switch to ${switchingTo} theme`}
+      aria-label={label}
       className="rounded-full p-3 text-on-surface transition-colors hover:text-primary"
     >
       <svg
