@@ -1,0 +1,20 @@
+{
+  "skipToContent": "Pular para o conteúdo",
+  "nav": {
+    "home": "Início",
+    "about": "Sobre",
+    "contact": "Contato",
+    "blog": "Blog",
+    "resume": "Currículo",
+    "openMenu": "Abrir menu",
+    "closeMenu": "Fechar menu",
+    "mainMenu": "Menu principal"
+  },
+  "themeToggle": {
+    "switchToLight": "Mudar para o tema claro",
+    "switchToDark": "Mudar para o tema escuro"
+  },
+  "languageSwitcher": {
+    "groupLabel": "Idioma"
+  }
+}

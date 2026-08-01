@@ -1,0 +1,20 @@
+{
+  "skipToContent": "Skip to content",
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "blog": "Blog",
+    "resume": "Resume",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "mainMenu": "Main menu"
+  },
+  "themeToggle": {
+    "switchToLight": "Switch to light theme",
+    "switchToDark": "Switch to dark theme"
+  },
+  "languageSwitcher": {
+    "groupLabel": "Language"
+  }
+}

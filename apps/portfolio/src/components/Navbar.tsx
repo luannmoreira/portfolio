@@ -1,5 +1,7 @@
 import { Link, useLocation } from "react-router";
-import { Navbar as SharedNavbar } from "@portfolio/ui";
+import { useTranslation } from "react-i18next";
+import { Navbar as SharedNavbar, LanguageSwitcher } from "@portfolio/ui";
+import { useLocale, withLocale } from "@portfolio/i18n";
 import ThemeToggle from "./ThemeToggle";
 import { useTheme } from "../hooks/useTheme";
 import type { Theme } from "../hooks/useTheme";
@@ -23,7 +25,7 @@ function withTheme(url: string, theme: Theme): string {
 const BLOG_URL = import.meta.env.VITE_BLOG_URL ?? "https://example.com/blog/";
 
 interface NavItem {
-  label: string;
+  labelKey: string;
   to: string;
   /** Route this item is considered "active" for (anchor items share their
    * parent route's pathname, so they don't get their own active state). */
@@ -38,22 +40,31 @@ interface NavItem {
 // items; the Engineering Timeline on Home has its own per-milestone hash
 // deep links (see Timeline.tsx) rather than a single top-level nav entry.
 const navItems: NavItem[] = [
-  { label: "Home", to: "/", activePath: "/" },
-  { label: "About", to: "/about", activePath: "/about" },
-  { label: "Contact", to: "/contact", activePath: "/contact" },
-  { label: "Blog", to: BLOG_URL, external: true },
+  { labelKey: "nav.home", to: "/", activePath: "/" },
+  { labelKey: "nav.about", to: "/about", activePath: "/about" },
+  { labelKey: "nav.contact", to: "/contact", activePath: "/contact" },
+  { labelKey: "nav.blog", to: BLOG_URL, external: true },
 ];
 
 export default function Navbar() {
   const { pathname } = useLocation();
+  const { t } = useTranslation();
   const [theme, toggleTheme] = useTheme();
+  const [locale, setLocale] = useLocale();
 
   function isActive(item: NavItem) {
     return Boolean(item.activePath && pathname === item.activePath);
   }
 
+  function crossAppHref(to: string) {
+    return withTheme(withLocale(to, locale), theme);
+  }
+
   return (
     <SharedNavbar
+      openMenuLabel={t("nav.openMenu")}
+      closeMenuLabel={t("nav.closeMenu")}
+      dialogLabel={t("nav.mainMenu")}
       brand={
         <Link
           to="/"
@@ -66,16 +77,16 @@ export default function Navbar() {
         <ul className="hidden items-center gap-gutter md:flex">
           {navItems.map((item) =>
             item.external ? (
-              <li key={item.label}>
+              <li key={item.labelKey}>
                 <a
-                  href={withTheme(item.to, theme)}
+                  href={crossAppHref(item.to)}
                   className="text-on-surface-variant transition-colors duration-200 hover:text-primary"
                 >
-                  {item.label}
+                  {t(item.labelKey)}
                 </a>
               </li>
             ) : (
-              <li key={item.label}>
+              <li key={item.labelKey}>
                 <Link
                   to={item.to}
                   className={
@@ -84,7 +95,7 @@ export default function Navbar() {
                       : "text-on-surface-variant transition-colors duration-200 hover:text-primary"
                   }
                 >
-                  {item.label}
+                  {t(item.labelKey)}
                 </Link>
               </li>
             )
@@ -96,15 +107,15 @@ export default function Navbar() {
           {navItems.map((item) =>
             item.external ? (
               <a
-                key={item.label}
-                href={withTheme(item.to, theme)}
+                key={item.labelKey}
+                href={crossAppHref(item.to)}
                 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface-variant hover:text-primary"
               >
-                {item.label}
+                {t(item.labelKey)}
               </a>
             ) : (
               <Link
-                key={item.label}
+                key={item.labelKey}
                 to={item.to}
                 className={
                   isActive(item)
@@ -112,7 +123,7 @@ export default function Navbar() {
                     : "font-headline-lg-mobile text-headline-lg-mobile text-on-surface-variant hover:text-primary"
                 }
               >
-                {item.label}
+                {t(item.labelKey)}
               </Link>
             )
           )}
@@ -121,17 +132,24 @@ export default function Navbar() {
             to="/resume"
             className="w-full rounded-lg bg-primary py-4 text-center font-bold uppercase tracking-widest text-on-primary transition-opacity hover:opacity-90"
           >
-            Resume
+            {t("nav.resume")}
           </Link>
         </div>
       }
       themeToggle={<ThemeToggle theme={theme} toggleTheme={toggleTheme} />}
+      languageSwitcher={
+        <LanguageSwitcher
+          locale={locale}
+          onChange={setLocale}
+          label={t("languageSwitcher.groupLabel")}
+        />
+      }
       desktopCta={
         <Link
           to="/resume"
           className="rounded-lg bg-primary px-6 py-2 font-bold text-on-primary transition-opacity hover:opacity-90"
         >
-          Resume
+          {t("nav.resume")}
         </Link>
       }
     />

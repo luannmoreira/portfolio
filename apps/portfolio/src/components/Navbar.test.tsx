@@ -1,13 +1,19 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
+import { renderWithI18n } from "../test-i18n";
 import Navbar from "./Navbar";
 
-test("renders route and anchor nav links with the expected destinations", () => {
-  render(
+function renderNavbar() {
+  return renderWithI18n(
     <MemoryRouter>
       <Navbar />
     </MemoryRouter>
   );
+}
+
+test("renders route and anchor nav links with the expected destinations", () => {
+  renderNavbar();
 
   const expectedLinks: [string, string][] = [
     ["Home", "/"],
@@ -28,23 +34,30 @@ test("renders route and anchor nav links with the expected destinations", () => 
 });
 
 test("renders a mobile menu toggle", () => {
-  render(
-    <MemoryRouter>
-      <Navbar />
-    </MemoryRouter>
-  );
+  renderNavbar();
 
   expect(screen.getByRole("button", { name: "Open menu" })).toBeInTheDocument();
 });
 
 test("renders the theme toggle", () => {
-  render(
-    <MemoryRouter>
-      <Navbar />
-    </MemoryRouter>
-  );
+  renderNavbar();
 
   expect(
     screen.getByRole("button", { name: /switch to (light|dark) theme/i })
   ).toBeInTheDocument();
+});
+
+test("renders the language switcher and switches the active locale", async () => {
+  const user = userEvent.setup();
+  renderNavbar();
+
+  expect(screen.getByRole("group", { name: "Language" })).toBeInTheDocument();
+  const ptButton = screen.getByRole("button", { name: "PT" });
+
+  await user.click(ptButton);
+
+  expect(ptButton).toHaveAttribute("aria-current", "true");
+  expect(
+    screen.getAllByRole("link", { name: "Início" }).length
+  ).toBeGreaterThan(0);
 });
