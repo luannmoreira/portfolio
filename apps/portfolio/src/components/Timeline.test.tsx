@@ -1,18 +1,33 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
+import { renderWithI18n } from "../test-i18n";
 import Timeline from "./Timeline";
 import { timelineMilestones } from "../content/timeline";
+import en from "../locales/en/translation.json";
 
 beforeEach(() => {
   vi.clearAllMocks();
 });
 
 function renderTimeline(initialEntry = "/") {
-  return render(
+  return renderWithI18n(
     <MemoryRouter initialEntries={[initialEntry]}>
       <Timeline />
     </MemoryRouter>
   );
+}
+
+function copyFor(id: string) {
+  return en.timeline.milestones[id as keyof typeof en.timeline.milestones];
+}
+
+function yearFor(id: string) {
+  const source = timelineMilestones.find((milestone) => milestone.id === id)!;
+  return /^\d{4}$/.test(source.year)
+    ? source.year
+    : en.timeline.year[
+        source.year.toLowerCase() as keyof typeof en.timeline.year
+      ];
 }
 
 test("renders an anchor target for cross-page nav", () => {
@@ -24,10 +39,11 @@ test("renders every milestone's title and summary", () => {
   renderTimeline();
 
   for (const milestone of timelineMilestones) {
+    const copy = copyFor(milestone.id);
     expect(
-      screen.getByRole("heading", { name: milestone.title })
+      screen.getByRole("heading", { name: copy.title })
     ).toBeInTheDocument();
-    expect(screen.getByText(milestone.summary)).toBeInTheDocument();
+    expect(screen.getByText(copy.summary)).toBeInTheDocument();
   }
 });
 
@@ -37,7 +53,7 @@ test("renders every milestone's own year label (no shared group heading)", () =>
   for (const milestone of timelineMilestones) {
     const item = container.querySelector(`#${milestone.id}`) as HTMLElement;
     expect(item).not.toBeNull();
-    expect(item.textContent).toContain(milestone.year);
+    expect(item.textContent).toContain(yearFor(milestone.id));
   }
 });
 

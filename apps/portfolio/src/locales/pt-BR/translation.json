@@ -10,6 +10,100 @@
     "closeMenu": "Fechar menu",
     "mainMenu": "Menu principal"
   },
+  "timeline": {
+    "journeyLabel": "Minha Jornada",
+    "heading": "Linha do Tempo de Engenharia",
+    "trackLabel": "Linha do tempo de engenharia",
+    "detailsToggle": "Detalhes",
+    "status": {
+      "completed": "Concluído",
+      "in-progress": "Em andamento",
+      "planned": "Planejado"
+    },
+    "year": {
+      "today": "Hoje",
+      "future": "Futuro"
+    },
+    "milestones": {
+      "videplast": {
+        "title": "Videplast",
+        "subtitle": "Estagiário de Operações",
+        "summary": "Desenvolvi aplicações de intranet interna para apoiar operações de manufatura, gestão de estoque e fluxos de trabalho internos da empresa."
+      },
+      "sedec": {
+        "title": "SEDEC",
+        "subtitle": "Estagiário de Desenvolvimento Front-end",
+        "summary": "Desenvolvi aplicações governamentais voltadas ao público, criando funcionalidades usadas por empresas e cidadãos em todo o Mato Grosso.",
+        "details": "Desenvolvi aplicações governamentais voltadas ao público, incluindo o Invest-MT, criando funcionalidades usadas por empresas e cidadãos em todo o Mato Grosso."
+      },
+      "os-systems": {
+        "title": "OS Systems",
+        "subtitle": "Engenheiro Front-end",
+        "summary": "Trabalhei em aplicações corporativas usando React e TypeScript, melhorando a arquitetura front-end e a experiência de desenvolvimento."
+      },
+      "shellhub": {
+        "title": "ShellHub",
+        "subtitle": "Contribuidor Open Source",
+        "summary": "Contribuí para o ecossistema front-end do ShellHub implementando novas funcionalidades, melhorando a arquitetura e ajudando a padronizar práticas de teste."
+      },
+      "aws-cloud-practitioner": {
+        "title": "AWS Cloud Practitioner",
+        "summary": "Obtive minha primeira certificação AWS, iniciando minha transição para a engenharia de software cloud-native."
+      },
+      "engineering-growth": {
+        "title": "Crescimento em Engenharia",
+        "summary": "Foco em arquitetura de software, escalabilidade front-end, estratégias de teste, código limpo e boas práticas de engenharia."
+      },
+      "portfolio-rebranding": {
+        "title": "Reformulação do Portfólio",
+        "summary": "Reconstruindo meu portfólio para me representar melhor como engenheiro de software, e não apenas como desenvolvedor front-end."
+      },
+      "kubernetes-cka": {
+        "title": "Kubernetes CKA",
+        "summary": "Estudando para a certificação Certified Kubernetes Administrator para aprofundar meu conhecimento em engenharia de plataforma."
+      },
+      "aws-developer": {
+        "title": "AWS Developer",
+        "summary": "Me preparando para a certificação AWS Developer Associate."
+      },
+      "mens-flexibility-app": {
+        "title": "App de Flexibilidade Masculina",
+        "summary": "Construindo uma plataforma de mobilidade e flexibilidade projetada especificamente para a musculatura e limitações masculinas."
+      },
+      "most-boring-project": {
+        "title": "O Projeto Mais Chato de Todos",
+        "summary": "Projetando uma plataforma de notificações intencionalmente simples, construída com arquitetura de nível empresarial para demonstrar sistemas distribuídos, design orientado a eventos, containerização e escalabilidade."
+      },
+      "technical-writing": {
+        "title": "Redação Técnica",
+        "summary": "Publicando artigos focados em decisões de engenharia, arquitetura, trade-offs e design de software, em vez de tutoriais simples."
+      },
+      "kubernetes-operators": {
+        "title": "Operadores Kubernetes",
+        "summary": "Construir operadores Kubernetes prontos para produção."
+      },
+      "platform-engineering": {
+        "title": "Engenharia de Plataforma",
+        "summary": "Expandir para engenharia de plataforma, automação de infraestrutura e sistemas cloud-native."
+      },
+      "distributed-systems": {
+        "title": "Sistemas Distribuídos",
+        "summary": "Desenvolver expertise em arquiteturas orientadas a eventos, sistemas de mensageria e design de back-end em larga escala."
+      },
+      "open-source": {
+        "title": "Open Source",
+        "summary": "Lançar e manter projetos open-source relevantes."
+      },
+      "saas-products": {
+        "title": "Produtos SaaS",
+        "summary": "Construir e lançar negócios SaaS independentes."
+      },
+      "conference-talks": {
+        "title": "Palestras em Conferências",
+        "summary": "Compartilhar conhecimento de engenharia por meio de palestras técnicas e eventos da comunidade."
+      }
+    }
+  },
   "principles": {
     "heading": "Princípios de Engenharia",
     "intro": "Os frameworks e modelos mentais que uso para navegar por paisagens técnicas complexas.",

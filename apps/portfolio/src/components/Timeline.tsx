@@ -1,9 +1,11 @@
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router";
+import { useTranslation } from "react-i18next";
 import TimelineItem from "./TimelineItem";
 import { useActiveTimelineItem } from "../hooks/useActiveTimelineItem";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 import { timelineMilestones } from "../content/timeline";
+import type { TimelineMilestone } from "../content/timeline";
 
 // Module scope, not per-render — useActiveTimelineItem depends on this
 // array's identity staying stable across renders.
@@ -14,9 +16,29 @@ const milestoneIdSet = new Set(milestoneIds);
 // vertical stack to a horizontally-scrolling row here, per prompt.md.
 const HORIZONTAL_BREAKPOINT = "(min-width: 768px)";
 
+const REAL_YEAR = /^\d{4}$/;
+
 export default function Timeline() {
+  const { t, i18n } = useTranslation();
   const trackRef = useRef<HTMLOListElement>(null);
   const isHorizontal = useMediaQuery(HORIZONTAL_BREAKPOINT);
+
+  const resolvedMilestones: TimelineMilestone[] = timelineMilestones.map(
+    (source) => {
+      const subtitleKey = `timeline.milestones.${source.id}.subtitle`;
+      const detailsKey = `timeline.milestones.${source.id}.details`;
+      return {
+        ...source,
+        year: REAL_YEAR.test(source.year)
+          ? source.year
+          : t(`timeline.year.${source.year.toLowerCase()}`),
+        title: t(`timeline.milestones.${source.id}.title`),
+        subtitle: i18n.exists(subtitleKey) ? t(subtitleKey) : undefined,
+        summary: t(`timeline.milestones.${source.id}.summary`),
+        details: i18n.exists(detailsKey) ? t(detailsKey) : undefined,
+      };
+    }
+  );
 
   // The scrollspy needs to measure against whichever axis is actually
   // scrolling: the page itself when stacked vertically on mobile, or the
@@ -72,17 +94,18 @@ export default function Timeline() {
       <div className="mx-auto max-w-container-max px-margin-mobile md:px-gutter">
         <div className="mb-stack-md">
           <span className="mb-2 block font-label-mono text-label-mono uppercase tracking-widest text-secondary">
-            My Journey
+            {t("timeline.journeyLabel")}
           </span>
           <h2 className="font-headline-lg text-headline-lg text-on-background">
-            Engineering Timeline
+            {t("timeline.heading")}
           </h2>
         </div>
         <ol
           ref={trackRef}
+          aria-label={t("timeline.trackLabel")}
           className="scrollbar-hide flex flex-col md:flex-row md:items-end md:overflow-x-auto md:snap-x md:snap-mandatory md:pb-4"
         >
-          {timelineMilestones.map((milestone) => (
+          {resolvedMilestones.map((milestone) => (
             <TimelineItem
               key={milestone.id}
               milestone={milestone}

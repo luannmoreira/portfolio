@@ -1,8 +1,17 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
+import type { ReactElement } from "react";
+import { renderWithI18n } from "../test-i18n";
 import TimelineItem from "./TimelineItem";
 import type { TimelineMilestone } from "../content/timeline";
+
+// TimelineItem itself renders whatever strings it's handed (Timeline.tsx is
+// what resolves translation keys) — the only i18n concern here is the
+// component's own status labels/"Details" toggle, which do need a provider.
+function render(ui: ReactElement) {
+  return renderWithI18n(ui);
+}
 
 // Mirrors Reveal.test.tsx's helper — no shared test util exists for this yet,
 // and it's a two-line stub, not worth extracting for one more caller.

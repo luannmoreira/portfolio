@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useInView } from "../hooks/useInView";
 import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
 import type { TimelineMilestone, TimelineStatus } from "../content/timeline";
@@ -9,12 +10,6 @@ const statusGlyph: Record<TimelineStatus, string> = {
   completed: "✓",
   "in-progress": "●",
   planned: "○",
-};
-
-const statusLabel: Record<TimelineStatus, string> = {
-  completed: "Completed",
-  "in-progress": "In progress",
-  planned: "Planned",
 };
 
 // completed: subtle/faded. in-progress: the one accent color, visually
@@ -66,6 +61,8 @@ export default function TimelineItem({
   forceVisible = false,
   forceExpanded = false,
 }: TimelineItemProps) {
+  const { t } = useTranslation();
+
   // Adjust `expanded` when `forceExpanded` newly turns true (the hash
   // target resolves after Timeline's own effect, on a later render of this
   // same instance) — done during render, not in an effect, per React's
@@ -127,7 +124,7 @@ export default function TimelineItem({
       >
         <span aria-hidden="true">{statusGlyph[milestone.status]}</span>
         <span>{milestone.year}</span>
-        <span>{statusLabel[milestone.status]}</span>
+        <span>{t(`timeline.status.${milestone.status}`)}</span>
       </div>
       <div className={cardStyle[milestone.status]}>
         <h3 className="font-headline-md text-headline-md">{milestone.title}</h3>
@@ -149,7 +146,7 @@ export default function TimelineItem({
               className="mt-2 flex items-center gap-1 font-label-mono text-label-mono uppercase tracking-widest text-primary"
             >
               <span aria-hidden="true">{expanded ? "▾" : "▸"}</span>
-              Details
+              {t("timeline.detailsToggle")}
             </button>
             {expanded && (
               <div id={detailsId} className="mt-2">

@@ -10,6 +10,100 @@
     "closeMenu": "Close menu",
     "mainMenu": "Main menu"
   },
+  "timeline": {
+    "journeyLabel": "My Journey",
+    "heading": "Engineering Timeline",
+    "trackLabel": "Engineering timeline",
+    "detailsToggle": "Details",
+    "status": {
+      "completed": "Completed",
+      "in-progress": "In progress",
+      "planned": "Planned"
+    },
+    "year": {
+      "today": "Today",
+      "future": "Future"
+    },
+    "milestones": {
+      "videplast": {
+        "title": "Videplast",
+        "subtitle": "Operations Trainee",
+        "summary": "Built internal intranet applications supporting manufacturing operations, inventory management, and internal business workflows."
+      },
+      "sedec": {
+        "title": "SEDEC",
+        "subtitle": "Front-end Developer Trainee",
+        "summary": "Developed public-facing government applications, creating features used by businesses and citizens across Mato Grosso.",
+        "details": "Developed public-facing government applications including Invest-MT, creating features used by businesses and citizens across Mato Grosso."
+      },
+      "os-systems": {
+        "title": "OS Systems",
+        "subtitle": "Front-end Engineer",
+        "summary": "Worked on enterprise applications using React and TypeScript while improving front-end architecture and developer experience."
+      },
+      "shellhub": {
+        "title": "ShellHub",
+        "subtitle": "Open Source Contributor",
+        "summary": "Contributed to ShellHub's front-end ecosystem by implementing new features, improving architecture, and helping standardize testing practices."
+      },
+      "aws-cloud-practitioner": {
+        "title": "AWS Cloud Practitioner",
+        "summary": "Earned my first AWS certification, beginning my transition toward cloud-native software engineering."
+      },
+      "engineering-growth": {
+        "title": "Engineering Growth",
+        "summary": "Focused on software architecture, front-end scalability, testing strategies, clean code, and engineering best practices."
+      },
+      "portfolio-rebranding": {
+        "title": "Portfolio Rebranding",
+        "summary": "Rebuilding my portfolio to better represent myself as a software engineer instead of simply a front-end developer."
+      },
+      "kubernetes-cka": {
+        "title": "Kubernetes CKA",
+        "summary": "Studying for the Certified Kubernetes Administrator certification to deepen my platform engineering knowledge."
+      },
+      "aws-developer": {
+        "title": "AWS Developer",
+        "summary": "Preparing for the AWS Developer Associate certification."
+      },
+      "mens-flexibility-app": {
+        "title": "Men's Flexibility App",
+        "summary": "Building a mobility and flexibility platform specifically designed around men's musculature and limitations."
+      },
+      "most-boring-project": {
+        "title": "The Most Boring Project Ever",
+        "summary": "Designing an intentionally simple notification platform built with enterprise-grade architecture to demonstrate distributed systems, event-driven design, containerization, and scalability."
+      },
+      "technical-writing": {
+        "title": "Technical Writing",
+        "summary": "Publishing articles focused on engineering decisions, architecture, trade-offs, and software design rather than simple tutorials."
+      },
+      "kubernetes-operators": {
+        "title": "Kubernetes Operators",
+        "summary": "Build production-ready Kubernetes operators."
+      },
+      "platform-engineering": {
+        "title": "Platform Engineering",
+        "summary": "Expand into platform engineering, infrastructure automation, and cloud-native systems."
+      },
+      "distributed-systems": {
+        "title": "Distributed Systems",
+        "summary": "Develop expertise in event-driven architectures, messaging systems, and large-scale backend design."
+      },
+      "open-source": {
+        "title": "Open Source",
+        "summary": "Launch and maintain meaningful open-source projects."
+      },
+      "saas-products": {
+        "title": "SaaS Products",
+        "summary": "Build and launch independent SaaS businesses."
+      },
+      "conference-talks": {
+        "title": "Conference Talks",
+        "summary": "Share engineering knowledge through technical talks and community events."
+      }
+    }
+  },
   "principles": {
     "heading": "Core Engineering Principles",
     "intro": "The frameworks and mental models I use to navigate complex technical landscapes.",
