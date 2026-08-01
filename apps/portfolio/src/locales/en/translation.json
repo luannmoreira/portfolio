@@ -10,6 +10,31 @@
     "closeMenu": "Close menu",
     "mainMenu": "Main menu"
   },
+  "principles": {
+    "heading": "Core Engineering Principles",
+    "intro": "The frameworks and mental models I use to navigate complex technical landscapes.",
+    "items": {
+      "reliability-first": {
+        "title": "Reliability First",
+        "desc": "Designing systems that fail gracefully. Observability and monitoring are baked into the architecture from day one."
+      },
+      "decoupled-architecture": {
+        "title": "Decoupled Architecture",
+        "desc": "Embracing modularity to allow components to evolve independently without risking systemic collapse."
+      },
+      "performance-budgeting": {
+        "title": "Performance Budgeting",
+        "desc": "Treating latency as a feature. Every kilobyte and millisecond counts in modern high-scale applications."
+      },
+      "self-documenting-code": {
+        "title": "Self-Documenting Code",
+        "desc": "Writing clear, expressive code that communicates intent. Comments are for \"why\", code is for \"how\"."
+      }
+    }
+  },
+  "footer": {
+    "copyright": "© {{year}} Luann Curioso. Built with precision."
+  },
   "themeToggle": {
     "switchToLight": "Switch to light theme",
     "switchToDark": "Switch to dark theme"

@@ -10,6 +10,31 @@
     "closeMenu": "Fechar menu",
     "mainMenu": "Menu principal"
   },
+  "principles": {
+    "heading": "Princípios de Engenharia",
+    "intro": "Os frameworks e modelos mentais que uso para navegar por paisagens técnicas complexas.",
+    "items": {
+      "reliability-first": {
+        "title": "Confiabilidade em Primeiro Lugar",
+        "desc": "Projetando sistemas que falham de forma graciosa. Observabilidade e monitoramento são incorporados à arquitetura desde o primeiro dia."
+      },
+      "decoupled-architecture": {
+        "title": "Arquitetura Desacoplada",
+        "desc": "Adotando modularidade para permitir que componentes evoluam de forma independente sem arriscar um colapso sistêmico."
+      },
+      "performance-budgeting": {
+        "title": "Orçamento de Performance",
+        "desc": "Tratando a latência como um recurso. Cada kilobyte e milissegundo conta em aplicações modernas de alta escala."
+      },
+      "self-documenting-code": {
+        "title": "Código Autodocumentado",
+        "desc": "Escrevendo código claro e expressivo que comunica a intenção. Comentários são para o \"porquê\", o código é para o \"como\"."
+      }
+    }
+  },
+  "footer": {
+    "copyright": "© {{year}} Luann Curioso. Construído com precisão."
+  },
   "themeToggle": {
     "switchToLight": "Mudar para o tema claro",
     "switchToDark": "Mudar para o tema escuro"

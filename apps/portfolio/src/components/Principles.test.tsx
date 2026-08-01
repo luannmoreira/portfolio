@@ -1,8 +1,9 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithI18n } from "../test-i18n";
 import Principles from "./Principles";
 
 test("renders the section heading and all four principles", () => {
-  render(<Principles />);
+  renderWithI18n(<Principles />);
 
   expect(
     screen.getByRole("heading", { name: "Core Engineering Principles" })

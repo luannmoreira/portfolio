@@ -1,9 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
+import { renderWithI18n } from "../test-i18n";
 import Footer from "./Footer";
 
 test("renders real social links and the copyright line", () => {
-  render(
+  renderWithI18n(
     <MemoryRouter>
       <Footer />
     </MemoryRouter>
