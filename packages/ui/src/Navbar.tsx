@@ -14,11 +14,18 @@ export interface NavbarProps {
   /** Stacked link list (plus any CTA) rendered inside the mobile overlay. */
   mobileNav: ReactNode;
   themeToggle: ReactNode;
+  languageSwitcher?: ReactNode;
   /** Persistent desktop CTA (e.g. portfolio's Resume button) — hidden
    * below `md`; render the mobile equivalent inside `mobileNav` instead. */
   desktopCta?: ReactNode;
   /** Overlay id, for `aria-controls`. */
   id?: string;
+  /** Accessible names for the hamburger toggle and the overlay dialog —
+   * plain-English defaults so existing consumers/tests keep working
+   * untouched; apps with i18n wired up pass translated strings instead. */
+  openMenuLabel?: string;
+  closeMenuLabel?: string;
+  dialogLabel?: string;
 }
 
 export default function Navbar({
@@ -26,8 +33,12 @@ export default function Navbar({
   desktopNav,
   mobileNav,
   themeToggle,
+  languageSwitcher,
   desktopCta,
   id = "mobile-nav",
+  openMenuLabel = "Open menu",
+  closeMenuLabel = "Close menu",
+  dialogLabel = "Main menu",
 }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -97,7 +108,7 @@ export default function Navbar({
             className="-ml-2 p-2 text-on-surface md:hidden"
             aria-expanded={isOpen}
             aria-controls={id}
-            aria-label={isOpen ? "Close menu" : "Open menu"}
+            aria-label={isOpen ? closeMenuLabel : openMenuLabel}
             onClick={() => setIsOpen((open) => !open)}
           >
             <MenuIcon open={isOpen} className="h-6 w-6" />
@@ -105,6 +116,7 @@ export default function Navbar({
           {brand}
           {desktopNav}
           <div className="flex items-center gap-2">
+            {languageSwitcher}
             {themeToggle}
             {desktopCta ? (
               <span className="hidden md:inline-flex">{desktopCta}</span>
@@ -118,7 +130,7 @@ export default function Navbar({
         ref={overlayRef}
         role="dialog"
         aria-modal={isOpen || undefined}
-        aria-label="Main menu"
+        aria-label={dialogLabel}
         className={`nav-overlay fixed inset-0 z-[90] flex flex-col border-t border-outline-variant/30 bg-surface-container/95 px-margin-mobile pt-24 backdrop-blur-lg md:hidden ${
           isOpen ? "active" : ""
         }`}

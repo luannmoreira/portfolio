@@ -1,14 +1,12 @@
 {
-  "name": "@portfolio/ui",
+  "name": "@portfolio/i18n",
   "version": "0.0.0",
   "private": true,
   "exports": {
-    ".": "./src/index.ts",
-    "./navbar.css": "./navbar.css"
+    ".": "./src/index.ts"
   },
   "files": [
-    "src",
-    "navbar.css"
+    "src"
   ],
   "scripts": {
     "lint": "eslint .",
@@ -18,20 +16,18 @@
     "test:watch": "vitest"
   },
   "peerDependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "^18.2.0"
   },
   "dependencies": {
-    "@portfolio/i18n": "workspace:*"
+    "i18next": "^26.3.6",
+    "react-i18next": "^17.0.11"
   },
   "devDependencies": {
     "@portfolio/config-eslint": "workspace:*",
     "@portfolio/config-typescript": "workspace:*",
     "@testing-library/jest-dom": "^7.0.0",
     "@testing-library/react": "^16.3.2",
-    "@testing-library/user-event": "^14.6.1",
     "@types/react": "^18.3.31",
-    "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^6.0.4",
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
