@@ -10,6 +10,48 @@
     "closeMenu": "Close menu",
     "mainMenu": "Main menu"
   },
+  "uses": {
+    "heading": "Hardware & Software",
+    "items": {
+      "editor": {
+        "category": "Editor",
+        "note": "My daily driver, most of the time."
+      },
+      "terminal": {
+        "category": "Terminal"
+      },
+      "os": {
+        "category": "OS",
+        "note": "Arch-based."
+      },
+      "browser": {
+        "category": "Browser",
+        "name": "Whatever's around",
+        "note": "As a web developer, sticking to just one browser is a bad habit — I keep several around on purpose."
+      },
+      "notes": {
+        "category": "Notes"
+      },
+      "ai-assistant": {
+        "category": "AI Assistant"
+      },
+      "hardware": {
+        "category": "Hardware",
+        "name": "Two monitors",
+        "note": "Some purists call it a window-management crutch. I call it a necessity — my eyesight isn't what it used to be."
+      }
+    }
+  },
+  "skills": {
+    "heading": "Technical Expertise",
+    "subtitle": "Technologies I use in production.",
+    "category": {
+      "languages": "Languages",
+      "frontEnd": "Front-end",
+      "testing": "Testing",
+      "platform": "Platform"
+    }
+  },
   "home": {
     "metaTitle": "Luann Curioso",
     "metaDescription": "Luann Curioso's portfolio — software engineer with production front-end experience and an infrastructure background, from ShellHub to government platforms.",

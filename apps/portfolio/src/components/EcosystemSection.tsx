@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import TechIcon from "./TechIcon";
 import { skills, type SkillCategory } from "../content/skills";
 
@@ -8,13 +9,25 @@ const categoryOrder: SkillCategory[] = [
   "Platform",
 ];
 
+// Translation key segments for each category — kept separate from the
+// SkillCategory union itself (which stays English and is only ever used
+// for filtering/grouping, never rendered directly).
+const categoryKey: Record<SkillCategory, string> = {
+  Languages: "languages",
+  "Front-end": "frontEnd",
+  Testing: "testing",
+  Platform: "platform",
+};
+
 export default function EcosystemSection() {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-col gap-4">
       {categoryOrder.map((category) => (
         <div key={category} className="flex flex-wrap items-center gap-2">
           <span className="rounded bg-on-surface px-3 py-1.5 font-label-mono text-label-mono uppercase text-surface">
-            {category}
+            {t(`skills.category.${categoryKey[category]}`)}
           </span>
           {skills
             .filter((skill) => skill.category === category)

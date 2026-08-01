@@ -10,6 +10,48 @@
     "closeMenu": "Fechar menu",
     "mainMenu": "Menu principal"
   },
+  "uses": {
+    "heading": "Hardware e Software",
+    "items": {
+      "editor": {
+        "category": "Editor",
+        "note": "Meu editor do dia a dia, na maior parte do tempo."
+      },
+      "terminal": {
+        "category": "Terminal"
+      },
+      "os": {
+        "category": "Sistema Operacional",
+        "note": "Baseado em Arch."
+      },
+      "browser": {
+        "category": "Navegador",
+        "name": "O que estiver disponível",
+        "note": "Como desenvolvedor web, se prender a um único navegador é um mau hábito — mantenho vários por perto de propósito."
+      },
+      "notes": {
+        "category": "Notas"
+      },
+      "ai-assistant": {
+        "category": "Assistente de IA"
+      },
+      "hardware": {
+        "category": "Hardware",
+        "name": "Dois monitores",
+        "note": "Alguns puristas chamam isso de muleta para gerenciamento de janelas. Eu chamo de necessidade — minha visão não é mais o que era."
+      }
+    }
+  },
+  "skills": {
+    "heading": "Habilidades Técnicas",
+    "subtitle": "Tecnologias que uso em produção.",
+    "category": {
+      "languages": "Linguagens",
+      "frontEnd": "Front-end",
+      "testing": "Testes",
+      "platform": "Plataforma"
+    }
+  },
   "home": {
     "metaTitle": "Luann Curioso",
     "metaDescription": "Portfólio de Luann Curioso — engenheiro de software com experiência em front-end de produção e background em infraestrutura, do ShellHub a plataformas governamentais.",

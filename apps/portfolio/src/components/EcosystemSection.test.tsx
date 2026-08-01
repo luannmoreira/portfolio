@@ -1,9 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithI18n } from "../test-i18n";
 import EcosystemSection from "./EcosystemSection";
 import { skills } from "../content/skills";
 
 test("renders every category and every skill name, grouped correctly", () => {
-  render(<EcosystemSection />);
+  renderWithI18n(<EcosystemSection />);
 
   const categories = [...new Set(skills.map((skill) => skill.category))];
   for (const category of categories) {
@@ -15,7 +16,7 @@ test("renders every category and every skill name, grouped correctly", () => {
 });
 
 test("does not render per-skill duration badges", () => {
-  render(<EcosystemSection />);
+  renderWithI18n(<EcosystemSection />);
 
   expect(screen.queryByText(/year/i)).not.toBeInTheDocument();
 });
