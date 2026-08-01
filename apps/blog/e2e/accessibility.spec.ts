@@ -20,17 +20,25 @@ const routes = [
 // this exact gap hid a real contrast bug).
 const colorSchemes = ["light", "dark"] as const;
 
+// ?lang= drives resolveInitialLocale() the same way ?theme= drives the
+// FOUC-prevention script above — covers both locales' translated chrome
+// per route × color scheme (article content itself stays English-only,
+// per the i18n plan's scope, but the chrome around it is fully bilingual).
+const locales = ["en", "pt-BR"] as const;
+
 for (const colorScheme of colorSchemes) {
-  for (const route of routes) {
-    test(`${route} has no automatically detectable accessibility violations (${colorScheme})`, async ({
-      page,
-    }) => {
-      await page.emulateMedia({ colorScheme });
-      await page.goto(route);
+  for (const locale of locales) {
+    for (const route of routes) {
+      test(`${route} has no automatically detectable accessibility violations (${colorScheme}, ${locale})`, async ({
+        page,
+      }) => {
+        await page.emulateMedia({ colorScheme });
+        await page.goto(`${route}?lang=${locale}`);
 
-      const results = await new AxeBuilder({ page }).analyze();
+        const results = await new AxeBuilder({ page }).analyze();
 
-      expect(results.violations).toEqual([]);
-    });
+        expect(results.violations).toEqual([]);
+      });
+    }
   }
 }
