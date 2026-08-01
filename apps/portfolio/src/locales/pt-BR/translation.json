@@ -10,6 +10,35 @@
     "closeMenu": "Fechar menu",
     "mainMenu": "Menu principal"
   },
+  "home": {
+    "metaTitle": "Luann Curioso",
+    "metaDescription": "Portfólio de Luann Curioso — engenheiro de software com experiência em front-end de produção e background em infraestrutura, do ShellHub a plataformas governamentais.",
+    "projectsEyebrow": "Portfólio",
+    "projectsHeading": "Trabalhos de Engenharia em Destaque",
+    "exploreAllProjects": "Ver Todos os Projetos",
+    "ctaHeading": "Pronto para escalar sua engenharia?",
+    "ctaBody": "Sempre interessado em problemas técnicos desafiadores — entre em contato se quiser falar sobre arquitetura, colaboração ou oportunidades.",
+    "sendEmail": "Enviar um E-mail",
+    "moreWaysToReach": "Mais Formas de Contato"
+  },
+  "projects": {
+    "eyebrow": "Portfólio",
+    "heading": "Trabalho de Engenharia",
+    "tagline": "Trabalho de engenharia em produção — arquitetura, manutenibilidade e visão de longo prazo, não apenas UI.",
+    "metaTitle": "Projetos • Luann Curioso",
+    "allProjectsHeading": "Todos os projetos",
+    "items": {
+      "shellhub": {
+        "description": "Uma plataforma de gerenciamento remoto de dispositivos de nível de produção, usada por clientes reais. Contribuí em todo o ciclo de engenharia — construindo funcionalidades em React e Vue 3 com TypeScript, padronizando testes unitários com Vitest, refatorando código legado em soluções sustentáveis e melhorando a consistência da arquitetura front-end. Além do trabalho em funcionalidades, isso significou reduzir dívida técnica, revisar pull requests e participar de discussões arquiteturais junto a engenheiros de backend — engenheirando um produto real, não apenas sua UI."
+      },
+      "os-systems": {
+        "description": "Software corporativo em múltiplos setores, abrangendo tanto desenvolvimento de aplicações quanto infraestrutura. Construí aplicações de produção com React, Vue, Angular e Electron, além de trabalhar diretamente com Docker, Windows Server, Hyper-V e Active Directory — experiência que moldou uma compreensão da entrega de software além da camada front-end."
+      },
+      "sedec-invest-mt": {
+        "description": "A plataforma oficial de investimentos do Governo de Mato Grosso, construída com Vue 3, Vuex e TypeScript. Entreguei novas funcionalidades e manutenção contínua para uma aplicação de produção que atende a uma iniciativa governamental real."
+      }
+    }
+  },
   "resume": {
     "metaTitle": "Currículo • Luann Curioso",
     "metaDescription": "Currículo de Luann Curioso — experiência e habilidades, trabalho front-end em produção com base em infraestrutura.",

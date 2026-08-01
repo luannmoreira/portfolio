@@ -10,6 +10,35 @@
     "closeMenu": "Close menu",
     "mainMenu": "Main menu"
   },
+  "home": {
+    "metaTitle": "Luann Curioso",
+    "metaDescription": "Luann Curioso's portfolio — software engineer with production front-end experience and an infrastructure background, from ShellHub to government platforms.",
+    "projectsEyebrow": "Portfolio",
+    "projectsHeading": "Selected Engineering Work",
+    "exploreAllProjects": "Explore All Projects",
+    "ctaHeading": "Ready to scale your engineering?",
+    "ctaBody": "Always interested in hard technical problems — reach out if you'd like to talk architecture, collaboration, or opportunities.",
+    "sendEmail": "Send an Email",
+    "moreWaysToReach": "More Ways to Reach Me"
+  },
+  "projects": {
+    "eyebrow": "Portfolio",
+    "heading": "Engineering Work",
+    "tagline": "Production engineering work — architecture, maintainability, and long-term thinking, not just UI.",
+    "metaTitle": "Projects • Luann Curioso",
+    "allProjectsHeading": "All projects",
+    "items": {
+      "shellhub": {
+        "description": "A production-grade remote device management platform used by real customers. Contributed across the full engineering lifecycle — building features in React and Vue 3 with TypeScript, standardizing unit testing with Vitest, refactoring legacy code into maintainable solutions, and improving front-end architecture consistency. Beyond feature work, this meant reducing technical debt, reviewing pull requests, and participating in architectural discussions alongside backend engineers — engineering a real product, not just its UI."
+      },
+      "os-systems": {
+        "description": "Enterprise software across multiple industries, spanning both application development and infrastructure. Built production applications with React, Vue, Angular, and Electron, while also working hands-on with Docker, Windows Server, Hyper-V, and Active Directory — experience that shaped an understanding of software delivery beyond the front-end layer."
+      },
+      "sedec-invest-mt": {
+        "description": "The official investment platform for the Government of Mato Grosso, built with Vue 3, Vuex, and TypeScript. Delivered new features and ongoing maintenance for a production application serving a real government initiative."
+      }
+    }
+  },
   "resume": {
     "metaTitle": "Resume • Luann Curioso",
     "metaDescription": "Luann Curioso's resume — experience and skills, production front-end work with an infrastructure background.",
