@@ -9,8 +9,12 @@
 @import "@portfolio/ui/navbar.css";
 
 html {
-  scroll-behavior: smooth;
   background-color: #0a0d11;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 html.light {
   background-color: #ffffff;
