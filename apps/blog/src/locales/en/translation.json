@@ -31,6 +31,10 @@
     "copy": "Copy",
     "copied": "Copied!"
   },
+  "rss": {
+    "title": "Blog",
+    "description": "Long-form engineering writing."
+  },
   "post": {
     "metaTitle": "{{title}} — Blog",
     "loading": "Loading…",

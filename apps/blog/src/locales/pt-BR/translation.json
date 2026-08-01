@@ -31,6 +31,10 @@
     "copy": "Copiar",
     "copied": "Copiado!"
   },
+  "rss": {
+    "title": "Blog",
+    "description": "Escrita técnica de longo formato."
+  },
   "post": {
     "metaTitle": "{{title}} — Blog",
     "loading": "Carregando…",

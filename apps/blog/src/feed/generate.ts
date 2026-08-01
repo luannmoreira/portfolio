@@ -1,4 +1,9 @@
 import type { ContentEntry } from "../content/schema";
+// Build-time only (no React/i18next context here) — reads the English
+// resource file directly rather than duplicating these two strings. A
+// single English feed, no per-locale RSS: revisit once real per-locale
+// content exists to justify it (see packages/i18n's forward-compat note).
+import en from "../locales/en/translation.json";
 
 // Only "post" and "adr" get a route that actually renders them
 // (App.tsx: /blog/:slug, /adr/:slug). "project" content exists in the
@@ -77,9 +82,9 @@ export function buildRss(entries: ContentEntry[], siteUrl: string): string {
   return (
     '<?xml version="1.0" encoding="UTF-8"?>\n' +
     '<rss version="2.0"><channel>\n' +
-    "  <title>Blog</title>\n" +
+    `  <title>${escapeXml(en.rss.title)}</title>\n` +
     `  <link>${base}/blog</link>\n` +
-    "  <description>Long-form engineering writing.</description>\n" +
+    `  <description>${escapeXml(en.rss.description)}</description>\n` +
     `${items}\n` +
     "</channel></rss>\n"
   );
