@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import GithubIcon from "./icons/GithubIcon";
 import LinkedinIcon from "./icons/LinkedinIcon";
 import WhatsappIcon from "./icons/WhatsappIcon";
@@ -6,6 +7,8 @@ import RssIcon from "./icons/RssIcon";
 const year = new Date().getFullYear();
 
 export default function Footer() {
+  const { t } = useTranslation();
+
   return (
     <footer className="mt-stack-lg w-full border-t border-outline-variant/30 bg-surface py-stack-md print:hidden">
       <div className="mx-auto flex max-w-container-max flex-col items-center justify-between gap-4 px-margin-mobile md:flex-row lg:px-gutter">
@@ -16,7 +19,7 @@ export default function Footer() {
           <li>
             <a
               href="/rss.xml"
-              aria-label="RSS feed"
+              aria-label={t("footer.rssFeed")}
               className="inline-flex items-center justify-center p-2.5 text-on-surface-variant opacity-80 transition-opacity hover:text-primary hover:opacity-100"
             >
               <RssIcon className="h-6 w-6" />
@@ -57,7 +60,7 @@ export default function Footer() {
           </li>
         </ul>
         <p className="font-caption text-caption text-secondary">
-          © {year} Luann Curioso. Built with precision.
+          {t("footer.copyright", { year })}
         </p>
       </div>
     </footer>

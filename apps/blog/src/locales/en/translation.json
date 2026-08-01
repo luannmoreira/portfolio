@@ -9,6 +9,10 @@
     "closeMenu": "Close menu",
     "mainMenu": "Main menu"
   },
+  "footer": {
+    "rssFeed": "RSS feed",
+    "copyright": "© {{year}} Luann Curioso. Built with precision."
+  },
   "themeToggle": {
     "switchToLight": "Switch to light theme",
     "switchToDark": "Switch to dark theme"
