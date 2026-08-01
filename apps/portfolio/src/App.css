@@ -16,17 +16,6 @@ body {
   }
 }
 
-/* Global keyboard-focus ring — token-driven so it stays correct in both
-   themes, applied broadly rather than per-component since no interactive
-   element in this codebase had a designed focus style before this. */
-a:focus-visible,
-button:focus-visible,
-[tabindex]:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-  border-radius: 2px;
-}
-
 /* Hides the scrollbar on the horizontally-scrolling Engineering Timeline
    track (Timeline.tsx) without a Tailwind plugin — the track is still
    fully scrollable via trackpad, touch, drag, or the wheel-to-horizontal

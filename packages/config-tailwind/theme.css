@@ -124,3 +124,39 @@
    don't need this variant at all — it's kept for content components not yet
    migrated off the old `light:` pattern (blog's Callout/mdx family). */
 @custom-variant light (&:where(.light, .light *));
+
+/* Global keyboard-focus ring — token-driven so it stays correct in both
+   themes and both apps. Promoted here from apps/portfolio/src/App.css once
+   the blog app became a second consumer (extract-on-second-use) — blog had
+   no focus-visible styling of its own and relied on the browser default. */
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* prefers-contrast: more — thickens the same focus ring and strengthens
+   the outline-variant border tone used throughout both apps' cards/dividers,
+   rather than introducing a separate high-contrast palette. Shape (glyphs,
+   text labels) already carries the information that would otherwise rely on
+   these subtle borders/outlines; this only makes the existing lines and
+   focus indicators easier to see, consistent with how prefers-reduced-motion
+   is handled as a targeted adjustment rather than an alternate theme. */
+@media (prefers-contrast: more) {
+  a:focus-visible,
+  button:focus-visible,
+  [tabindex]:focus-visible {
+    outline-width: 3px;
+  }
+
+  /* Both selectors needed, matching :root.light's own specificity (0,2,0)
+     above — a plain `:root` rule here would always lose the cascade to
+     `:root.light` in light mode regardless of source order, since a bare
+     :root is less specific than :root.light. */
+  :root,
+  :root.light {
+    --color-outline-variant: var(--color-outline);
+  }
+}
