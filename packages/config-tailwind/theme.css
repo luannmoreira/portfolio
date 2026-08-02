@@ -35,6 +35,14 @@
   --color-tertiary-container: #231500;
   --color-on-tertiary-container: #957d5a;
 
+  /* Not part of the Stitch-sourced M3 palette above — added for inline text
+     emphasis (e.g. About page's highlighted phrase within a heading), a
+     distinct concern from --color-secondary's muted eyebrow/label use
+     elsewhere. Deliberately more saturated for visibility as an accent
+     inside body copy; both values keep contrast against --color-background
+     well above WCAG AA (dark: 7.29:1, light: 6.35:1). */
+  --color-highlight: #60a5fa;
+
   --color-error: #ffb4ab;
   --color-on-error: #690005;
   --color-error-container: #93000a;
@@ -102,6 +110,8 @@
   --color-on-tertiary: #ffffff;
   --color-tertiary-container: #271901;
   --color-on-tertiary-container: #98805d;
+
+  --color-highlight: #1d4ed8;
 
   --color-error: #ba1a1a;
   --color-on-error: #ffffff;
