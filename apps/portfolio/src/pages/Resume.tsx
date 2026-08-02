@@ -26,7 +26,7 @@ function Resume() {
           <button
             type="button"
             onClick={() => window.print()}
-            className="rounded-lg border border-outline px-4 py-2 font-body-md font-bold text-primary transition-colors hover:bg-surface-container print:hidden"
+            className="rounded-lg border border-outline px-4 py-2 font-body-md font-bold text-button transition-colors hover:bg-surface-container print:hidden"
           >
             {t("resume.print")}
           </button>

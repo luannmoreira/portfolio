@@ -25,13 +25,13 @@ export default function Hero() {
           <div className="flex flex-wrap gap-4">
             <Link
               to="/projects"
-              className="rounded-lg bg-primary px-6 py-3 font-headline-md text-on-primary transition-colors hover:opacity-90"
+              className="rounded-lg bg-button px-6 py-3 font-headline-md text-on-button transition-colors hover:opacity-90"
             >
               {t("hero.viewProjects")}
             </Link>
             <Link
               to="/contact"
-              className="rounded-lg border border-outline bg-surface/60 px-6 py-3 font-headline-md text-primary backdrop-blur-md transition-colors hover:bg-surface-container"
+              className="rounded-lg border border-outline bg-surface/60 px-6 py-3 font-headline-md text-button backdrop-blur-md transition-colors hover:bg-surface-container"
             >
               {t("hero.contactMe")}
             </Link>

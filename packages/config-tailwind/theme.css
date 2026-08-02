@@ -24,18 +24,29 @@
 
   /* --color-primary diverges from the original Stitch-sourced value
      (formerly a muted lavender #bec6e0) — this is the site's one accent
-     color for "this is highlighted/active/emphasized" (nav active state,
-     timeline status, links, focus ring, buttons, etc.). Same hue as the
-     Hero/DotCanvas animated dots' own color (#22a39f, sampled from
-     assets/logo.png — see apps/portfolio/src/theme.css's .canvas-bg
-     comments), so the accent used across the UI and the accent used in the
-     hero's decorative animation read as clearly related — but desaturated
-     (65%→45% sat, 39%→45% lightness) for a subtler, less neon feel than
-     the literal dot color. Contrast against --color-background: 6.35:1. */
+     color for "this is highlighted/active/selected" (nav active state,
+     timeline status, timeline links, the About highlight phrase, eyebrow
+     labels, focus ring, etc.). Same hue as the Hero/DotCanvas animated
+     dots' own color (#22a39f, sampled from assets/logo.png — see
+     apps/portfolio/src/theme.css's .canvas-bg comments), so the accent
+     used across the UI and the accent used in the hero's decorative
+     animation read as clearly related — but desaturated (65%→45% sat,
+     39%→45% lightness) for a subtler, less neon feel than the literal dot
+     color. Contrast against --color-background: 6.35:1.
+     Deliberately NOT used for CTA buttons (Resume, View Projects, Contact
+     Me, the Print button) — those kept their original pre-existing
+     --color-button/--color-on-button pair below, unrelated to this accent
+     work. "Selected/active" and "primary action" turned out to be two
+     different concerns the user wanted visually distinct, not one token. */
   --color-primary: #3fa6a3;
   --color-on-primary: #0a1420;
   --color-primary-container: #0f172a;
   --color-on-primary-container: #798098;
+  /* The original (pre-accent-work) --color-primary/--color-on-primary
+     values, kept as their own pair specifically for CTA buttons — see the
+     comment above. */
+  --color-button: #bec6e0;
+  --color-on-button: #283044;
   --color-secondary: #b9c7e0;
   --color-on-secondary: #233144;
   --color-secondary-container: #3c4a5e;
@@ -111,6 +122,10 @@
   --color-on-primary: #ffffff;
   --color-primary-container: #131b2e;
   --color-on-primary-container: #7c839b;
+  /* Original (pre-accent-work) --color-primary/--color-on-primary values —
+     see the dark-mode --color-button comment above. */
+  --color-button: #000000;
+  --color-on-button: #ffffff;
   --color-secondary: #515f74;
   --color-on-secondary: #ffffff;
   --color-secondary-container: #d5e3fd;
