@@ -51,9 +51,16 @@ export default defineConfig({
     contentIndexPlugin(),
     feedPlugin(),
   ],
-  // No "base" yet — deploy target is deliberately undecided (see
-  // ROADMAP.md Phase 7), so this stays at Vite's "/" default until a host
-  // is picked.
+  // Deployed as a subfolder of the portfolio's Cloudflare Pages project
+  // (dist/blog/) so the two apps share luanncurioso.dev — the app's own
+  // routes are already absolute ("/blog", "/adr", see App.tsx), so this
+  // only needs to fix up asset URLs, not add a router basename. Gated
+  // behind BASE_PATH (set by the root "build:site" script) rather than
+  // hardcoded: vite's `base` also changes where its own dev/preview server
+  // serves the app from, which would break this app's independent
+  // dev/build/e2e workflow (see SITE_URL below for the same
+  // undecided-until-merge pattern).
+  base: process.env.BASE_PATH ?? "/",
   test: {
     environment: "jsdom",
     globals: true,

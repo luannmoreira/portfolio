@@ -14,8 +14,8 @@
     "preview:blog": "pnpm --filter blog preview",
     "lint:portfolio": "pnpm --filter portfolio lint",
     "lint:blog": "pnpm --filter blog lint",
-    "deploy:portfolio": "pnpm --filter portfolio build && wrangler pages deploy apps/portfolio/dist --project-name luanncurioso-portfolio --branch main",
-    "deploy:blog": "pnpm --filter blog build && wrangler pages deploy apps/blog/dist --project-name luanncurioso-blog --branch main",
+    "build:site": "pnpm build:portfolio && SITE_URL=https://luanncurioso.dev BASE_PATH=/blog/ pnpm build:blog && rm -rf apps/portfolio/dist/blog && mkdir -p apps/portfolio/dist/blog && cp -r apps/blog/dist/. apps/portfolio/dist/blog/",
+    "deploy": "pnpm build:site && wrangler pages deploy apps/portfolio/dist --project-name luanncurioso-portfolio --branch main",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

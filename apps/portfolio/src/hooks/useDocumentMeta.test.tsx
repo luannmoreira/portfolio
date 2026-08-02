@@ -110,11 +110,11 @@ test("sets a canonical link and og:url from the current route", () => {
 
   expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute(
     "href",
-    "https://luanncurioso-portfolio.pages.dev/resume"
+    "https://luanncurioso.dev/resume"
   );
   expect(document.querySelector('meta[property="og:url"]')).toHaveAttribute(
     "content",
-    "https://luanncurioso-portfolio.pages.dev/resume"
+    "https://luanncurioso.dev/resume"
   );
 });
 

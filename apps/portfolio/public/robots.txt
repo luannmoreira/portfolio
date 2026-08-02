@@ -2,4 +2,5 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://luanncurioso-portfolio.pages.dev/sitemap.xml
+Sitemap: https://luanncurioso.dev/sitemap.xml
+Sitemap: https://luanncurioso.dev/blog/sitemap.xml

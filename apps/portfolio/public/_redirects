@@ -1,1 +1,8 @@
-/*   /index.html   200
+# The blog is a separate SPA bundle merged into dist/blog at build time
+# (see the root "deploy" script) — its rules must come before the
+# catch-all below, since Cloudflare Pages takes the first match.
+/blog        /blog/index.html   200
+/blog/*      /blog/index.html   200
+/adr         /blog/index.html   200
+/adr/*       /blog/index.html   200
+/*           /index.html        200

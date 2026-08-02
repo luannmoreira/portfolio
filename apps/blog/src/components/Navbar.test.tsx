@@ -15,26 +15,21 @@ function renderNavbar() {
 test("renders portfolio anchor links and the internal Blog link", () => {
   renderNavbar();
 
-  const expectedAnchorHrefFragments: [string, string][] = [
-    ["Home", "/?lang=en&theme="],
-    ["About", "/about?lang=en&theme="],
-    ["Contact", "/contact?lang=en&theme="],
+  const expectedLinks: [string, string][] = [
+    ["Home", "/"],
+    ["About", "/about"],
+    ["Contact", "/contact"],
+    ["Blog", "/blog"],
   ];
 
   // Each item now renders twice — once in the desktop <ul>, once in the
   // mobile overlay — so assert every rendered instance agrees.
-  for (const [name, hrefFragment] of expectedAnchorHrefFragments) {
+  for (const [name, href] of expectedLinks) {
     const links = screen.getAllByRole("link", { name });
     expect(links.length).toBeGreaterThan(0);
     for (const link of links) {
-      expect(link.getAttribute("href")).toContain(hrefFragment);
+      expect(link).toHaveAttribute("href", href);
     }
-  }
-
-  const blogLinks = screen.getAllByRole("link", { name: "Blog" });
-  expect(blogLinks.length).toBeGreaterThan(0);
-  for (const link of blogLinks) {
-    expect(link).toHaveAttribute("href", "/blog");
   }
 });
 
@@ -52,16 +47,17 @@ test("renders the theme toggle", () => {
   ).toBeInTheDocument();
 });
 
-test("renders the language switcher and carries the choice on cross-app links", async () => {
+test("renders the language switcher and switches the active locale", async () => {
   const user = userEvent.setup();
   renderNavbar();
 
   expect(screen.getByRole("group", { name: "Language" })).toBeInTheDocument();
-  await user.click(screen.getByRole("button", { name: "PT" }));
+  const ptButton = screen.getByRole("button", { name: "PT" });
 
-  const links = screen.getAllByRole("link", { name: "Sobre" });
-  expect(links.length).toBeGreaterThan(0);
-  for (const link of links) {
-    expect(link.getAttribute("href")).toContain("lang=pt-BR");
-  }
+  await user.click(ptButton);
+
+  expect(ptButton).toHaveAttribute("aria-current", "true");
+  expect(screen.getAllByRole("link", { name: "Sobre" }).length).toBeGreaterThan(
+    0
+  );
 });

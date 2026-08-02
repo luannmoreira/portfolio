@@ -1,48 +1,18 @@
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Navbar as SharedNavbar, LanguageSwitcher } from "@portfolio/ui";
-import { useLocale, withLocale } from "@portfolio/i18n";
+import { useLocale } from "@portfolio/i18n";
 import ThemeToggle from "./ThemeToggle";
 import { useTheme } from "../hooks/useTheme";
-import type { Theme } from "../hooks/useTheme";
-import type { Locale } from "@portfolio/i18n";
-
-// localStorage can't cross origins, and the portfolio/blog are two separate
-// Cloudflare Pages deploys — so the theme choice can't just be "shared
-// storage". Carrying it in the URL on the way out (read back by the other
-// app's pre-paint script, see index.html) is the practical middle ground:
-// clicking between the two sites keeps them in sync without needing a
-// custom domain to unify their origins.
-function withTheme(url: string, theme: Theme): string {
-  const separator = url.includes("?") ? "&" : "?";
-  return `${url}${separator}theme=${theme}`;
-}
-
-// Portfolio's deploy target isn't hardcoded here — this app is
-// built/deployed independently. Mirrors apps/blog/src/feed/plugin.ts's
-// SITE_URL placeholder-until-decided pattern: falls back to an obvious
-// placeholder in dev, set for real via .env.production's VITE_PORTFOLIO_URL.
-const PORTFOLIO_URL =
-  import.meta.env.VITE_PORTFOLIO_URL ?? "https://example.com/portfolio/";
 
 interface PortfolioNavItem {
   labelKey: string;
-  /** Portfolio-internal path — a real route since the portfolio moved from
-   * HashRouter to BrowserRouter. */
+  /** Portfolio-internal, root-relative path. A plain <a> (not react-router's
+   * <Link>), since the portfolio is a separate SPA bundle served from "/"
+   * on the same domain — a full page load, not a client-side transition.
+   * Theme/locale need no query-param carrying here: same-origin means
+   * localStorage is already shared with the target app. */
   to: string;
-}
-
-// Resolves a portfolio-internal path against PORTFOLIO_URL's origin (e.g.
-// "/about?section=skills" -> "https://…pages.dev/about?section=skills"),
-// then layers the cross-app theme/locale params on top — done in steps so
-// withLocale/withTheme's "append ?/& correctly" logic runs against the
-// real query string a path like "/about?section=skills" already carries,
-// rather than duplicating that logic here.
-function resolvePortfolioLink(to: string, theme: Theme, locale: Locale) {
-  return withTheme(
-    withLocale(new URL(to, PORTFOLIO_URL).toString(), locale),
-    theme
-  );
 }
 
 // Kept in sync by hand with apps/portfolio/src/components/Navbar.tsx's own
@@ -78,7 +48,7 @@ export default function Navbar() {
           {portfolioNavItems.map((item) => (
             <li key={item.labelKey}>
               <a
-                href={resolvePortfolioLink(item.to, theme, locale)}
+                href={item.to}
                 className="text-on-surface-variant transition-colors duration-200 hover:text-primary"
               >
                 {t(item.labelKey)}
@@ -100,7 +70,7 @@ export default function Navbar() {
           {portfolioNavItems.map((item) => (
             <a
               key={item.labelKey}
-              href={resolvePortfolioLink(item.to, theme, locale)}
+              href={item.to}
               className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface-variant hover:text-primary"
             >
               {t(item.labelKey)}

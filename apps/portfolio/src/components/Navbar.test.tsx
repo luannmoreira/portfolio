@@ -20,6 +20,7 @@ test("renders route and anchor nav links with the expected destinations", () => 
     ["About", "/about"],
     ["Contact", "/contact"],
     ["Resume", "/resume"],
+    ["Blog", "/blog"],
   ];
 
   // Each nav item now renders twice — once in the desktop <ul>, once in the

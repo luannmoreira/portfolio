@@ -1,11 +1,9 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router";
 
-// This app's own production URL — unlike the blog (whose deploy target is
-// still undecided, see apps/blog/src/feed/plugin.ts's PLACEHOLDER_SITE_URL),
-// the portfolio's Cloudflare Pages URL is already fixed and is exactly what
-// apps/blog/.env.production's VITE_PORTFOLIO_URL points back at.
-const SITE_URL = "https://luanncurioso-portfolio.pages.dev";
+// This app's own production URL — the custom domain both apps share
+// (portfolio at "/", blog under "/blog").
+const SITE_URL = "https://luanncurioso.dev";
 // A public/ asset (stable, unhashed path), not a src/assets import — the
 // same URL index.html's static <meta property="og:image"> uses, so the
 // runtime-updated tags stay consistent with the pre-JS baseline social

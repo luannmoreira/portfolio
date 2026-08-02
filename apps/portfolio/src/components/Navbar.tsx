@@ -1,28 +1,9 @@
 import { Link, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Navbar as SharedNavbar, LanguageSwitcher } from "@portfolio/ui";
-import { useLocale, withLocale } from "@portfolio/i18n";
+import { useLocale } from "@portfolio/i18n";
 import ThemeToggle from "./ThemeToggle";
 import { useTheme } from "../hooks/useTheme";
-import type { Theme } from "../hooks/useTheme";
-
-// localStorage can't cross origins, and the portfolio/blog are two separate
-// Cloudflare Pages deploys — so the theme choice can't just be "shared
-// storage". Carrying it in the URL on the way out (read back by the other
-// app's pre-paint script, see index.html) is the practical middle ground:
-// clicking between the two sites keeps them in sync without needing a
-// custom domain to unify their origins.
-function withTheme(url: string, theme: Theme): string {
-  const separator = url.includes("?") ? "&" : "?";
-  return `${url}${separator}theme=${theme}`;
-}
-
-// Blog's deploy target is deliberately undecided (apps/blog/vite.config.js)
-// — this app is built/deployed independently, so it isn't hardcoded here.
-// Mirrors apps/blog/src/feed/plugin.ts's SITE_URL placeholder-until-decided
-// pattern: falls back to an obvious placeholder, set VITE_BLOG_URL once
-// both apps share a real deploy story.
-const BLOG_URL = import.meta.env.VITE_BLOG_URL ?? "https://example.com/blog/";
 
 interface NavItem {
   labelKey: string;
@@ -30,7 +11,10 @@ interface NavItem {
   /** Route this item is considered "active" for (anchor items share their
    * parent route's pathname, so they don't get their own active state). */
   activePath?: string;
-  /** True for links that leave this app (the blog is a separate deploy). */
+  /** True for links that leave this app's bundle — the blog is a separate
+   * SPA served from /blog on the same domain, so it still needs a plain
+   * <a> (full page load) rather than react-router's <Link>, even though
+   * theme/locale now travel for free via shared same-origin localStorage. */
   external?: boolean;
 }
 
@@ -43,7 +27,7 @@ const navItems: NavItem[] = [
   { labelKey: "nav.home", to: "/", activePath: "/" },
   { labelKey: "nav.about", to: "/about", activePath: "/about" },
   { labelKey: "nav.contact", to: "/contact", activePath: "/contact" },
-  { labelKey: "nav.blog", to: BLOG_URL, external: true },
+  { labelKey: "nav.blog", to: "/blog", external: true },
 ];
 
 export default function Navbar() {
@@ -54,10 +38,6 @@ export default function Navbar() {
 
   function isActive(item: NavItem) {
     return Boolean(item.activePath && pathname === item.activePath);
-  }
-
-  function crossAppHref(to: string) {
-    return withTheme(withLocale(to, locale), theme);
   }
 
   return (
@@ -79,7 +59,7 @@ export default function Navbar() {
             item.external ? (
               <li key={item.labelKey}>
                 <a
-                  href={crossAppHref(item.to)}
+                  href={item.to}
                   className="text-on-surface-variant transition-colors duration-200 hover:text-primary"
                 >
                   {t(item.labelKey)}
@@ -108,7 +88,7 @@ export default function Navbar() {
             item.external ? (
               <a
                 key={item.labelKey}
-                href={crossAppHref(item.to)}
+                href={item.to}
                 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface-variant hover:text-primary"
               >
                 {t(item.labelKey)}

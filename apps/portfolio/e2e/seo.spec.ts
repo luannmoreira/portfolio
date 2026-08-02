@@ -8,7 +8,7 @@ test.describe("SEO metadata", () => {
 
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       "href",
-      "https://luanncurioso-portfolio.pages.dev/"
+      "https://luanncurioso.dev/"
     );
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
       "content",
@@ -38,11 +38,11 @@ test.describe("SEO metadata", () => {
 
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       "href",
-      "https://luanncurioso-portfolio.pages.dev/about"
+      "https://luanncurioso.dev/about"
     );
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
       "content",
-      "https://luanncurioso-portfolio.pages.dev/about"
+      "https://luanncurioso.dev/about"
     );
     // Exactly one of each — a stale duplicate left behind by a prior route
     // would silently confuse crawlers about which URL is canonical.
