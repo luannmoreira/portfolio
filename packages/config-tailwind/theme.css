@@ -25,13 +25,16 @@
   /* --color-primary diverges from the original Stitch-sourced value
      (formerly a muted lavender #bec6e0) — this is the site's one accent
      color for "this is highlighted/active/emphasized" (nav active state,
-     timeline status, links, focus ring, buttons, etc.), and the muted
-     version read as washed-out everywhere it was used for actual emphasis.
-     Picked for vibrancy while keeping contrast against both
-     --color-background and --color-on-primary well above WCAG AA — see
-     the --color-on-primary contrast note below. */
-  --color-primary: #60a5fa;
-  --color-on-primary: #283044;
+     timeline status, links, focus ring, buttons, etc.). Matches the
+     Hero/DotCanvas animated dots' own color exactly (#22a39f, sampled from
+     assets/logo.png — see apps/portfolio/src/theme.css's .canvas-bg
+     comments) so the accent used across the UI and the accent used in the
+     hero's decorative animation are the same color, not two different
+     near-teals. --color-on-primary darkened from the original #283044 to
+     keep contrast against this teal comfortably above WCAG AA (was 4.26:1,
+     now 6.00:1) — button/label text sits on this color. */
+  --color-primary: #22a39f;
+  --color-on-primary: #0a1420;
   --color-primary-container: #0f172a;
   --color-on-primary-container: #798098;
   --color-secondary: #b9c7e0;
@@ -99,8 +102,13 @@
   --color-outline-variant: #c6c6cd;
 
   /* Diverges from the original Stitch-sourced value (formerly pure black
-     #000000) — see the dark-mode --color-primary comment above for why. */
-  --color-primary: #1d4ed8;
+     #000000) — see the dark-mode --color-primary comment above for why.
+     Not the dots' exact #22a39f: that's only 2.92:1 against this light
+     background (fails WCAG AA even for large text), so this deepens the
+     same hue (178°→175°, higher saturation, lower lightness) rather than
+     reusing the literal decorative value — 5.19:1 against
+     --color-background, 5.47:1 for white --color-on-primary text on it. */
+  --color-primary: #0f766e;
   --color-on-primary: #ffffff;
   --color-primary-container: #131b2e;
   --color-on-primary-container: #7c839b;
