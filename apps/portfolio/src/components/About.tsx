@@ -14,7 +14,7 @@ export default function About() {
           <h1 className="mb-stack-sm font-display text-display leading-tight">
             <Trans
               i18nKey="about.philosophyHeading"
-              components={{ highlight: <span className="text-highlight" /> }}
+              components={{ highlight: <span className="text-primary" /> }}
             />
           </h1>
           <div className="max-w-3xl space-y-6">
