@@ -1,9 +1,18 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import App from "./App";
+import { createMemoryRouter } from "react-router";
+import App, { routes } from "./App";
+
+// Each test gets its own router/history instead of sharing the app's real
+// browser router — full isolation, no cross-test navigation state leaking
+// between tests in this file.
+function renderApp(initialEntries = ["/"]) {
+  const router = createMemoryRouter(routes, { initialEntries });
+  return render(<App router={router} />);
+}
 
 test("Home renders the hero, Engineering Timeline, and projects teaser", () => {
-  render(<App />);
+  renderApp();
 
   expect(
     screen.getByRole("heading", { name: "Building systems that scale." })
@@ -24,7 +33,7 @@ test("Home renders the hero, Engineering Timeline, and projects teaser", () => {
 
 test("About page renders philosophy, skills, principles, and experience content", async () => {
   const user = userEvent.setup();
-  render(<App />);
+  renderApp();
 
   await user.click(screen.getAllByRole("link", { name: "About" })[0]);
 
@@ -50,7 +59,7 @@ test("About page renders philosophy, skills, principles, and experience content"
 
 test("Contact page renders the contact section", async () => {
   const user = userEvent.setup();
-  render(<App />);
+  renderApp();
 
   await user.click(screen.getAllByRole("link", { name: "Contact" })[0]);
 
