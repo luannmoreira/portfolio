@@ -68,7 +68,7 @@ export default function Navbar() {
       brand={
         <Link
           to="/"
-          className="font-headline-md text-headline-md font-bold text-primary"
+          className="font-headline-md text-headline-md font-bold text-on-background"
         >
           Luann Curioso
         </Link>
