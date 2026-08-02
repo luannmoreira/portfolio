@@ -10,6 +10,13 @@ import { projects } from "../content/projects";
 import { useDocumentMeta } from "../hooks/useDocumentMeta";
 import { useScrollToSection } from "../hooks/useScrollToSection";
 
+// Curated, not just "first two" — picked by id so the teaser survives
+// reordering/additions to the full projects list on /projects.
+const FEATURED_PROJECT_IDS = ["shellhub", "sedec-invest-mt"];
+const featuredProjects = FEATURED_PROJECT_IDS.map((id) =>
+  projects.find((project) => project.id === id)!
+);
+
 function Home() {
   const { t } = useTranslation();
   useScrollToSection();
@@ -30,7 +37,7 @@ function Home() {
             </h2>
           </div>
           <div className="grid grid-cols-1 gap-stack-md md:grid-cols-2">
-            {projects.slice(0, 2).map((project) => (
+            {featuredProjects.map((project) => (
               <CardProjects
                 key={project.id}
                 name={project.name}
