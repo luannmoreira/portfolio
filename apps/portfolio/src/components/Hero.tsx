@@ -13,7 +13,7 @@ export default function Hero() {
     >
       <div className="mx-auto w-full max-w-container-max px-margin-mobile md:px-gutter">
         <div className="max-w-3xl">
-          <p className="mb-stack-sm font-label-mono text-label-mono uppercase tracking-widest text-secondary">
+          <p className="mb-stack-sm font-label-mono text-label-mono uppercase tracking-widest text-primary">
             <span className="text-plate">{t("hero.eyebrow")}</span>
           </p>
           <h1 className="mb-stack-sm font-display text-display leading-[1.1] text-on-background">

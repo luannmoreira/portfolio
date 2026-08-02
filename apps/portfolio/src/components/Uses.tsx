@@ -21,7 +21,7 @@ export default function Uses() {
 
           return (
             <div key={item.id}>
-              <dt className="mb-1 font-label-mono text-label-mono uppercase tracking-widest text-secondary">
+              <dt className="mb-1 font-label-mono text-label-mono uppercase tracking-widest text-primary">
                 {t(`uses.items.${item.id}.category`)}
               </dt>
               <dd className="font-headline-md text-[16px] font-semibold">

@@ -11,7 +11,7 @@ function Projects() {
   return (
     <div className="mx-auto max-w-container-max px-margin-mobile pb-stack-lg md:px-gutter">
       <section className="mb-stack-lg">
-        <span className="mb-2 block font-label-mono text-label-mono uppercase tracking-widest text-secondary">
+        <span className="mb-2 block font-label-mono text-label-mono uppercase tracking-widest text-primary">
           {t("projects.eyebrow")}
         </span>
         <h1 className="mb-6 font-display text-display">

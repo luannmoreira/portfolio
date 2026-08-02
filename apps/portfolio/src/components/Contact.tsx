@@ -26,7 +26,7 @@ export default function Contact() {
             className="group relative flex flex-col justify-between overflow-hidden border border-outline-variant/30 bg-surface/60 p-stack-md backdrop-blur-md transition-all duration-300 hover:border-primary"
           >
             <div className="mb-stack-md">
-              <span className="mb-2 block font-label-mono text-label-mono uppercase text-secondary">
+              <span className="mb-2 block font-label-mono text-label-mono uppercase text-primary">
                 {t("contact.primaryChannel")}
               </span>
               <h2 className="font-headline-lg text-headline-lg text-primary">
@@ -53,10 +53,10 @@ export default function Contact() {
             >
               <div className="flex items-center gap-stack-sm">
                 <div className="rounded-lg bg-secondary-container/30 p-4">
-                  <LinkedinIcon className="h-5 w-5 text-secondary" />
+                  <LinkedinIcon className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <span className="block font-label-mono text-label-mono uppercase text-secondary">
+                  <span className="block font-label-mono text-label-mono uppercase text-primary">
                     {t("contact.professional")}
                   </span>
                   <h2 className="font-headline-md text-headline-md text-primary">
@@ -81,7 +81,7 @@ export default function Contact() {
                   <GithubIcon className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <span className="block font-label-mono text-label-mono uppercase text-secondary">
+                  <span className="block font-label-mono text-label-mono uppercase text-primary">
                     {t("contact.development")}
                   </span>
                   <h2 className="font-headline-md text-headline-md text-primary">
@@ -106,7 +106,7 @@ export default function Contact() {
                   <WhatsappIcon className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <span className="block font-label-mono text-label-mono uppercase text-secondary">
+                  <span className="block font-label-mono text-label-mono uppercase text-primary">
                     {t("contact.direct")}
                   </span>
                   <h2 className="font-headline-md text-headline-md text-primary">

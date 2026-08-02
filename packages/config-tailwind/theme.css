@@ -25,15 +25,14 @@
   /* --color-primary diverges from the original Stitch-sourced value
      (formerly a muted lavender #bec6e0) — this is the site's one accent
      color for "this is highlighted/active/emphasized" (nav active state,
-     timeline status, links, focus ring, buttons, etc.). Matches the
-     Hero/DotCanvas animated dots' own color exactly (#22a39f, sampled from
+     timeline status, links, focus ring, buttons, etc.). Same hue as the
+     Hero/DotCanvas animated dots' own color (#22a39f, sampled from
      assets/logo.png — see apps/portfolio/src/theme.css's .canvas-bg
-     comments) so the accent used across the UI and the accent used in the
-     hero's decorative animation are the same color, not two different
-     near-teals. --color-on-primary darkened from the original #283044 to
-     keep contrast against this teal comfortably above WCAG AA (was 4.26:1,
-     now 6.00:1) — button/label text sits on this color. */
-  --color-primary: #22a39f;
+     comments), so the accent used across the UI and the accent used in the
+     hero's decorative animation read as clearly related — but desaturated
+     (65%→45% sat, 39%→45% lightness) for a subtler, less neon feel than
+     the literal dot color. Contrast against --color-background: 6.35:1. */
+  --color-primary: #3fa6a3;
   --color-on-primary: #0a1420;
   --color-primary-container: #0f172a;
   --color-on-primary-container: #798098;
@@ -103,12 +102,12 @@
 
   /* Diverges from the original Stitch-sourced value (formerly pure black
      #000000) — see the dark-mode --color-primary comment above for why.
-     Not the dots' exact #22a39f: that's only 2.92:1 against this light
-     background (fails WCAG AA even for large text), so this deepens the
-     same hue (178°→175°, higher saturation, lower lightness) rather than
-     reusing the literal decorative value — 5.19:1 against
-     --color-background, 5.47:1 for white --color-on-primary text on it. */
-  --color-primary: #0f766e;
+     Same subtler-than-the-dots hue as dark mode's --color-primary
+     (175°, 45% sat), deepened in lightness (32%) since the dots' own
+     value has too little contrast against this light background to use
+     directly — 5.05:1 against --color-background, 5.33:1 for white
+     --color-on-primary text on it. */
+  --color-primary: #2d7670;
   --color-on-primary: #ffffff;
   --color-primary-container: #131b2e;
   --color-on-primary-container: #7c839b;

@@ -93,7 +93,7 @@ export default function Timeline() {
     >
       <div className="mx-auto max-w-container-max px-margin-mobile md:px-gutter">
         <div className="mb-stack-md">
-          <span className="mb-2 block font-label-mono text-label-mono uppercase tracking-widest text-secondary">
+          <span className="mb-2 block font-label-mono text-label-mono uppercase tracking-widest text-primary">
             {t("timeline.journeyLabel")}
           </span>
           <h2 className="font-headline-lg text-headline-lg text-on-background">

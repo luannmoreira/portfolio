@@ -8,7 +8,7 @@ export default function About() {
     <section className="mb-stack-lg">
       <div className="grid grid-cols-1 items-start gap-gutter lg:grid-cols-12">
         <div className="lg:col-span-8">
-          <span className="mb-4 block font-label-mono text-label-mono uppercase tracking-widest text-secondary">
+          <span className="mb-4 block font-label-mono text-label-mono uppercase tracking-widest text-primary">
             {t("about.philosophyEyebrow")}
           </span>
           <h1 className="mb-stack-sm font-display text-display leading-tight">
