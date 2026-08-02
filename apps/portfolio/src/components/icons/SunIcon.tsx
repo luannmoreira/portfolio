@@ -1,8 +1,36 @@
-import Icon from "./Icon";
+interface SunIconProps {
+  className?: string;
+}
 
-const PATH =
-  "M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2zM10 15a5 5 0 100-10 5 5 0 000 10zM10 18a.75.75 0 01.75.75v0a.75.75 0 01-1.5 0v0A.75.75 0 0110 18zM16.364 5.636a.75.75 0 010 1.06l-1.06 1.062a.75.75 0 11-1.062-1.06l1.06-1.06a.75.75 0 011.06 0zM6.697 15.303a.75.75 0 010 1.061l-1.06 1.06a.75.75 0 01-1.061-1.06l1.06-1.06a.75.75 0 011.06 0zM18 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5a.75.75 0 01.75.75zM5 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 015 10zM14.243 15.303a.75.75 0 011.061 0l1.06 1.06a.75.75 0 01-1.06 1.061l-1.06-1.06a.75.75 0 010-1.061zM5.636 5.636a.75.75 0 011.06 0l1.061 1.06a.75.75 0 11-1.06 1.062l-1.061-1.06a.75.75 0 010-1.061z";
-
-export default function SunIcon({ className }: { className?: string }) {
-  return <Icon viewBox="0 0 20 20" path={PATH} className={className} />;
+// Built from plain trigonometry rather than a transcribed third-party icon
+// path: a filled circle (r=4) at center (12,12), plus 8 stroked rays at
+// 45°-increments, each spanning radius 6→9 from center
+// (cos/sin(angle) * radius, added to the 12,12 center). Every coordinate
+// below can be checked by hand — e.g. 45°: cos=sin=0.7071,
+// 12 ± 4.24 (r=6) and 12 ± 6.36 (r=9) — instead of trusted from memory,
+// which is how the previous version of this icon ended up with a
+// malformed, asymmetric bottom ray.
+export default function SunIcon({ className }: SunIconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      fill="currentColor"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <circle cx="12" cy="12" r="4" stroke="none" />
+      <line x1="18" y1="12" x2="21" y2="12" />
+      <line x1="16.24" y1="16.24" x2="18.36" y2="18.36" />
+      <line x1="12" y1="18" x2="12" y2="21" />
+      <line x1="7.76" y1="16.24" x2="5.64" y2="18.36" />
+      <line x1="6" y1="12" x2="3" y2="12" />
+      <line x1="7.76" y1="7.76" x2="5.64" y2="5.64" />
+      <line x1="12" y1="6" x2="12" y2="3" />
+      <line x1="16.24" y1="7.76" x2="18.36" y2="5.64" />
+    </svg>
+  );
 }
