@@ -25,26 +25,28 @@
   /* --color-primary diverges from the original Stitch-sourced value
      (formerly a muted lavender #bec6e0) — this is the site's one accent
      color for "this is highlighted/active/selected" (nav active state,
-     timeline status, timeline links, the About highlight phrase, eyebrow
-     labels, focus ring, etc.). Same hue as the Hero/DotCanvas animated
-     dots' own color (#22a39f, sampled from assets/logo.png — see
-     apps/portfolio/src/theme.css's .canvas-bg comments), so the accent
-     used across the UI and the accent used in the hero's decorative
-     animation read as clearly related — but desaturated (65%→45% sat,
-     39%→45% lightness) for a subtler, less neon feel than the literal dot
-     color. Contrast against --color-background: 6.35:1.
-     Deliberately NOT used for CTA buttons (Resume, View Projects, Contact
-     Me, the Print button) — those kept their original pre-existing
-     --color-button/--color-on-button pair below, unrelated to this accent
-     work. "Selected/active" and "primary action" turned out to be two
-     different concerns the user wanted visually distinct, not one token. */
+     the Resume nav CTA, timeline status, timeline links, the About
+     highlight phrase, eyebrow labels, focus ring, etc.). Same hue as the
+     Hero/DotCanvas animated dots' own color (#22a39f, sampled from
+     assets/logo.png — see apps/portfolio/src/theme.css's .canvas-bg
+     comments), so the accent used across the UI and the accent used in
+     the hero's decorative animation read as clearly related — but
+     desaturated (65%→45% sat, 39%→45% lightness) for a subtler, less neon
+     feel than the literal dot color. Contrast against --color-background:
+     6.35:1.
+     Deliberately NOT used for the other CTA buttons (Hero's View
+     Projects/Contact Me, the Resume page's Print button) — those keep
+     their original pre-existing --color-button/--color-on-button pair
+     below, unrelated to this accent work. The Resume nav CTA is the one
+     exception: the user wants it treated as the nav's own "primary/most
+     important" action, not lumped in with the others. */
   --color-primary: #3fa6a3;
   --color-on-primary: #0a1420;
   --color-primary-container: #0f172a;
   --color-on-primary-container: #798098;
   /* The original (pre-accent-work) --color-primary/--color-on-primary
-     values, kept as their own pair specifically for CTA buttons — see the
-     comment above. */
+     values, kept as their own pair for the CTA buttons that stay off the
+     accent — see the comment above. */
   --color-button: #bec6e0;
   --color-on-button: #283044;
   --color-secondary: #b9c7e0;

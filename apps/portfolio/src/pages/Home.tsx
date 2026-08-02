@@ -51,7 +51,7 @@ function Home() {
           <div className="mt-stack-md text-center">
             <Link
               to="/projects"
-              className="inline-flex items-center gap-2 font-headline-md text-primary transition-all hover:gap-4"
+              className="inline-flex items-center gap-2 font-headline-md text-on-surface-variant transition-all hover:gap-4 hover:text-primary"
             >
               {t("home.exploreAllProjects")}
               <MaterialIcon name="arrow_forward" className="h-5 w-5" />

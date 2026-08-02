@@ -110,7 +110,7 @@ export default function Navbar() {
           <div className="my-4 h-px w-full bg-outline-variant/30" />
           <Link
             to="/resume"
-            className="w-full rounded-lg bg-button py-4 text-center font-bold uppercase tracking-widest text-on-button transition-opacity hover:opacity-90"
+            className="w-full rounded-lg bg-primary py-4 text-center font-bold uppercase tracking-widest text-on-primary transition-opacity hover:opacity-90"
           >
             {t("nav.resume")}
           </Link>
@@ -127,7 +127,7 @@ export default function Navbar() {
       desktopCta={
         <Link
           to="/resume"
-          className="rounded-lg bg-button px-6 py-2 font-bold text-on-button transition-opacity hover:opacity-90"
+          className="rounded-lg bg-primary px-6 py-2 font-bold text-on-primary transition-opacity hover:opacity-90"
         >
           {t("nav.resume")}
         </Link>
