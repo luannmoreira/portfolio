@@ -51,6 +51,15 @@ const milestoneWithDetails: TimelineMilestone = {
   links: [{ label: "detailed.dev", href: "https://detailed.dev" }],
 };
 
+const milestoneWithoutDetailsCopy: TimelineMilestone = {
+  id: "tech-only-co",
+  year: "2023",
+  status: "completed",
+  title: "Tech Only Co",
+  summary: "Only a summary, no separate details.",
+  technologies: ["Vue"],
+};
+
 test("renders an id target, year, title, subtitle, and summary", () => {
   const { container } = render(
     <ol>
@@ -96,15 +105,26 @@ test("does not render a details toggle when there is nothing extra to show", () 
 });
 
 test("keeps expandable content collapsed by default", () => {
-  render(
+  const { container } = render(
     <ol>
       <TimelineItem milestone={milestoneWithDetails} />
     </ol>
   );
 
+  // Present in the DOM (needed so the open transition has something to
+  // animate) but collapsed to zero height/opacity, and hidden from
+  // assistive tech. Asserted on the details wrapper's own style/attribute
+  // rather than an ancestor-aware visibility check, since the outer <li>'s
+  // separate scroll-reveal opacity (see below) would make everything
+  // "invisible" by that measure regardless of the accordion's own state.
   expect(
-    screen.queryByText("Longer explanation of the work.")
-  ).not.toBeInTheDocument();
+    screen.getByText("Longer explanation of the work.")
+  ).toBeInTheDocument();
+  const detailsRegion = container.querySelector(
+    `#${milestoneWithDetails.id}-details`
+  );
+  expect(detailsRegion).toHaveAttribute("aria-hidden", "true");
+  expect(detailsRegion).toHaveStyle({ gridTemplateRows: "0fr", opacity: "0" });
   expect(screen.getByRole("button", { name: /details/i })).toHaveAttribute(
     "aria-expanded",
     "false"
@@ -113,16 +133,20 @@ test("keeps expandable content collapsed by default", () => {
 
 test("reveals details, technologies, and links when expanded, and collapses again on toggle", async () => {
   const user = userEvent.setup();
-  render(
+  const { container } = render(
     <ol>
       <TimelineItem milestone={milestoneWithDetails} />
     </ol>
   );
 
+  const detailsRegion = () =>
+    container.querySelector(`#${milestoneWithDetails.id}-details`);
   const toggle = screen.getByRole("button", { name: /details/i });
   await user.click(toggle);
 
   expect(toggle).toHaveAttribute("aria-expanded", "true");
+  expect(detailsRegion()).toHaveAttribute("aria-hidden", "false");
+  expect(detailsRegion()).toHaveStyle({ gridTemplateRows: "1fr", opacity: "1" });
   expect(
     screen.getByText("Longer explanation of the work.")
   ).toBeInTheDocument();
@@ -134,9 +158,24 @@ test("reveals details, technologies, and links when expanded, and collapses agai
 
   await user.click(toggle);
   expect(toggle).toHaveAttribute("aria-expanded", "false");
+  expect(detailsRegion()).toHaveAttribute("aria-hidden", "true");
+  expect(detailsRegion()).toHaveStyle({ gridTemplateRows: "0fr", opacity: "0" });
+});
+
+test("does not repeat the summary in the expanded panel when there is no separate details copy", async () => {
+  const user = userEvent.setup();
+  render(
+    <ol>
+      <TimelineItem milestone={milestoneWithoutDetailsCopy} />
+    </ol>
+  );
+
+  await user.click(screen.getByRole("button", { name: /details/i }));
+
   expect(
-    screen.queryByText("Longer explanation of the work.")
-  ).not.toBeInTheDocument();
+    screen.getAllByText("Only a summary, no separate details.")
+  ).toHaveLength(1);
+  expect(screen.getByText("Vue")).toBeInTheDocument();
 });
 
 test("the details toggle is keyboard operable", async () => {

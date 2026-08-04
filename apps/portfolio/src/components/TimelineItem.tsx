@@ -148,42 +148,71 @@ export default function TimelineItem({
               <span aria-hidden="true">{expanded ? "▾" : "▸"}</span>
               {t("timeline.detailsToggle")}
             </button>
-            {expanded && (
-              <div id={detailsId} className="mt-2">
-                <p className="font-body-md text-body-md leading-relaxed text-on-surface-variant">
-                  {milestone.details ?? milestone.summary}
-                </p>
-                {milestone.technologies &&
-                  milestone.technologies.length > 0 && (
-                    <ul className="mt-2 flex flex-wrap gap-2">
-                      {milestone.technologies.map((technology) => (
-                        <li
-                          key={technology}
-                          className="rounded-full border border-outline-variant/30 bg-on-surface-variant/10 px-3 py-1 font-label-mono text-label-mono text-on-surface-variant light:border-outline-variant/70"
-                        >
-                          {technology}
+            {/* Always mounted (not conditionally rendered) so the open/close
+                transition has something to animate — grid-template-rows
+                0fr/1fr grows/shrinks the row smoothly regardless of the
+                content's actual height, without measuring it in JS. The
+                overflow-hidden inner wrapper is what actually clips the
+                content during the animation; the outer grid element itself
+                never clips. */}
+            <div
+              id={detailsId}
+              aria-hidden={!expanded}
+              style={
+                prefersReducedMotion
+                  ? { display: expanded ? "block" : "none" }
+                  : {
+                      display: "grid",
+                      gridTemplateRows: expanded ? "1fr" : "0fr",
+                      opacity: expanded ? 1 : 0,
+                      transition:
+                        "grid-template-rows 300ms ease-in-out, opacity 300ms ease-in-out",
+                    }
+              }
+            >
+              <div className="overflow-hidden">
+                <div className="mt-2">
+                  {/* Only when there's a distinct expanded-view copy — a
+                      milestone with nothing but technologies/links and no
+                      `details` field would otherwise repeat the summary
+                      already shown above, verbatim. */}
+                  {milestone.details && (
+                    <p className="font-body-md text-body-md leading-relaxed text-on-surface-variant">
+                      {milestone.details}
+                    </p>
+                  )}
+                  {milestone.technologies &&
+                    milestone.technologies.length > 0 && (
+                      <ul className="mt-2 flex flex-wrap gap-2">
+                        {milestone.technologies.map((technology) => (
+                          <li
+                            key={technology}
+                            className="rounded-full border border-outline-variant/30 bg-on-surface-variant/10 px-3 py-1 font-label-mono text-label-mono text-on-surface-variant light:border-outline-variant/70"
+                          >
+                            {technology}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  {milestone.links && milestone.links.length > 0 && (
+                    <ul className="mt-2 flex flex-wrap gap-4">
+                      {milestone.links.map((link) => (
+                        <li key={link.href}>
+                          <a
+                            href={link.href}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-body-md text-body-md text-primary underline"
+                          >
+                            {link.label}
+                          </a>
                         </li>
                       ))}
                     </ul>
                   )}
-                {milestone.links && milestone.links.length > 0 && (
-                  <ul className="mt-2 flex flex-wrap gap-4">
-                    {milestone.links.map((link) => (
-                      <li key={link.href}>
-                        <a
-                          href={link.href}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="font-body-md text-body-md text-primary underline"
-                        >
-                          {link.label}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                </div>
               </div>
-            )}
+            </div>
           </>
         )}
       </div>
