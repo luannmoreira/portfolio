@@ -9,7 +9,7 @@ export default function Hero() {
   return (
     <DotCanvas
       as="section"
-      className="flex min-h-[70vh] items-center py-stack-lg"
+      className="-mt-8 flex min-h-[70vh] items-center py-stack-lg"
     >
       <div className="mx-auto w-full max-w-container-max px-margin-mobile md:px-gutter">
         <div className="max-w-3xl">
@@ -37,13 +37,6 @@ export default function Hero() {
             </Link>
           </div>
         </div>
-      </div>
-      <div
-        className="pointer-events-none absolute right-0 top-1/2 hidden h-full w-1/3 -translate-y-1/2 opacity-5 lg:block"
-        aria-hidden="true"
-      >
-        <div className="h-full w-full border-l border-t border-primary" />
-        <div className="absolute left-1/4 top-1/4 h-1/2 w-1/2 border-l border-t border-primary" />
       </div>
     </DotCanvas>
   );
