@@ -14,7 +14,7 @@ export default function CardExperiencia({
   anoSaida,
 }: CardExperienciaProps) {
   return (
-    <li className="border-l-2 border-outline-variant/30 pl-6">
+    <li className="border-l-2 border-outline-variant/30 pl-6 light:border-outline-variant/70">
       <p className="font-label-mono text-label-mono text-secondary">
         {anoEntrada} — {anoSaida}
       </p>

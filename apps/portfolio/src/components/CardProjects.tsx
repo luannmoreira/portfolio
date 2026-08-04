@@ -18,14 +18,14 @@ export default function CardProjects({
   link,
   animate = true,
 }: CardProjectsProps) {
-  // Hover affordances (shadow lift, title color shift) only make sense
-  // when the card is actually a link — applying them unconditionally made
-  // non-interactive cards (no external `link`, e.g. OS Systems) look
+  // Hover affordances (lift, border shift, title color shift) only make
+  // sense when the card is actually a link — applying them unconditionally
+  // made non-interactive cards (no external `link`, e.g. OS Systems) look
   // clickable when they weren't.
   const content = (
     <div
-      className={`flex h-full flex-col gap-4 rounded-lg border border-outline-variant/30 bg-surface-container-lowest p-stack-sm transition-shadow ${
-        link ? "hover:shadow-xl" : ""
+      className={`flex h-full flex-col gap-4 rounded-lg border border-outline-variant/30 bg-surface-container-lowest p-stack-sm transition-[transform,border-color] light:border-outline-variant/70 light:shadow-sm ${
+        link ? "hover:-translate-y-0.5 hover:border-primary/30" : ""
       }`}
     >
       <h3
@@ -42,7 +42,7 @@ export default function CardProjects({
         {tech.map((item) => (
           <li
             key={item}
-            className="rounded bg-surface-container px-3 py-1 font-label-mono text-label-mono text-on-surface-variant"
+            className="rounded-full border border-outline-variant/30 bg-on-surface-variant/10 px-3 py-1 font-label-mono text-label-mono text-on-surface-variant light:border-outline-variant/70"
           >
             {item}
           </li>

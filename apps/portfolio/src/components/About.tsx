@@ -27,7 +27,7 @@ export default function About() {
           </div>
         </div>
         <div className="mt-stack-md lg:col-span-4 lg:mt-0">
-          <div className="relative overflow-hidden border border-outline-variant/30 bg-surface-container-lowest p-unit">
+          <div className="relative overflow-hidden border border-outline-variant/30 bg-surface-container-lowest p-unit light:border-outline-variant/70 light:shadow-sm">
             <img
               src={profile}
               alt={t("about.profileAlt")}

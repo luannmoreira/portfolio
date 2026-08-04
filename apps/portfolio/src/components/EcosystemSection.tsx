@@ -34,7 +34,7 @@ export default function EcosystemSection() {
             .map((skill) => (
               <span
                 key={skill.name}
-                className="flex items-center gap-1.5 rounded border border-outline-variant/50 bg-surface-container-lowest px-3 py-1.5 font-label-mono text-label-mono text-secondary"
+                className="flex items-center gap-1.5 rounded-full border border-outline-variant/30 bg-on-surface-variant/10 px-3 py-1 font-label-mono text-label-mono text-on-surface-variant light:border-outline-variant/70"
               >
                 {skill.iconPath && (
                   <TechIcon path={skill.iconPath} className="h-3.5 w-3.5" />

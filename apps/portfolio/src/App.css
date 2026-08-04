@@ -16,14 +16,34 @@ body {
   }
 }
 
-/* Hides the scrollbar on the horizontally-scrolling Engineering Timeline
-   track (Timeline.tsx) without a Tailwind plugin — the track is still
-   fully scrollable via trackpad, touch, drag, or the wheel-to-horizontal
-   handler, this only hides the OS scrollbar chrome. */
+/* The Engineering Timeline track (Timeline.tsx) only scrolls horizontally
+   at the md breakpoint — below it, it's a plain vertical stack with
+   nothing to scroll, so the scrollbar stays hidden there. At md+, a thin
+   themed scrollbar replaces the OS default as a visible affordance that
+   the row of cards continues off-screen; the track also stays scrollable
+   via trackpad, touch, drag, or the wheel-to-horizontal handler either way. */
 .scrollbar-hide {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+@media (min-width: 768px) {
+  .scrollbar-hide {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-outline-variant) transparent;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: block;
+    height: 6px;
+  }
+  .scrollbar-hide::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-hide::-webkit-scrollbar-thumb {
+    background-color: var(--color-outline-variant);
+    border-radius: 9999px;
+  }
 }

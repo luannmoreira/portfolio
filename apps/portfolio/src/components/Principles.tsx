@@ -5,7 +5,7 @@ export default function Principles() {
   const { t } = useTranslation();
 
   return (
-    <section className="mb-stack-lg border border-outline-variant/20 bg-surface-container-low p-stack-md">
+    <section className="mb-stack-lg border border-outline-variant/20 bg-surface-container-low p-stack-md light:border-outline-variant/60 light:shadow-sm">
       <div className="flex flex-col gap-gutter md:flex-row">
         <div className="md:w-1/3">
           <h2 className="mb-4 font-headline-lg text-headline-lg leading-tight">

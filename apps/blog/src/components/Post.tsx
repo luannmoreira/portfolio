@@ -205,7 +205,7 @@ function Post({ basePath }: PostProps) {
               {entry.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-full bg-surface-container-highest px-3 py-1 font-label-mono text-label-mono text-secondary"
+                  className="rounded-full border border-outline-variant/30 bg-on-surface-variant/10 px-3 py-1 font-label-mono text-label-mono text-on-surface-variant light:border-outline-variant/70"
                 >
                   {tag}
                 </span>

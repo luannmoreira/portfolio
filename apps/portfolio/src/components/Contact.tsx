@@ -23,7 +23,7 @@ export default function Contact() {
         <section className="grid grid-cols-1 gap-stack-sm md:grid-cols-2">
           <a
             href="mailto:luannmcurioso@gmail.com"
-            className="group relative flex flex-col justify-between overflow-hidden border border-outline-variant/30 bg-surface/60 p-stack-md backdrop-blur-md transition-all duration-300 hover:border-primary"
+            className="group relative flex flex-col justify-between overflow-hidden border border-outline-variant/30 bg-surface/60 p-stack-md backdrop-blur-md transition-all duration-300 hover:border-primary light:border-outline-variant/70"
           >
             <div className="mb-stack-md">
               <span className="mb-2 block font-label-mono text-label-mono uppercase text-primary">
@@ -49,7 +49,7 @@ export default function Contact() {
               href="https://linkedin.com/in/luanncurioso"
               target="_blank"
               rel="noreferrer"
-              className="group flex items-center justify-between border border-outline-variant/30 bg-surface/60 p-stack-sm backdrop-blur-md transition-all duration-300 hover:border-primary"
+              className="group flex items-center justify-between border border-outline-variant/30 bg-surface/60 p-stack-sm backdrop-blur-md transition-all duration-300 hover:border-primary light:border-outline-variant/70"
             >
               <div className="flex items-center gap-stack-sm">
                 <div className="rounded-lg bg-secondary-container/30 p-4">
@@ -74,7 +74,7 @@ export default function Contact() {
               href="https://github.com/luannmoreira"
               target="_blank"
               rel="noreferrer"
-              className="group flex items-center justify-between border border-outline-variant/30 bg-surface/60 p-stack-sm backdrop-blur-md transition-all duration-300 hover:border-primary"
+              className="group flex items-center justify-between border border-outline-variant/30 bg-surface/60 p-stack-sm backdrop-blur-md transition-all duration-300 hover:border-primary light:border-outline-variant/70"
             >
               <div className="flex items-center gap-stack-sm">
                 <div className="rounded-lg bg-surface-container-high p-4">
@@ -99,7 +99,7 @@ export default function Contact() {
               href="https://wa.me/5565999722455?text=Ol%C3%A1%2C%20Luann!"
               target="_blank"
               rel="noreferrer"
-              className="group flex items-center justify-between border border-outline-variant/30 bg-surface/60 p-stack-sm backdrop-blur-md transition-all duration-300 hover:border-primary"
+              className="group flex items-center justify-between border border-outline-variant/30 bg-surface/60 p-stack-sm backdrop-blur-md transition-all duration-300 hover:border-primary light:border-outline-variant/70"
             >
               <div className="flex items-center gap-stack-sm">
                 <div className="rounded-lg bg-surface-container-high p-4">

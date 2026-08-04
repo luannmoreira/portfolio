@@ -87,7 +87,7 @@ function FeaturedCard({
         {entry.tags.slice(0, 2).map((tag) => (
           <span
             key={tag}
-            className="font-label-mono text-caption text-secondary"
+            className="rounded-full border border-outline-variant/30 bg-on-surface-variant/10 px-2 py-0.5 font-label-mono text-caption text-on-surface-variant light:border-outline-variant/70"
           >
             #{tag}
           </span>
@@ -135,7 +135,7 @@ function SideCard({
       </p>
       {entry.tags[0] && (
         <div className="mt-auto flex items-center gap-3">
-          <span className="font-label-mono text-caption text-secondary">
+          <span className="rounded-full border border-outline-variant/30 bg-on-surface-variant/10 px-2 py-0.5 font-label-mono text-caption text-on-surface-variant light:border-outline-variant/70">
             #{entry.tags[0]}
           </span>
         </div>
@@ -251,7 +251,7 @@ function ContentIndex({ type, basePath }: ContentIndexProps) {
                 </span>
                 <div className="mt-2 flex gap-2 md:mt-0">
                   {entry.tags[0] && (
-                    <span className="rounded-sm bg-surface-container px-2 py-0.5 font-label-mono text-caption text-on-surface-variant">
+                    <span className="rounded-full border border-outline-variant/30 bg-on-surface-variant/10 px-2 py-0.5 font-label-mono text-caption text-on-surface-variant light:border-outline-variant/70">
                       #{entry.tags[0]}
                     </span>
                   )}

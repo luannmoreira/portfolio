@@ -102,16 +102,26 @@
   --color-surface-dim: #d8dadc;
   --color-surface-bright: #f7f9fb;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f2f4f6;
-  --color-surface-container: #eceef0;
-  --color-surface-container-high: #e6e8ea;
-  --color-surface-container-highest: #e0e3e5;
-  --color-surface-variant: #e0e3e5;
+  --color-surface-container-low: #eef1f3;
+  --color-surface-container: #e3e6e9;
+  --color-surface-container-high: #d7dadd;
+  --color-surface-container-highest: #cbced2;
+  --color-surface-variant: #cbced2;
   --color-on-background: #191c1e;
   --color-on-surface: #191c1e;
   --color-on-surface-variant: #45464d;
-  --color-outline: #76777d;
-  --color-outline-variant: #c6c6cd;
+  /* Both darkened from the original Stitch-sourced values (#76777d /
+     #c6c6cd) — on the near-white background above, those were barely
+     visible even at full opacity (contrast ~1.4:1 and ~1.1:1 against
+     white), let alone at the /20-/60 opacity many card/section borders
+     use (see components' `border-outline-variant/NN` classes), which
+     made light mode read as borderless next to dark mode's much wider
+     surface/border value range. --color-outline-variant now holds ~4:1
+     against white at full opacity, ~2.3:1 at the 70% many of those
+     components now apply via `light:` overrides — visible without going
+     as heavy as --color-outline's solid-border use (Hero/Resume buttons). */
+  --color-outline: #5c5d63;
+  --color-outline-variant: #83848c;
 
   /* Diverges from the original Stitch-sourced value (formerly pure black
      #000000) — see the dark-mode --color-primary comment above for why.

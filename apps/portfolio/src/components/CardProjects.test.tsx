@@ -63,6 +63,7 @@ test("renders a hover affordance when the card is a link", () => {
 
   const heading = screen.getByRole("heading", { name: "Linked Project" });
   const card = heading.closest("div")!;
-  expect(card.className).toMatch(/hover:shadow/);
+  expect(card.className).toMatch(/hover:-translate-y/);
+  expect(card.className).toMatch(/hover:border-primary/);
   expect(heading.className).toMatch(/group-hover/);
 });

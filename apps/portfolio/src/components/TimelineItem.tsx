@@ -16,20 +16,20 @@ const statusGlyph: Record<TimelineStatus, string> = {
 // emphasized. planned: muted, further faded than completed — matches
 // prompt.md's "Subtle, slightly faded / Active, emphasized / Muted".
 const statusColor: Record<TimelineStatus, string> = {
-  completed: "text-on-surface-variant/70",
+  completed: "text-on-surface-variant/70 light:text-on-surface-variant/90",
   "in-progress": "text-primary",
-  planned: "text-outline/70",
+  planned: "text-outline/70 light:text-outline/90",
 };
 
 // Card-level treatment per status, applied to the content wrapper below
 // the status/year header row.
 const cardStyle: Record<TimelineStatus, string> = {
   completed:
-    "rounded-xl border border-outline-variant/30 bg-surface p-stack-sm transition-colors hover:border-primary/30",
+    "rounded-xl border border-outline-variant/30 bg-surface p-stack-sm transition-[transform,border-color] hover:-translate-y-0.5 hover:border-primary/30 light:border-outline-variant/70 light:shadow-sm",
   "in-progress":
     "rounded-xl border-2 border-primary bg-surface p-stack-sm shadow-lg",
   planned:
-    "rounded-xl border border-dashed border-outline-variant/60 bg-surface-container/50 p-stack-sm text-secondary",
+    "rounded-xl border border-dashed border-outline-variant/60 bg-surface-container/50 p-stack-sm text-secondary transition-[transform,border-color] hover:-translate-y-0.5 hover:border-outline light:border-outline-variant/90",
 };
 
 // The node sitting directly on the timeline itself (the vertical line on
@@ -103,7 +103,7 @@ export default function TimelineItem({
       id={milestone.id}
       style={revealStyle}
       aria-current={isActive ? "true" : undefined}
-      className="relative border-l-2 border-outline-variant/30 pb-stack-sm pl-6 pt-0 md:w-72 md:flex-shrink-0 md:snap-start md:border-l-0 md:px-3 md:pb-10 md:pt-0"
+      className="relative border-l-2 border-outline-variant/30 pb-stack-sm pl-6 pt-0 light:border-outline-variant/70 md:w-72 md:flex-shrink-0 md:snap-start md:border-l-0 md:px-3 md:pb-10 md:pt-0"
     >
       {/* Node on the vertical line — mobile only; the line itself is each
           item's own border-l-2, which already reads as continuous since
@@ -159,7 +159,7 @@ export default function TimelineItem({
                       {milestone.technologies.map((technology) => (
                         <li
                           key={technology}
-                          className="rounded-full border border-outline-variant/30 px-3 py-1 font-label-mono text-label-mono text-on-surface-variant"
+                          className="rounded-full border border-outline-variant/30 bg-on-surface-variant/10 px-3 py-1 font-label-mono text-label-mono text-on-surface-variant light:border-outline-variant/70"
                         >
                           {technology}
                         </li>
@@ -200,9 +200,9 @@ export default function TimelineItem({
         aria-hidden="true"
         className="mt-4 hidden md:flex md:flex-col md:items-center"
       >
-        <span className="h-4 w-px bg-outline-variant/40" />
+        <span className="h-4 w-px bg-outline-variant/40 light:bg-outline-variant/80" />
       </div>
-      <div className="relative hidden md:block md:-mx-3 md:border-t-2 md:border-outline-variant/30">
+      <div className="relative hidden md:block md:-mx-3 md:border-t-2 md:border-outline-variant/30 md:light:border-outline-variant/70">
         <span
           aria-hidden="true"
           data-pulse={milestone.status === "in-progress" ? "true" : undefined}
