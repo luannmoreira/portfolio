@@ -1,4 +1,5 @@
 import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { renderWithI18n } from "../test-i18n";
 import Timeline from "./Timeline";
@@ -36,6 +37,7 @@ test("renders an anchor target for cross-page nav", () => {
 });
 
 test("renders every milestone's title and summary", () => {
+  stubHorizontalBreakpoint(true);
   renderTimeline();
 
   for (const milestone of timelineMilestones) {
@@ -48,6 +50,7 @@ test("renders every milestone's title and summary", () => {
 });
 
 test("renders every milestone's own year label (no shared group heading)", () => {
+  stubHorizontalBreakpoint(true);
   const { container } = renderTimeline();
 
   for (const milestone of timelineMilestones) {
@@ -125,6 +128,70 @@ test("does not hijack vertical wheel scroll below the horizontal breakpoint", ()
   );
 
   expect(track.scrollLeft).toBe(0);
+});
+
+test("collapses milestones beyond the first few on mobile by default", () => {
+  stubHorizontalBreakpoint(false);
+  renderTimeline();
+
+  const firstCopy = copyFor(timelineMilestones[0].id);
+  const lastMilestone = timelineMilestones[timelineMilestones.length - 1];
+  const lastCopy = copyFor(lastMilestone.id);
+
+  expect(
+    screen.getByRole("heading", { name: firstCopy.title })
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole("heading", { name: lastCopy.title })
+  ).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /show all/i })).toBeVisible();
+});
+
+test("reveals every milestone after clicking Show all on mobile", async () => {
+  stubHorizontalBreakpoint(false);
+  const user = userEvent.setup();
+  renderTimeline();
+
+  await user.click(screen.getByRole("button", { name: /show all/i }));
+
+  for (const milestone of timelineMilestones) {
+    const copy = copyFor(milestone.id);
+    expect(
+      screen.getByRole("heading", { name: copy.title })
+    ).toBeInTheDocument();
+  }
+  expect(
+    screen.queryByRole("button", { name: /show all/i })
+  ).not.toBeInTheDocument();
+});
+
+test("does not collapse milestones on desktop", () => {
+  stubHorizontalBreakpoint(true);
+  renderTimeline();
+
+  expect(
+    screen.queryByRole("button", { name: /show all/i })
+  ).not.toBeInTheDocument();
+  for (const milestone of timelineMilestones) {
+    const copy = copyFor(milestone.id);
+    expect(
+      screen.getByRole("heading", { name: copy.title })
+    ).toBeInTheDocument();
+  }
+});
+
+test("auto-reveals the full mobile list when a URL hash targets a collapsed milestone", () => {
+  stubHorizontalBreakpoint(false);
+  const targetId = "engineering-growth";
+  renderTimeline(`/#${targetId}`);
+
+  const targetCopy = copyFor(targetId);
+  expect(
+    screen.getByRole("heading", { name: targetCopy.title })
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: /show all/i })
+  ).not.toBeInTheDocument();
 });
 
 test("jumps instantly instead of animating when the user prefers reduced motion", () => {

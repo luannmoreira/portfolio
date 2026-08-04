@@ -146,6 +146,7 @@
     "heading": "Engineering Timeline",
     "trackLabel": "Engineering timeline",
     "detailsToggle": "Details",
+    "showAll": "Show all ({{count}} more)",
     "status": {
       "completed": "Completed",
       "in-progress": "In progress",

@@ -146,6 +146,7 @@
     "heading": "Linha do Tempo de Engenharia",
     "trackLabel": "Linha do tempo de engenharia",
     "detailsToggle": "Detalhes",
+    "showAll": "Mostrar tudo (mais {{count}})",
     "status": {
       "completed": "Concluído",
       "in-progress": "Em andamento",

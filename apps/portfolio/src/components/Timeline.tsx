@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import TimelineItem from "./TimelineItem";
@@ -18,10 +18,16 @@ const HORIZONTAL_BREAKPOINT = "(min-width: 768px)";
 
 const REAL_YEAR = /^\d{4}$/;
 
+// Below the horizontal breakpoint the track stacks vertically, so the full
+// 18-milestone history is a long scroll before reaching the page footer —
+// this caps the initial view, with a button to reveal the rest.
+const MOBILE_VISIBLE_COUNT = 4;
+
 export default function Timeline() {
   const { t, i18n } = useTranslation();
   const trackRef = useRef<HTMLOListElement>(null);
   const isHorizontal = useMediaQuery(HORIZONTAL_BREAKPOINT);
+  const [showAllMobile, setShowAllMobile] = useState(false);
 
   const resolvedMilestones: TimelineMilestone[] = timelineMilestones.map(
     (source) => {
@@ -57,6 +63,15 @@ export default function Timeline() {
   const location = useLocation();
   const rawHash = location.hash.replace(/^#/, "");
   const hashTarget = milestoneIdSet.has(rawHash) ? rawHash : null;
+
+  // A hash deep link always needs its target present in the DOM to scroll
+  // to, so it forces the full list open rather than requiring a click.
+  const isMobileCollapsed =
+    !isHorizontal && !showAllMobile && !hashTarget &&
+    resolvedMilestones.length > MOBILE_VISIBLE_COUNT;
+  const visibleMilestones = isMobileCollapsed
+    ? resolvedMilestones.slice(0, MOBILE_VISIBLE_COUNT)
+    : resolvedMilestones;
 
   useEffect(() => {
     if (!hashTarget) return;
@@ -105,7 +120,7 @@ export default function Timeline() {
           aria-label={t("timeline.trackLabel")}
           className="scrollbar-hide flex flex-col md:flex-row md:items-end md:overflow-x-auto md:snap-x md:snap-mandatory md:pb-4"
         >
-          {resolvedMilestones.map((milestone) => (
+          {visibleMilestones.map((milestone) => (
             <TimelineItem
               key={milestone.id}
               milestone={milestone}
@@ -115,6 +130,17 @@ export default function Timeline() {
             />
           ))}
         </ol>
+        {isMobileCollapsed && (
+          <button
+            type="button"
+            onClick={() => setShowAllMobile(true)}
+            className="mt-4 font-label-mono text-label-mono uppercase tracking-widest text-primary"
+          >
+            {t("timeline.showAll", {
+              count: resolvedMilestones.length - MOBILE_VISIBLE_COUNT,
+            })}
+          </button>
+        )}
       </div>
     </section>
   );
