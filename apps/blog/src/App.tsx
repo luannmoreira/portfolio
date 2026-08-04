@@ -28,7 +28,7 @@ function Layout() {
   const { t } = useTranslation();
 
   return (
-    <div className="w-full bg-background text-on-surface">
+    <div className="flex min-h-screen w-full flex-col bg-background text-on-surface">
       <ScrollRestoration />
       <a
         href="#main-content"
@@ -37,7 +37,7 @@ function Layout() {
         {t("skipToContent")}
       </a>
       <Navbar />
-      <main id="main-content" tabIndex={-1} className="focus:outline-none">
+      <main id="main-content" tabIndex={-1} className="flex flex-1 flex-col focus:outline-none">
         <Outlet />
       </main>
       <Footer />
