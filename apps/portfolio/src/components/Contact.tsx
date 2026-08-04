@@ -9,7 +9,7 @@ export default function Contact() {
   const { t } = useTranslation();
 
   return (
-    <DotCanvas className="flex-1 pb-stack-lg">
+    <DotCanvas className="-mt-8 flex-1 pb-stack-lg pt-stack-lg">
       <div className="mx-auto max-w-container-max px-margin-mobile md:px-gutter">
         <section className="mb-stack-lg">
           <h1 className="mb-stack-sm max-w-2xl font-display text-display">
