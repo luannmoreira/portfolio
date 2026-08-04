@@ -82,6 +82,13 @@ export default function Navbar() {
           >
             {t("nav.blog")}
           </Link>
+          <div className="my-4 h-px w-full bg-outline-variant/30" />
+          <a
+            href="/resume"
+            className="w-full rounded-lg bg-primary py-4 text-center font-bold uppercase tracking-widest text-on-primary transition-opacity hover:opacity-90"
+          >
+            {t("nav.resume")}
+          </a>
         </div>
       }
       themeToggle={<ThemeToggle theme={theme} toggleTheme={toggleTheme} />}
@@ -91,6 +98,14 @@ export default function Navbar() {
           onChange={setLocale}
           label={t("languageSwitcher.groupLabel")}
         />
+      }
+      desktopCta={
+        <a
+          href="/resume"
+          className="rounded-lg bg-primary px-6 py-2 font-bold text-on-primary transition-opacity hover:opacity-90"
+        >
+          {t("nav.resume")}
+        </a>
       }
     />
   );
