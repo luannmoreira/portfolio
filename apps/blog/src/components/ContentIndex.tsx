@@ -198,7 +198,10 @@ function ContentIndex({ type, basePath }: ContentIndexProps) {
       )}
 
       {!featured && (
-        <p className="py-stack-md font-body-md text-body-md text-on-surface-variant">
+        <p
+          role="status"
+          className="py-stack-md font-body-md text-body-md text-on-surface-variant"
+        >
           {t("contentIndex.empty")}
         </p>
       )}

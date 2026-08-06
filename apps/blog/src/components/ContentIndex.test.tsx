@@ -2,6 +2,15 @@ import { screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import { renderWithI18n } from "../test-i18n";
 import ContentIndex from "./ContentIndex";
+import * as loader from "../content/loader";
+
+// Defaults to the real implementation (spread below) — only the one test
+// exercising the empty state overrides it, via mockReturnValueOnce, so
+// every other test in this file keeps reading real content fixtures.
+vi.mock("../content/loader", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../content/loader")>();
+  return { ...actual, loadContent: vi.fn(actual.loadContent) };
+});
 
 function renderBlogIndex() {
   return renderWithI18n(
@@ -57,4 +66,12 @@ test("works for a second content type (ADR), proving the generalization", () => 
     "/adr/placeholder"
   );
   expect(screen.queryByText("Hello, Blog")).not.toBeInTheDocument();
+});
+
+test("announces the empty-state message to assistive tech via a live region", () => {
+  vi.mocked(loader.loadContent).mockReturnValueOnce([]);
+
+  renderBlogIndex();
+
+  expect(screen.getByRole("status")).toHaveTextContent(/nothing here yet/i);
 });
