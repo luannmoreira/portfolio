@@ -52,12 +52,8 @@
         ]
       }
     </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Fonts are self-hosted (@fontsource/*, imported in src/index.css) —
+         no Google Fonts preconnect/stylesheet needed anymore. -->
     <script>
       // Runs before first paint, synchronously — deciding after React
       // mounts would flash the wrong theme for a frame. Dark is this site's
