@@ -75,3 +75,12 @@ test("announces the empty-state message to assistive tech via a live region", ()
 
   expect(screen.getByRole("status")).toHaveTextContent(/nothing here yet/i);
 });
+
+test("sets a real meta description, not just a title", () => {
+  renderBlogIndex();
+
+  expect(document.querySelector('meta[name="description"]')).toHaveAttribute(
+    "content",
+    "Thoughts on software architecture, production systems, and the occasional real bug — written down as they happen."
+  );
+});

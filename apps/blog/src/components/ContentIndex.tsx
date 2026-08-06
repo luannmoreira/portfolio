@@ -155,7 +155,10 @@ function ContentIndex({ type, basePath }: ContentIndexProps) {
   const allTags = [...new Set(entries.flatMap((entry) => entry.tags))].sort();
   const [activeTag, setActiveTag] = useState<string | null>(null);
 
-  useDocumentMeta(t("contentIndex.metaTitle", { heading }));
+  useDocumentMeta(
+    t("contentIndex.metaTitle", { heading }),
+    t(`contentIndex.hero.${type}`)
+  );
 
   const visible = activeTag
     ? entries.filter((entry) => entry.tags.includes(activeTag))
