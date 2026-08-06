@@ -79,7 +79,7 @@ Effort: S.
 | **3 — Performance**   | PERF-003 (reverted, see below), PERF-004, PERF-005, PERF-006 (new, found this wave)                                              | Real CWV numbers exist and meet targets — **done**     |
 | **4 — Consistency**   | CONTENT-001/ARCH-009, CONTENT-002, A11Y-005, SEO-005/006, TEST-005/006                                                           | `cspell` dictionary applied; visual review             |
 | **5 — Architecture**  | ARCH-001 (dir cycle), ARCH-002 (dead export), ARCH-003/004/006/008/011 (small cleanups)                                          | Zero cycles (already true); no regressions — **done**  |
-| **6 — Documentation** | DOCS-007, DOCS-008, DOCS-009, DOCS-010/ARCH-010, ARCH-005/007 (content decisions), SEC-001/002/005/006                           | Newcomer completes setup unaided                       |
+| **6 — Documentation** | DOCS-007, DOCS-008, DOCS-009, DOCS-010/ARCH-010, ARCH-005/007 (content decisions), SEC-001/002/005/006                           | Newcomer completes setup unaided — **done**            |
 
 **Order rationale:** performance work is placed after the a11y/docs/SEO blockers deliberately —
 several of Wave 3's numbers (Lighthouse CWV) were `null` from a tooling bug, not
@@ -127,6 +127,33 @@ files untouched by this wave's own diffs) surfaced while re-running the gate and
 alongside it, in its own commit. Full Definition of Done gate green for both apps afterward:
 typecheck, lint, unit tests (89 portfolio / 97 blog / 16 `@portfolio/i18n`), e2e (86 portfolio / 76
 blog), build, `format:check`.
+
+**Wave 6 outcome:** 8 of 9 items fixed, one tried and reverted, no regressions. **DOCS-007** added
+an `i18n` CI job mirroring `ui`'s. **DOCS-009** documented obtaining `pnpm` itself (Corepack) in
+README. **DOCS-010/ARCH-010** corrected root `package.json`'s stale `luannmoreira-dev` name.
+**ARCH-005**: user chose to document the precedent rather than extract — broadened `CLAUDE.md`
+Standing Decision 1 to explicitly cover the 4 shared icon components alongside
+`useTheme.ts`/`ThemeToggle.tsx`. **ARCH-007/DOCS-008**: user chose to write real content — replaced
+`content/adr/placeholder.mdx` with a genuine first ADR (`browserrouter-over-hashrouter.mdx`)
+documenting the actual HashRouter->BrowserRouter decision, sourced from real git history (commits
+`78aaab7`, `aff6a7a`) rather than fabricated, including the real cross-app-link regression that
+decision caused; `content/projects/placeholder.mdx` marked `draft: true` (the `project` content
+type still has no route — a separate, smaller decision left alone) so it stops shipping into
+sitemap/rss. **SEC-001/SEC-002**: added `apps/portfolio/public/_headers` (CSP, HSTS,
+`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, plus
+far-future immutable caching for `/assets/*` and `/blog/assets/*`) — verified with a real browser
+(`wrangler pages dev` + Playwright) across 8 routes in both apps: zero CSP violations. `script-src`/
+`style-src` need `'unsafe-inline'` (inline theme-detection script + dynamic per-post JSON-LD
+content, neither coverable by a static hash/nonce allowlist on a static host); `font-src` needed
+`data:` too, caught by the same real-browser check — Vite inlines small self-hosted font subsets as
+base64. **SEC-006** added `.env`/`.env.*` to `.dockerignore`. **SEC-005** (Dockerfile `USER`
+directive) was tried and reverted: real verification (`docker compose build`/`up`, not just a
+build) showed it breaks the documented Docker Compose dev workflow — `EACCES` on `pnpm install`,
+since the bind-mounted `.:/app` is owned by the host UID, not the container's `uid 1000`. Same
+disposition as **PERF-003** in Wave 3: tried, verified broken, reverted rather than shipped blind.
+Full Definition of Done gate green for both apps afterward: typecheck, lint, unit tests (89
+portfolio / 97 blog), e2e (86 portfolio / 76 blog, including axe on the new ADR route in both
+themes/viewports), build, `format:check`.
 
 ## 5. Full backlog
 

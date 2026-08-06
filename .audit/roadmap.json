@@ -148,9 +148,7 @@
       "effort": "S",
       "confidence": 0.9,
       "priority": 1.35,
-      "merged_with": [
-        "TEST-003"
-      ],
+      "merged_with": ["TEST-003"],
       "note": "Independently reproduced by the synthesis pass with a real browser: '/' itself renders cleanly, only unmatched paths (incl. the literal /index.html Lighthouse hit) crash. Downgraded from the perf-auditor's original 'critical homepage crash' framing once reproduced."
     },
     {
@@ -212,9 +210,9 @@
       "effort": "XS",
       "confidence": 0.95,
       "priority": 0.95,
-      "merged_with": [
-        "DOCS-010"
-      ]
+      "merged_with": ["DOCS-010"],
+      "outcome": "fixed",
+      "verification": "Root package.json's name corrected from luannmoreira-dev to luanncurioso-dev, matching the confirmed canonical domain. Not referenced by pnpm-lock.yaml's importers (keyed by path, not name), so no lockfile regen needed."
     },
     {
       "id": "SEC-001",
@@ -224,7 +222,9 @@
       "title": "No CSP/HSTS/Permissions-Policy on production",
       "effort": "S",
       "confidence": 0.95,
-      "priority": 0.95
+      "priority": 0.95,
+      "outcome": "fixed",
+      "verification": "Added apps/portfolio/public/_headers (ships for both apps per Standing Decision 8's precedent) with CSP, HSTS, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy. Verified with a real browser (wrangler pages dev + Playwright) against 8 routes across both apps: zero CSP violations. script-src/style-src need 'unsafe-inline' (inline theme script + dynamic JSON-LD content a static hash/nonce allowlist can't cover); font-src needed data: too, caught by the same real-browser check (Vite inlines small self-hosted font subsets as base64)."
     },
     {
       "id": "SEC-002",
@@ -234,7 +234,9 @@
       "title": "Hashed assets cached 4h instead of far-future immutable",
       "effort": "XS",
       "confidence": 0.95,
-      "priority": 0.95
+      "priority": 0.95,
+      "outcome": "fixed",
+      "verification": "Same _headers file adds Cache-Control: public, max-age=31536000, immutable for /assets/* and /blog/assets/* (Vite content-hashes every filename, so a new deploy always produces new URLs). Verified via curl against a local wrangler pages dev server."
     },
     {
       "id": "TEST-002",
@@ -286,7 +288,9 @@
       "title": "Unrouted project content type; ADR placeholder ships to sitemap/rss (product decision, pairs with DOCS-008)",
       "effort": "XS",
       "confidence": 0.9,
-      "priority": 0.9
+      "priority": 0.9,
+      "outcome": "fixed",
+      "verification": "content/adr/placeholder.mdx replaced with a real ADR (content/adr/browserrouter-over-hashrouter.mdx) documenting the actual HashRouter->BrowserRouter decision, sourced from git history (commits 78aaab7, aff6a7a), not fabricated. content/projects/placeholder.mdx marked draft: true — the \"project\" content type still has no route, a separate, smaller decision left as-is. Verified: full blog unit+e2e suite green, including axe on the new /adr/browserrouter-over-hashrouter route in both themes/viewports."
     },
     {
       "id": "DOCS-007",
@@ -296,7 +300,9 @@
       "title": "packages/i18n has no CI job, unlike packages/ui",
       "effort": "S",
       "confidence": 0.85,
-      "priority": 0.85
+      "priority": 0.85,
+      "outcome": "fixed",
+      "verification": "Added an i18n CI job to .github/workflows/ci.yml mirroring the existing ui job: pnpm --filter @portfolio/i18n lint/typecheck/test."
     },
     {
       "id": "TEST-005",
@@ -328,7 +334,9 @@
       "title": ".dockerignore doesn't exclude .env*",
       "effort": "XS",
       "confidence": 0.85,
-      "priority": 0.85
+      "priority": 0.85,
+      "outcome": "fixed",
+      "verification": "Added .env / .env.* to .dockerignore — previously unexcluded, risking a local secrets file leaking into the dev image's build context via COPY . ."
     },
     {
       "id": "ARCH-006",
@@ -441,7 +449,9 @@
       "title": "README never explains how to obtain pnpm itself",
       "effort": "XS",
       "confidence": 0.7,
-      "priority": 0.7
+      "priority": 0.7,
+      "outcome": "fixed",
+      "verification": "Added a note to README's \"Getting started\" section on obtaining pnpm itself via Corepack (corepack enable) or pnpm's own install docs, before the first pnpm install call."
     },
     {
       "id": "REACT-TS-002",
@@ -461,7 +471,9 @@
       "title": "Dockerfile has no USER directive (dev-only, not production)",
       "effort": "S",
       "confidence": 1.0,
-      "priority": 0.5
+      "priority": 0.5,
+      "outcome": "attempted, reverted",
+      "verification": "Tried: added USER node + chown to the Dockerfile. Reverted after real verification (docker compose build/up) showed it breaks the documented Docker Compose dev workflow — EACCES on pnpm install, since the bind-mounted .:/app is owned by the host UID, not the container's uid 1000. Same disposition as PERF-003 in Wave 3: tried, verified broken, reverted rather than shipped blind."
     },
     {
       "id": "ARCH-004",
@@ -484,9 +496,7 @@
       "effort": "S",
       "confidence": 0.9,
       "priority": 0.45,
-      "merged_with": [
-        "CONTENT-001"
-      ]
+      "merged_with": ["CONTENT-001"]
     },
     {
       "id": "SEC-003",
@@ -506,7 +516,9 @@
       "title": "Icon components byte-identical across apps; comment claims an unrecorded precedent",
       "effort": "S",
       "confidence": 0.85,
-      "priority": 0.425
+      "priority": 0.425,
+      "outcome": "fixed",
+      "verification": "Broadened CLAUDE.md Standing Decision 1 (untracked, so not in this diff) to explicitly name the 4 byte-identical shared icon components (GitHubIcon/Icon/LinkedinIcon/WhatsappIcon) alongside useTheme.ts/ThemeToggle.tsx — user's explicit choice: document the precedent, don't extract to packages/."
     },
     {
       "id": "DOCS-004",
@@ -547,13 +559,12 @@
       "title": "ADR pipeline shipped but never used for a real decision",
       "effort": "M",
       "confidence": 0.75,
-      "priority": 0.375
+      "priority": 0.375,
+      "outcome": "fixed",
+      "verification": "Same fix as ARCH-007 — the ADR pipeline now has one real, non-placeholder decision record."
     }
   ],
-  "already_fixed_this_session": [
-    "DOCS-005",
-    "DOCS-006"
-  ],
+  "already_fixed_this_session": ["DOCS-005", "DOCS-006"],
   "confirmed_non_issues": [
     "DOCS-011",
     "SEO-007",
