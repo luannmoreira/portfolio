@@ -1,8 +1,43 @@
 # The blog is a separate SPA bundle merged into dist/blog at build time
-# (see the root "deploy" script) — its rules must come before the
-# catch-all below, since Cloudflare Pages takes the first match.
-/blog        /blog/index.html   200
-/blog/*      /blog/index.html   200
-/adr         /blog/index.html   200
-/adr/*       /blog/index.html   200
-/*           /index.html        200
+# (see the root "build:site" script). No catch-all "/* /index.html 200"
+# here — Cloudflare Pages already serves the project's own root index.html
+# for any unmatched path by default (verified: /about, /contact etc. hard-
+# refresh fine with zero explicit rule), and an explicit rule for it hits
+# the same "infinite loop" rejection described below for no benefit.
+#
+# Two Cloudflare Pages quirks shape every rule below, both confirmed via
+# `wrangler pages dev --log-level debug` against this exact file (not just
+# assumed from docs):
+#
+# 1. Redirects are checked before static assets, even for a file that
+#    literally exists — so a catch-all "/blog/* -> .../shell 200" rule
+#    would swallow /blog/assets/*.js, /blog/rss.xml and /blog/sitemap.xml
+#    too. Those three passthroughs must come first and win by being more
+#    specific (first match wins).
+# 2. A rule whose destination is reducible (by stripping ".html" or
+#    "/index") back to something the same rule's own source pattern
+#    matches gets silently DROPPED as a false-positive "infinite loop" —
+#    not just in local `wrangler pages dev`, this is also rejected at
+#    real deploy time (Cloudflare error 10021). This is why the rule
+#    doesn't point at .../index.html: any "index.html"-shaped target,
+#    even renamed, also gets its own separate 308 "clean URL" redirect
+#    back to the containing directory once served this way, which would
+#    overwrite the browser's URL and break client-side routing for any
+#    /blog/:slug. "spa.htm" (built by the root "build:site" script as a
+#    byte-identical copy of blog's index.html, under a different name and
+#    extension) sidesteps both: nothing here reduces back to a source
+#    pattern, so no loop rejection, and Cloudflare's clean-URL redirect
+#    is specific to the literal ".html" extension — ".htm" isn't rewritten
+#    at all, while still being recognized for a correct, auto-inferred
+#    "text/html" Content-Type (verified: no manual header override needed,
+#    unlike an extensionless target, which serves as
+#    application/octet-stream and — combined with the X-Content-Type-
+#    Options: nosniff in _headers — silently refuses to render in a
+#    browser).
+/blog/assets/*       /blog/assets/:splat   200
+/blog/rss.xml        /blog/rss.xml         200
+/blog/sitemap.xml    /blog/sitemap.xml     200
+/blog                /blog/spa.htm         200
+/blog/:slug          /blog/spa.htm         200
+/adr                 /blog/spa.htm         200
+/adr/:slug           /blog/spa.htm         200
