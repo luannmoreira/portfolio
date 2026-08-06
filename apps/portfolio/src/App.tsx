@@ -20,7 +20,7 @@ import { i18n } from "./i18n";
 const About = lazy(() => import("./pages/About"));
 const Resume = lazy(() => import("./pages/Resume"));
 const Projects = lazy(() => import("./pages/Projects"));
-const Contact = lazy(() => import("./pages/Contact"));
+const Contact = lazy(() => import("./components/Contact"));
 const NotFound = lazy(() => import("./components/NotFound"));
 
 // The persistent shell, mounted once for the app's lifetime as the parent

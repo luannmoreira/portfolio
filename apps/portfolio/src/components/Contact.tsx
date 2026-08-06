@@ -4,9 +4,11 @@ import GitHubIcon from "./icons/GitHubIcon";
 import LinkedinIcon from "./icons/LinkedinIcon";
 import WhatsappIcon from "./icons/WhatsappIcon";
 import MaterialIcon from "./icons/MaterialIcon";
+import { useDocumentMeta } from "../hooks/useDocumentMeta";
 
 export default function Contact() {
   const { t } = useTranslation();
+  useDocumentMeta(t("contact.metaTitle"), t("contact.metaDescription"));
 
   return (
     <DotCanvas className="-mt-8 flex-1 pb-stack-lg pt-stack-lg">
