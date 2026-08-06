@@ -267,5 +267,11 @@
   },
   "languageSwitcher": {
     "groupLabel": "Idioma"
+  },
+  "notFound": {
+    "metaTitle": "Não Encontrado — Luann Curioso",
+    "heading": "Não Encontrado",
+    "body": "Página não encontrada.",
+    "backToHome": "Voltar ao Início"
   }
 }

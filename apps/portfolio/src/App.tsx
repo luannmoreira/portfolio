@@ -21,6 +21,7 @@ const About = lazy(() => import("./pages/About"));
 const Resume = lazy(() => import("./pages/Resume"));
 const Projects = lazy(() => import("./pages/Projects"));
 const Contact = lazy(() => import("./pages/Contact"));
+const NotFound = lazy(() => import("./components/NotFound"));
 
 // The persistent shell, mounted once for the app's lifetime as the parent
 // route wrapping every page via <Outlet> — the right place for
@@ -79,6 +80,7 @@ export const routes = [
       { path: "/resume", element: <Resume /> },
       { path: "/projects", element: <Projects /> },
       { path: "/contact", element: <Contact /> },
+      { path: "*", element: <NotFound /> },
     ],
   },
 ];

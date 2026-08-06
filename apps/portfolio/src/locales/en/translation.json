@@ -267,5 +267,11 @@
   },
   "languageSwitcher": {
     "groupLabel": "Language"
+  },
+  "notFound": {
+    "metaTitle": "Not Found — Luann Curioso",
+    "heading": "Not Found",
+    "body": "Page not found.",
+    "backToHome": "Back to Home"
   }
 }

@@ -137,3 +137,11 @@ test.describe("outbound links", () => {
     await expect(link).toHaveAttribute("target", "_blank");
   });
 });
+
+test("an unknown path shows the styled not-found page", async ({ page }) => {
+  await page.goto("/does-not-exist");
+  await expect(page.getByRole("heading", { name: /not found/i })).toBeVisible();
+  // Exact text, not /home/i — the Navbar's own "Home" link also matches a
+  // loose name regex and would trip Playwright's strict-mode ambiguity check.
+  await expect(page.getByRole("link", { name: "Back to Home" })).toBeVisible();
+});

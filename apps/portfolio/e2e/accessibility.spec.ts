@@ -3,7 +3,16 @@ import { test, expect } from "@playwright/test";
 
 // /uses and /now are anchor sections on / and /about (not their own
 // routes), so their content is already covered by those two scans.
-const routes = ["/", "/about", "/resume", "/projects", "/contact"];
+// /does-not-exist covers the catch-all NotFound route (see navigation.spec.ts
+// for its own behavioral test), matching the blog's equivalent coverage.
+const routes = [
+  "/",
+  "/about",
+  "/resume",
+  "/projects",
+  "/contact",
+  "/does-not-exist",
+];
 
 // emulateMedia before navigating drives the inline FOUC-prevention script in
 // index.html (it reads prefers-color-scheme on first paint) — the more
