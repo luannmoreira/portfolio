@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import GithubIcon from "./icons/GithubIcon";
+import GitHubIcon from "./icons/GitHubIcon";
 import LinkedinIcon from "./icons/LinkedinIcon";
 import WhatsappIcon from "./icons/WhatsappIcon";
 
@@ -23,7 +23,7 @@ export default function Footer() {
               aria-label="GitHub"
               className="inline-flex items-center justify-center p-2.5 text-on-surface-variant opacity-80 transition-opacity hover:text-primary hover:opacity-100"
             >
-              <GithubIcon className="h-6 w-6" />
+              <GitHubIcon className="h-6 w-6" />
             </a>
           </li>
           <li>

@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import DotCanvas from "./DotCanvas";
-import GithubIcon from "./icons/GithubIcon";
+import GitHubIcon from "./icons/GitHubIcon";
 import LinkedinIcon from "./icons/LinkedinIcon";
 import WhatsappIcon from "./icons/WhatsappIcon";
 import MaterialIcon from "./icons/MaterialIcon";
@@ -78,7 +78,7 @@ export default function Contact() {
             >
               <div className="flex items-center gap-stack-sm">
                 <div className="rounded-lg bg-surface-container-high p-4">
-                  <GithubIcon className="h-5 w-5 text-primary" />
+                  <GitHubIcon className="h-5 w-5 text-primary" />
                 </div>
                 <div>
                   <span className="block font-label-mono text-label-mono uppercase text-primary">
