@@ -7,7 +7,7 @@
 @source "../../../packages/ui/src";
 @import "@portfolio/config-tailwind/theme.css";
 @import "@portfolio/ui/navbar.css";
-@import "./theme.css";
+@import "./effects.css";
 
 /* Self-hosted (@fontsource/*) instead of Google Fonts — removes the
    fonts.googleapis.com -> fonts.gstatic.com cross-origin round trip (CSS
