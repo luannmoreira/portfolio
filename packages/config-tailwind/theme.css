@@ -126,11 +126,17 @@
   /* Diverges from the original Stitch-sourced value (formerly pure black
      #000000) — see the dark-mode --color-primary comment above for why.
      Same subtler-than-the-dots hue as dark mode's --color-primary
-     (175°, 45% sat), deepened in lightness (32%) since the dots' own
+     (175°, 45% sat), deepened in lightness (30%) since the dots' own
      value has too little contrast against this light background to use
-     directly — 5.05:1 against --color-background, 5.33:1 for white
-     --color-on-primary text on it. */
-  --color-primary: #2d7670;
+     directly — 5.56:1 against --color-background, 5.87:1 for white
+     --color-on-primary text on it. Lightness tuned down from an earlier
+     32% (#2d7670): that value read fine against the flat background above
+     but only cleared 4.42:1 — under WCAG AA's 4.5:1 — against the navbar's
+     actual translucent bg-surface-container/80 (see
+     packages/ui/src/Navbar.tsx), which composites to a slightly darker,
+     grayer tone than the flat page background. 30% clears that real
+     composited case at 4.86:1 with headroom, not just the flat token. */
+  --color-primary: #2a6f69;
   --color-on-primary: #ffffff;
   --color-primary-container: #131b2e;
   --color-on-primary-container: #7c839b;
