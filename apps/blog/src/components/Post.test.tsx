@@ -53,10 +53,40 @@ test("renders a BlogPosting JSON-LD script tag with the post's real data", async
   });
 });
 
-test("omits the JSON-LD script tag for an unknown slug", () => {
+test("omits the JSON-LD script tags for an unknown slug", () => {
   const { container } = renderAtSlug("does-not-exist");
 
   expect(
-    container.querySelector('script[type="application/ld+json"]')
-  ).toBeNull();
+    container.querySelectorAll('script[type="application/ld+json"]')
+  ).toHaveLength(0);
+});
+
+test("renders a BreadcrumbList JSON-LD script tag alongside BlogPosting", async () => {
+  const { container } = renderAtSlug("hello-world");
+  await screen.findByRole("heading", { name: "Hello, Blog", level: 1 });
+
+  const scripts = container.querySelectorAll(
+    'script[type="application/ld+json"]'
+  );
+  expect(scripts).toHaveLength(2);
+  const json = JSON.parse(scripts[1].textContent!);
+
+  expect(json).toMatchObject({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Blog",
+        item: "https://luanncurioso.dev/blog",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Hello, Blog",
+        item: "https://luanncurioso.dev/blog/hello-world",
+      },
+    ],
+  });
 });

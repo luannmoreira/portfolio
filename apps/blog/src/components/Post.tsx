@@ -50,6 +50,34 @@ function BlogPostingJsonLd({
   );
 }
 
+function BreadcrumbListJsonLd({
+  baseLabel,
+  baseUrl,
+  title,
+  url,
+}: {
+  baseLabel: string;
+  baseUrl: string;
+  title: string;
+  url: string;
+}) {
+  const json = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: baseLabel, item: baseUrl },
+      { "@type": "ListItem", position: 2, name: title, item: url },
+    ],
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(json) }}
+    />
+  );
+}
+
 const BASE_LABEL_KEY: Record<string, string> = {
   "/blog": "blog",
   "/adr": "adr",
@@ -220,6 +248,12 @@ function Post({ basePath }: PostProps) {
     <>
       <BlogPostingJsonLd
         entry={entry}
+        url={`${SITE_URL}${basePath}/${entry.slug}`}
+      />
+      <BreadcrumbListJsonLd
+        baseLabel={baseLabel}
+        baseUrl={`${SITE_URL}${basePath}`}
+        title={entry.title}
         url={`${SITE_URL}${basePath}/${entry.slug}`}
       />
       <article className="mx-auto max-w-[800px] px-margin-mobile pb-stack-md pt-32 md:px-gutter">
