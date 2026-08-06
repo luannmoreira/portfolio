@@ -12,8 +12,10 @@
    fonts.googleapis.com -> fonts.gstatic.com cross-origin round trip (CSS
    response, then a separate request for the actual font file) in favor of
    same-origin files Vite bundles and hashes like any other asset. Only the
-   weights actually used — Material Symbols Outlined's icon components never
-   override weight/FILL, so 400 (the default) covers every usage. */
+   weights actually used. Material Symbols Outlined dropped entirely — its
+   icons are inline SVGs now (components/icons/MaterialIcon.tsx), matching
+   the portfolio; the font's own `.material-symbols-outlined` utility class
+   was never defined here, so every glyph rendered as raw ligature text. */
 @import "@fontsource/hanken-grotesk/600.css";
 @import "@fontsource/hanken-grotesk/700.css";
 @import "@fontsource/hanken-grotesk/800.css";
@@ -21,7 +23,6 @@
 @import "@fontsource/inter/500.css";
 @import "@fontsource/inter/600.css";
 @import "@fontsource/jetbrains-mono/500.css";
-@import "@fontsource/material-symbols-outlined/400.css";
 
 html {
   background-color: #0a0d11;

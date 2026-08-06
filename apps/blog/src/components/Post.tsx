@@ -11,6 +11,7 @@ import {
 import { useDocumentMeta } from "../hooks/useDocumentMeta";
 import { mdxComponents } from "./mdx/mdxComponents";
 import NotFound from "./NotFound";
+import MaterialIcon from "./icons/MaterialIcon";
 
 interface PostProps {
   basePath: string;
@@ -112,12 +113,7 @@ function ShareRow({ title }: { title: string }) {
           rel="noreferrer"
           className="flex items-center gap-2 text-secondary transition-colors duration-200 hover:text-primary"
         >
-          <span
-            className="material-symbols-outlined text-[20px]"
-            aria-hidden="true"
-          >
-            share
-          </span>
+          <MaterialIcon name="share" className="h-5 w-5" />
           <span className="font-caption text-caption">{t("post.twitter")}</span>
         </a>
         <a
@@ -126,12 +122,7 @@ function ShareRow({ title }: { title: string }) {
           rel="noreferrer"
           className="flex items-center gap-2 text-secondary transition-colors duration-200 hover:text-primary"
         >
-          <span
-            className="material-symbols-outlined text-[20px]"
-            aria-hidden="true"
-          >
-            link
-          </span>
+          <MaterialIcon name="link" className="h-5 w-5" />
           <span className="font-caption text-caption">LinkedIn</span>
         </a>
         <button
@@ -139,12 +130,7 @@ function ShareRow({ title }: { title: string }) {
           onClick={handleCopy}
           className="flex items-center gap-2 text-secondary transition-colors duration-200 hover:text-primary"
         >
-          <span
-            className="material-symbols-outlined text-[20px]"
-            aria-hidden="true"
-          >
-            content_copy
-          </span>
+          <MaterialIcon name="content_copy" className="h-5 w-5" />
           <span className="font-caption text-caption">
             {copied ? t("pre.copied") : t("post.copyLink")}
           </span>
@@ -199,12 +185,10 @@ function RelatedEntries({
               </p>
               <div className="mt-6 flex items-center gap-2 text-caption font-bold uppercase tracking-wider text-primary">
                 {t("post.read")}
-                <span
-                  className="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-1"
-                  aria-hidden="true"
-                >
-                  arrow_forward
-                </span>
+                <MaterialIcon
+                  name="arrow_forward"
+                  className="h-4 w-4 transition-transform group-hover:translate-x-1"
+                />
               </div>
             </Link>
           ))}
@@ -262,12 +246,7 @@ function Post({ basePath }: PostProps) {
             to={basePath}
             className="group flex items-center gap-2 text-secondary transition-all duration-200 hover:text-primary"
           >
-            <span
-              className="material-symbols-outlined text-[18px]"
-              aria-hidden="true"
-            >
-              arrow_back
-            </span>
+            <MaterialIcon name="arrow_back" className="h-[18px] w-[18px]" />
             <span className="font-label-mono text-label-mono uppercase tracking-tight">
               {t("post.backTo", { label: baseLabel })}
             </span>
@@ -291,21 +270,11 @@ function Post({ basePath }: PostProps) {
           </h1>
           <div className="flex items-center gap-6 font-caption text-caption text-secondary">
             <div className="flex items-center gap-2">
-              <span
-                className="material-symbols-outlined text-[16px]"
-                aria-hidden="true"
-              >
-                calendar_today
-              </span>
+              <MaterialIcon name="calendar_today" className="h-4 w-4" />
               <span>{formatDate(entry.date, locale, DATE_OPTIONS)}</span>
             </div>
             <div className="flex items-center gap-2">
-              <span
-                className="material-symbols-outlined text-[16px]"
-                aria-hidden="true"
-              >
-                schedule
-              </span>
+              <MaterialIcon name="schedule" className="h-4 w-4" />
               <span>
                 {t("post.readingTime", { count: entry.readingMinutes })}
               </span>

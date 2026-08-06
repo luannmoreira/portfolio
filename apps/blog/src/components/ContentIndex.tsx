@@ -8,6 +8,7 @@ import {
   type ContentType,
 } from "../content/loader";
 import { useDocumentMeta } from "../hooks/useDocumentMeta";
+import MaterialIcon from "./icons/MaterialIcon";
 
 interface ContentIndexProps {
   type: ContentType;
@@ -93,12 +94,10 @@ function FeaturedCard({
           </span>
         ))}
         <div className="ml-auto">
-          <span
-            className="material-symbols-outlined text-primary transition-transform group-hover:translate-x-1"
-            aria-hidden="true"
-          >
-            arrow_forward
-          </span>
+          <MaterialIcon
+            name="arrow_forward"
+            className="h-6 w-6 text-primary transition-transform group-hover:translate-x-1"
+          />
         </div>
       </div>
     </Link>
