@@ -93,7 +93,9 @@
       "title": "Directory-level cycle: content/ <-> feed/ (file-level clean per madge)",
       "effort": "XS",
       "confidence": 0.95,
-      "priority": 1.9
+      "priority": 1.9,
+      "outcome": "fixed",
+      "verification": "Moved feed/contentEntries.ts (+test) into content/, where content/schema.ts and content/readingTime.ts already live; feed/generate.ts, feed/plugin.ts, content/contentIndexPlugin.ts updated. madge --circular confirms only the pre-existing, unrelated components/mdx/Callout<->CalloutIcon.tsx cycle remains."
     },
     {
       "id": "ARCH-002",
@@ -103,7 +105,9 @@
       "title": "packages/i18n exports dead withLocale() with self-contradicting comment",
       "effort": "XS",
       "confidence": 0.95,
-      "priority": 1.9
+      "priority": 1.9,
+      "outcome": "fixed",
+      "verification": "Deleted withLocale.ts and its test; grep confirmed zero consumers outside the package's own tests, and no withTheme() helper (which its comment claimed to mirror) exists anywhere in the repo."
     },
     {
       "id": "TEST-004",
@@ -144,7 +148,9 @@
       "effort": "S",
       "confidence": 0.9,
       "priority": 1.35,
-      "merged_with": ["TEST-003"],
+      "merged_with": [
+        "TEST-003"
+      ],
       "note": "Independently reproduced by the synthesis pass with a real browser: '/' itself renders cleanly, only unmatched paths (incl. the literal /index.html Lighthouse hit) crash. Downgraded from the perf-auditor's original 'critical homepage crash' framing once reproduced."
     },
     {
@@ -206,7 +212,9 @@
       "effort": "XS",
       "confidence": 0.95,
       "priority": 0.95,
-      "merged_with": ["DOCS-010"]
+      "merged_with": [
+        "DOCS-010"
+      ]
     },
     {
       "id": "SEC-001",
@@ -266,7 +274,9 @@
       "title": "pages/Contact.tsx is a pure forwarding layer",
       "effort": "XS",
       "confidence": 0.9,
-      "priority": 0.9
+      "priority": 0.9,
+      "outcome": "fixed",
+      "verification": "Folded pages/Contact.tsx's useDocumentMeta call into components/Contact.tsx directly, deleted the forwarding file, repointed App.tsx's lazy import at components/Contact — same pattern already used for NotFound."
     },
     {
       "id": "ARCH-007",
@@ -328,7 +338,9 @@
       "title": "Both apps' i18n bootstrap files byte-identical",
       "effort": "XS",
       "confidence": 0.85,
-      "priority": 0.85
+      "priority": 0.85,
+      "outcome": "fixed",
+      "verification": "Extracted packages/i18n's setupI18n() (resolveInitialLocale + <html lang> + createI18n) with its own unit tests; apps/portfolio/src/i18n.ts and apps/blog/src/i18n.ts now differ only in which translation JSON they import."
     },
     {
       "id": "ARCH-008",
@@ -338,7 +350,9 @@
       "title": "apps/portfolio/src/theme.css holds component CSS, colliding by name with the real token file",
       "effort": "XS",
       "confidence": 0.85,
-      "priority": 0.85
+      "priority": 0.85,
+      "outcome": "fixed",
+      "verification": "Renamed apps/portfolio/src/theme.css to effects.css and updated its one import in index.css — it held component-level decorative CSS (DotCanvas backdrop, text-plate emboss), colliding by name with @portfolio/config-tailwind/theme.css imported one line above it."
     },
     {
       "id": "SEO-006",
@@ -380,7 +394,9 @@
       "title": "apps/blog/src/mdx/ splits the MDX component registry from its own components",
       "effort": "XS",
       "confidence": 0.75,
-      "priority": 0.75
+      "priority": 0.75,
+      "outcome": "fixed",
+      "verification": "Moved apps/blog/src/mdx/mdxComponents.tsx into apps/blog/src/components/mdx/ alongside the components it registers, converting its 10 imports from ../components/mdx/* to ./*; updated Post.tsx and mdx/provider.test.tsx's import paths."
     },
     {
       "id": "REACT-TS-004",
@@ -455,7 +471,9 @@
       "title": "Reveal component: over- and under-abstracted at once",
       "effort": "S",
       "confidence": 0.9,
-      "priority": 0.45
+      "priority": 0.45,
+      "outcome": "fixed",
+      "verification": "Extracted hooks/useReveal.ts (useInView + usePrefersReducedMotion + transform/timing, one hiddenTransforms table) shared by Reveal.tsx (thin <div> wrapper) and TimelineItem.tsx (applies the same style straight to its <li>, which can't use Reveal's own wrapper without breaking list semantics)."
     },
     {
       "id": "ARCH-009",
@@ -466,7 +484,9 @@
       "effort": "S",
       "confidence": 0.9,
       "priority": 0.45,
-      "merged_with": ["CONTENT-001"]
+      "merged_with": [
+        "CONTENT-001"
+      ]
     },
     {
       "id": "SEC-003",
@@ -530,7 +550,10 @@
       "priority": 0.375
     }
   ],
-  "already_fixed_this_session": ["DOCS-005", "DOCS-006"],
+  "already_fixed_this_session": [
+    "DOCS-005",
+    "DOCS-006"
+  ],
   "confirmed_non_issues": [
     "DOCS-011",
     "SEO-007",

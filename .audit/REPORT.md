@@ -78,7 +78,7 @@ Effort: S.
 | **2 — High priority** | A11Y-003, A11Y-004, DOCS-002/003/004, SEO-002/003/004, PERF-001+TEST-003 (merged, see §5 note), TEST-004, REACT-TS-001, PERF-002 | Zero High in a11y/security/docs; journey coverage ≥80% |
 | **3 — Performance**   | PERF-003 (reverted, see below), PERF-004, PERF-005, PERF-006 (new, found this wave)                                              | Real CWV numbers exist and meet targets — **done**     |
 | **4 — Consistency**   | CONTENT-001/ARCH-009, CONTENT-002, A11Y-005, SEO-005/006, TEST-005/006                                                           | `cspell` dictionary applied; visual review             |
-| **5 — Architecture**  | ARCH-001 (dir cycle), ARCH-002 (dead export), ARCH-003/004/006/008/011 (small cleanups)                                          | Zero cycles (already true); no regressions             |
+| **5 — Architecture**  | ARCH-001 (dir cycle), ARCH-002 (dead export), ARCH-003/004/006/008/011 (small cleanups)                                          | Zero cycles (already true); no regressions — **done**  |
 | **6 — Documentation** | DOCS-007, DOCS-008, DOCS-009, DOCS-010/ARCH-010, ARCH-005/007 (content decisions), SEC-001/002/005/006                           | Newcomer completes setup unaided                       |
 
 **Order rationale:** performance work is placed after the a11y/docs/SEO blockers deliberately —
@@ -108,6 +108,25 @@ as "tried, not worth it" rather than reattempted blind.
 Final measured numbers (Lighthouse, real routes): portfolio `/` 0.94 perf / 0.013 CLS, `/about`
 0.90 / 0.004, `/contact` 0.93 / 0.002, `/projects` 0.93 / 0.001, `/resume` 0.93 / 0. Blog `/blog`
 0.98 / 0, `/blog/hello-world` 0.97 / 0.002, `/adr` 0.98 / 0.001.
+
+**Wave 5 outcome:** all 7 items fixed, all XS/S effort, no regressions. **ARCH-001** (the
+`content/`<->`feed/` directory cycle, invisible to madge's file-level check) was broken by moving
+`contentEntries.ts` into `content/`, where the code it reads content through already lived —
+`feed/` now depends one-way on `content/`; `madge --circular` afterward shows only the
+pre-existing, unrelated `components/mdx/Callout.tsx`<->`CalloutIcon.tsx` cycle, out of this
+finding's scope. **ARCH-002** (`withLocale()`) confirmed dead by grep — zero consumers outside its
+own tests, and the `withTheme()` helper its comment claimed to mirror was never built — deleted.
+**ARCH-003, ARCH-004, ARCH-006, ARCH-008, ARCH-011** were the "small cleanups" grouping: merged
+`pages/Contact.tsx`'s forwarding layer into `components/Contact.tsx`; extracted a shared
+`useReveal` hook from `Reveal.tsx`/`TimelineItem.tsx`'s duplicated reveal-on-scroll logic;
+extracted a shared `setupI18n()` helper for the two apps' byte-identical `i18n.ts` bootstrap;
+renamed `apps/portfolio/src/theme.css` to `effects.css` to stop it colliding by name with the real
+design-token file; recolocated the blog's `mdxComponents.tsx` into `components/mdx/` alongside the
+components it registers. One unrelated, pre-existing `format:check` failure (whitespace-only, 3
+files untouched by this wave's own diffs) surfaced while re-running the gate and was fixed
+alongside it, in its own commit. Full Definition of Done gate green for both apps afterward:
+typecheck, lint, unit tests (89 portfolio / 97 blog / 16 `@portfolio/i18n`), e2e (86 portfolio / 76
+blog), build, `format:check`.
 
 ## 5. Full backlog
 
