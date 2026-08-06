@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useInView } from "../hooks/useInView";
-import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
+import { useReveal } from "../hooks/useReveal";
 import type { TimelineMilestone, TimelineStatus } from "../content/timeline";
 
 // Glyph shape (not just color) carries the status so it doesn't rely on
@@ -95,18 +94,12 @@ export default function TimelineItem({
 
   // Reveal's own wrapper (a <div>) can't be used directly here — inserting
   // one between the <ol> and this <li> would break list semantics — so the
-  // same fade-up transform/timing it uses is applied straight to the <li>,
-  // driven by the same useInView/usePrefersReducedMotion hooks.
-  const { ref, isInView } = useInView<HTMLLIElement>();
-  const prefersReducedMotion = usePrefersReducedMotion();
-  const visible = isInView || forceVisible;
-  const revealStyle = prefersReducedMotion
-    ? { opacity: 1, transform: "none", transition: "none" }
-    : {
-        opacity: visible ? 1 : 0,
-        transform: visible ? "none" : "translateY(2rem)",
-        transition: "opacity 500ms ease-out, transform 500ms ease-out",
-      };
+  // same useReveal hook it uses is applied straight to the <li> instead.
+  const {
+    ref,
+    style: revealStyle,
+    prefersReducedMotion,
+  } = useReveal<HTMLLIElement>({ forceVisible });
 
   return (
     <li

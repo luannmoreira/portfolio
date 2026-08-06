@@ -1,8 +1,5 @@
 import type { ReactNode } from "react";
-import { useInView } from "../hooks/useInView";
-import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
-
-type RevealVariant = "fade-up" | "fade-left" | "fade-right" | "flip-right";
+import { useReveal, type RevealVariant } from "../hooks/useReveal";
 
 interface RevealProps {
   variant: RevealVariant;
@@ -12,13 +9,6 @@ interface RevealProps {
   children: ReactNode;
 }
 
-const hiddenTransforms: Record<RevealVariant, string> = {
-  "fade-up": "translateY(2rem)",
-  "fade-left": "translateX(2rem)",
-  "fade-right": "translateX(-2rem)",
-  "flip-right": "perspective(2500px) rotateY(-100deg)",
-};
-
 export default function Reveal({
   variant,
   duration = 500,
@@ -26,31 +16,14 @@ export default function Reveal({
   className,
   children,
 }: RevealProps) {
-  const { ref, isInView } = useInView<HTMLDivElement>({ offset });
-  const prefersReducedMotion = usePrefersReducedMotion();
-
-  if (prefersReducedMotion) {
-    return (
-      <div
-        ref={ref}
-        className={className}
-        style={{ opacity: 1, transform: "none", transition: "none" }}
-      >
-        {children}
-      </div>
-    );
-  }
+  const { ref, style } = useReveal<HTMLDivElement>({
+    variant,
+    duration,
+    offset,
+  });
 
   return (
-    <div
-      ref={ref}
-      className={className}
-      style={{
-        opacity: isInView ? 1 : 0,
-        transform: isInView ? "none" : hiddenTransforms[variant],
-        transition: `opacity ${duration}ms ease-out, transform ${duration}ms ease-out`,
-      }}
-    >
+    <div ref={ref} className={className} style={style}>
       {children}
     </div>
   );
