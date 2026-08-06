@@ -17,12 +17,16 @@ interface LanguageSwitcherProps {
   label: string;
 }
 
-// Two always-visible buttons rather than a single toggle: unlike sun/moon
-// iconography, "EN"/"PT" text has no universal single-glyph convention for
-// "this is what you'll get if you click", so unambiguous current-selection
-// state needs both options shown at once with `aria-current` marking the
-// active one — the same pattern TimelineItem.tsx already uses for its
-// active milestone.
+/**
+ * A locale picker rendered as two always-visible, always-labeled buttons.
+ *
+ * Two always-visible buttons rather than a single toggle: unlike sun/moon
+ * iconography, "EN"/"PT" text has no universal single-glyph convention for
+ * "this is what you'll get if you click", so unambiguous current-selection
+ * state needs both options shown at once with `aria-current` marking the
+ * active one — the same pattern TimelineItem.tsx already uses for its
+ * active milestone.
+ */
 export default function LanguageSwitcher({
   locale,
   onChange,

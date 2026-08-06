@@ -7,9 +7,13 @@ interface CreateI18nOptions {
   resources: Resource;
 }
 
-// One resources object per app, statically imported and passed in whole —
-// no lazy backend/namespace-loading, which the "instant switch" requirement
-// needs anyway and this string count doesn't justify avoiding.
+/**
+ * Creates and initializes an i18next instance wired for react-i18next.
+ *
+ * One resources object per app, statically imported and passed in whole —
+ * no lazy backend/namespace-loading, which the "instant switch" requirement
+ * needs anyway and this string count doesn't justify avoiding.
+ */
 export function createI18n({
   locale,
   resources,

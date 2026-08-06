@@ -6,9 +6,14 @@ interface PickLocaleInput {
   navigatorLanguages: readonly string[];
 }
 
-// Pure — the one place detection precedence is decided, so there's never a
-// second source of truth (deliberately not using i18next-browser-detector,
-// which would configure this same precedence separately).
+/**
+ * Decides which locale wins given a URL `?lang=`, a stored choice, and the
+ * browser's own language list, in that precedence order.
+ *
+ * Pure — the one place detection precedence is decided, so there's never a
+ * second source of truth (deliberately not using i18next-browser-detector,
+ * which would configure this same precedence separately).
+ */
 export function pickLocale({
   fromLink,
   stored,
@@ -22,11 +27,16 @@ export function pickLocale({
   return hasPortuguese ? "pt-BR" : DEFAULT_LOCALE;
 }
 
-// Thin, impure wrapper used only at the real app entry point. Unlike the
-// `.light` class (which gates CSS painted before React even mounts, and so
-// needs a pre-paint inline <script>), no text renders before React mounts —
-// there's no flash to prevent, so this can be plain, testable TS run from
-// the entry point instead of an inline <head> script.
+/**
+ * Reads the current URL and storage to resolve the locale an app should
+ * boot with, persisting an explicit `?lang=` choice for next time.
+ *
+ * Thin, impure wrapper used only at the real app entry point. Unlike the
+ * `.light` class (which gates CSS painted before React even mounts, and so
+ * needs a pre-paint inline <script>), no text renders before React mounts —
+ * there's no flash to prevent, so this can be plain, testable TS run from
+ * the entry point instead of an inline <head> script.
+ */
 export function resolveInitialLocale(): Locale {
   const fromLink = new URLSearchParams(location.search).get("lang");
   if (isSupportedLocale(fromLink)) {
