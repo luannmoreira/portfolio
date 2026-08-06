@@ -31,7 +31,13 @@ export default function About() {
             <img
               src={profile}
               alt={t("about.profileAlt")}
-              className="w-full grayscale contrast-110"
+              // aspect-[600/680] alongside width/height: the attributes alone
+              // should let the UA stylesheet's `aspect-ratio: attr(width) /
+              // attr(height)` reserve the right space before decode, but
+              // real measurement (Lighthouse CLS 0.26 on this route) showed
+              // it wasn't happening reliably here — explicit CSS removes the
+              // ambiguity instead of relying on that interaction.
+              className="aspect-[600/680] w-full grayscale contrast-110"
               width={600}
               height={680}
               loading="lazy"
