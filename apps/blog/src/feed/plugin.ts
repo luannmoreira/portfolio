@@ -4,11 +4,9 @@ import type { Plugin, ResolvedConfig } from "vite";
 import { readContentEntries } from "./contentEntries";
 import { buildRss, buildSitemap } from "./generate";
 
-// Blog's deploy target is deliberately undecided (ROADMAP.md) — SITE_URL
-// isn't set anywhere yet, so this falls back to an obvious placeholder
-// rather than guessing a real domain. Whoever wires up deployment sets
-// SITE_URL then, and sitemap.xml/rss.xml start pointing at real URLs
-// without any other change here.
+// The root build:site/deploy scripts set SITE_URL=https://luanncurioso.dev,
+// so this placeholder only kicks in for a standalone local `pnpm build:blog`
+// (no other change needed once SITE_URL is set — see CLAUDE.md Gotchas).
 const PLACEHOLDER_SITE_URL = "https://example.com";
 
 export function feedPlugin(): Plugin {
@@ -26,8 +24,9 @@ export function feedPlugin(): Plugin {
       if (!siteUrl) {
         this.warn(
           `SITE_URL is not set — sitemap.xml and rss.xml will use the ` +
-            `placeholder ${PLACEHOLDER_SITE_URL}. Set SITE_URL once the ` +
-            `blog's deploy target is decided.`
+            `placeholder ${PLACEHOLDER_SITE_URL}. Set SITE_URL (or run the ` +
+            `root build:site/deploy scripts, which set it automatically) ` +
+            `to get real URLs.`
         );
       }
 

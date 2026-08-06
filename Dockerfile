@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
-# Dev-only (see ROADMAP.md's Docker open question — both apps deploy as
-# static builds, nothing here is meant to run in production). One file
+# Dev-only — both apps deploy as static builds to Cloudflare Pages, nothing
+# here is meant to run in production (see CLAUDE.md standing decision 3). One file
 # with named stages, not one Dockerfile per app: Docker's build cache is
 # scoped per file, so two separate Dockerfiles could never actually share
 # the install layer no matter how identical their early steps looked —

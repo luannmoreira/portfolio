@@ -3,8 +3,8 @@ import Smoke from "./smoke.mdx";
 
 // Proves the compiled pipeline (remark-gfm, rehype-slug,
 // rehype-autolink-headings, rehype-pretty-code/Shiki), not real content —
-// none of this markup renders unless every plugin listed in ROADMAP.md's
-// 8.2 is actually wired into vite.config.js.
+// none of this markup renders unless every one of those plugins is actually
+// wired into vite.config.js.
 
 test("gives the heading a slug id, from rehype-slug", () => {
   const { container } = render(<Smoke />);

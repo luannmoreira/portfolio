@@ -58,8 +58,8 @@ export default defineConfig({
   // behind BASE_PATH (set by the root "build:site" script) rather than
   // hardcoded: vite's `base` also changes where its own dev/preview server
   // serves the app from, which would break this app's independent
-  // dev/build/e2e workflow (see SITE_URL below for the same
-  // undecided-until-merge pattern).
+  // dev/build/e2e workflow (see SITE_URL in feed/plugin.ts for the same
+  // set-only-at-merge-time pattern).
   base: process.env.BASE_PATH ?? "/",
   test: {
     environment: "jsdom",
