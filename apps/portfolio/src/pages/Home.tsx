@@ -65,12 +65,15 @@ function Home() {
       >
         <div className="mx-auto max-w-container-max px-margin-mobile text-center md:px-gutter">
           <h2 className="mb-stack-sm font-headline-lg text-headline-lg">
-            <span className="text-plate text-plate-inverse">
+            <span data-text-plate className="text-plate text-plate-inverse">
               {t("home.ctaHeading")}
             </span>
           </h2>
           <p className="mx-auto mb-stack-md max-w-2xl font-body-lg text-body-lg">
-            <span className="text-plate text-plate-inverse text-inverse-on-surface/80">
+            <span
+              data-text-plate
+              className="text-plate text-plate-inverse text-inverse-on-surface/80"
+            >
               {t("home.ctaBody")}
             </span>
           </p>

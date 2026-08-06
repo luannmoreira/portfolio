@@ -13,10 +13,14 @@ export default function Contact() {
       <div className="mx-auto max-w-container-max px-margin-mobile md:px-gutter">
         <section className="mb-stack-lg">
           <h1 className="mb-stack-sm max-w-2xl font-display text-display">
-            <span className="text-plate">{t("contact.heading")}</span>
+            <span data-text-plate className="text-plate">
+              {t("contact.heading")}
+            </span>
           </h1>
           <p className="max-w-xl font-body-lg text-body-lg text-on-surface-variant">
-            <span className="text-plate">{t("contact.body")}</span>
+            <span data-text-plate className="text-plate">
+              {t("contact.body")}
+            </span>
           </p>
         </section>
 

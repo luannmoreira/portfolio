@@ -105,14 +105,20 @@ test.describe("mobile nav overlay", () => {
     await expect(page).toHaveURL(/\/resume$/);
   });
 
-  test(".text-plate headings keep enough line-height to avoid clipping on wrap", async ({
+  test("text-plate headings keep enough line-height to avoid clipping on wrap", async ({
     page,
   }) => {
-    const lineHeightRatios = await page.$$eval(".text-plate", (elements) =>
-      elements.map((el) => {
-        const style = getComputedStyle(el);
-        return parseFloat(style.lineHeight) / parseFloat(style.fontSize);
-      })
+    // [data-text-plate], not .text-plate — a stable test hook decoupled from
+    // the styling class, so a future rename/refactor of the utility class
+    // itself doesn't silently break this (every element carrying the class
+    // in source also carries this attribute, see Hero.tsx/Contact.tsx/etc).
+    const lineHeightRatios = await page.$$eval(
+      "[data-text-plate]",
+      (elements) =>
+        elements.map((el) => {
+          const style = getComputedStyle(el);
+          return parseFloat(style.lineHeight) / parseFloat(style.fontSize);
+        })
     );
 
     expect(lineHeightRatios.length).toBeGreaterThan(0);

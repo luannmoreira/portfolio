@@ -80,9 +80,9 @@ test.describe("language switcher", () => {
   });
 
   // Regression test: pt-BR strings run longer than their English source and
-  // can wrap a `.text-plate` heading (Hero's "Construindo sistemas que
+  // can wrap a `text-plate` heading (Hero's "Construindo sistemas que
   // escalam.") at desktop widths where English never wrapped — a fixed
-  // `max-width: 767px` media query guarding .text-plate's anti-gap
+  // `max-width: 767px` media query guarding text-plate's anti-gap
   // line-height used to assume headings only wrap below that breakpoint,
   // which silently stopped holding once translated content could be
   // longer than the English string the assumption was written against.
@@ -97,7 +97,7 @@ test.describe("language switcher", () => {
     await page.setViewportSize({ width: 768, height: 900 });
     await page.goto("/?lang=pt-BR");
 
-    const ratios = await page.$$eval(".text-plate", (elements) =>
+    const ratios = await page.$$eval("[data-text-plate]", (elements) =>
       elements.map((el) => {
         const style = getComputedStyle(el);
         return parseFloat(style.lineHeight) / parseFloat(style.fontSize);
