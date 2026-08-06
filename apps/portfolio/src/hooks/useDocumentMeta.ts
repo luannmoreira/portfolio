@@ -34,6 +34,19 @@ function setCanonical(href: string) {
   link.href = href;
 }
 
+function setAlternate(hreflang: string, href: string) {
+  let link = document.querySelector<HTMLLinkElement>(
+    `link[rel="alternate"][hreflang="${hreflang}"]`
+  );
+  if (!link) {
+    link = document.createElement("link");
+    link.rel = "alternate";
+    link.hreflang = hreflang;
+    document.head.appendChild(link);
+  }
+  link.href = href;
+}
+
 export function useDocumentMeta(title: string, description?: string) {
   const { pathname } = useLocation();
 
@@ -79,5 +92,18 @@ export function useDocumentMeta(title: string, description?: string) {
     // large-image card minimum (300x157) but well above summary's (144x144).
     setMetaByAttr("name", "twitter:card", "summary");
     setMetaByAttr("name", "twitter:image", DEFAULT_OG_IMAGE);
+  }, [pathname]);
+
+  useEffect(() => {
+    // Both locales render from the same path (resolveInitialLocale reads
+    // ?lang= or localStorage, there's no per-locale route), so ?lang= is
+    // the one addressable URL per language this site actually has — the
+    // same query param the e2e a11y specs already use to force each
+    // locale. x-default covers the un-suffixed URL a crawler with no
+    // language preference lands on.
+    const url = `${SITE_URL}${pathname}`;
+    setAlternate("en", `${url}?lang=en`);
+    setAlternate("pt-BR", `${url}?lang=pt-BR`);
+    setAlternate("x-default", url);
   }, [pathname]);
 }

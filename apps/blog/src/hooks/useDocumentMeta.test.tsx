@@ -13,7 +13,7 @@ afterEach(() => {
   document.title = "";
   document
     .querySelectorAll(
-      'meta[name="description"], meta[property^="og:"], meta[name^="twitter:"], link[rel="canonical"]'
+      'meta[name="description"], meta[property^="og:"], meta[name^="twitter:"], link[rel="canonical"], link[rel="alternate"]'
     )
     .forEach((el) => el.remove());
 });
@@ -134,4 +134,42 @@ test("reuses a single canonical link and og/twitter meta tags across re-renders 
     "content",
     "Second"
   );
+});
+
+test("sets hreflang alternate links for both locales plus x-default, from the current route", () => {
+  renderHook(() => useDocumentMeta("Hello World — Blog"), {
+    wrapper: wrapper("/blog/hello-world"),
+  });
+
+  const en = document.querySelector('link[rel="alternate"][hreflang="en"]');
+  const ptBR = document.querySelector(
+    'link[rel="alternate"][hreflang="pt-BR"]'
+  );
+  const xDefault = document.querySelector(
+    'link[rel="alternate"][hreflang="x-default"]'
+  );
+
+  expect(en).toHaveAttribute(
+    "href",
+    "https://luanncurioso.dev/blog/hello-world?lang=en"
+  );
+  expect(ptBR).toHaveAttribute(
+    "href",
+    "https://luanncurioso.dev/blog/hello-world?lang=pt-BR"
+  );
+  expect(xDefault).toHaveAttribute(
+    "href",
+    "https://luanncurioso.dev/blog/hello-world"
+  );
+});
+
+test("reuses the same 3 alternate links across re-renders instead of duplicating them", () => {
+  const { rerender } = renderHook(
+    ({ title }: { title: string }) => useDocumentMeta(title),
+    { wrapper: wrapper(), initialProps: { title: "First" } }
+  );
+
+  rerender({ title: "Second" });
+
+  expect(document.querySelectorAll('link[rel="alternate"]')).toHaveLength(3);
 });
