@@ -14,6 +14,40 @@ interface PostProps {
   basePath: string;
 }
 
+// Matches useDocumentMeta.ts's own constant — this is the one other place
+// in the app that needs the full production URL (for JSON-LD's `url`, which
+// has to be absolute).
+const SITE_URL = "https://luanncurioso.dev";
+
+function BlogPostingJsonLd({
+  entry,
+  url,
+}: {
+  entry: ContentEntry;
+  url: string;
+}) {
+  const json = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: entry.title,
+    datePublished: entry.date,
+    description: entry.excerpt,
+    url,
+    author: {
+      "@type": "Person",
+      name: "Luann Curioso",
+      url: SITE_URL,
+    },
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(json) }}
+    />
+  );
+}
+
 const BASE_LABEL_KEY: Record<string, string> = {
   "/blog": "blog",
   "/adr": "adr",
@@ -182,6 +216,10 @@ function Post({ basePath }: PostProps) {
 
   return (
     <>
+      <BlogPostingJsonLd
+        entry={entry}
+        url={`${SITE_URL}${basePath}/${entry.slug}`}
+      />
       <article className="mx-auto max-w-[800px] px-margin-mobile pb-stack-md pt-32 md:px-gutter">
         <nav className="mb-stack-sm" aria-label={t("post.breadcrumbLabel")}>
           <Link

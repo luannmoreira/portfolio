@@ -35,3 +35,28 @@ test("shows the post's reading time", async () => {
   const article = await screen.findByRole("article");
   expect(within(article).getByText(/read$/i)).toBeInTheDocument();
 });
+
+test("renders a BlogPosting JSON-LD script tag with the post's real data", async () => {
+  const { container } = renderAtSlug("hello-world");
+  await screen.findByRole("heading", { name: "Hello, Blog", level: 1 });
+
+  const script = container.querySelector('script[type="application/ld+json"]');
+  expect(script).not.toBeNull();
+  const json = JSON.parse(script!.textContent!);
+
+  expect(json).toMatchObject({
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: "Hello, Blog",
+    url: "https://luanncurioso.dev/blog/hello-world",
+    author: { "@type": "Person", name: "Luann Curioso" },
+  });
+});
+
+test("omits the JSON-LD script tag for an unknown slug", () => {
+  const { container } = renderAtSlug("does-not-exist");
+
+  expect(
+    container.querySelector('script[type="application/ld+json"]')
+  ).toBeNull();
+});
