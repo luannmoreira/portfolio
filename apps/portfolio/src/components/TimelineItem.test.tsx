@@ -146,7 +146,10 @@ test("reveals details, technologies, and links when expanded, and collapses agai
 
   expect(toggle).toHaveAttribute("aria-expanded", "true");
   expect(detailsRegion()).toHaveAttribute("aria-hidden", "false");
-  expect(detailsRegion()).toHaveStyle({ gridTemplateRows: "1fr", opacity: "1" });
+  expect(detailsRegion()).toHaveStyle({
+    gridTemplateRows: "1fr",
+    opacity: "1",
+  });
   expect(
     screen.getByText("Longer explanation of the work.")
   ).toBeInTheDocument();
@@ -159,7 +162,10 @@ test("reveals details, technologies, and links when expanded, and collapses agai
   await user.click(toggle);
   expect(toggle).toHaveAttribute("aria-expanded", "false");
   expect(detailsRegion()).toHaveAttribute("aria-hidden", "true");
-  expect(detailsRegion()).toHaveStyle({ gridTemplateRows: "0fr", opacity: "0" });
+  expect(detailsRegion()).toHaveStyle({
+    gridTemplateRows: "0fr",
+    opacity: "0",
+  });
 });
 
 test("does not repeat the summary in the expanded panel when there is no separate details copy", async () => {

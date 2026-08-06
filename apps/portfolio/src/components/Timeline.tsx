@@ -67,7 +67,9 @@ export default function Timeline() {
   // A hash deep link always needs its target present in the DOM to scroll
   // to, so it forces the full list open rather than requiring a click.
   const isMobileCollapsed =
-    !isHorizontal && !showAllMobile && !hashTarget &&
+    !isHorizontal &&
+    !showAllMobile &&
+    !hashTarget &&
     resolvedMilestones.length > MOBILE_VISIBLE_COUNT;
   const visibleMilestones = isMobileCollapsed
     ? resolvedMilestones.slice(0, MOBILE_VISIBLE_COUNT)
