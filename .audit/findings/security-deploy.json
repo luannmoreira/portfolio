@@ -1,0 +1,156 @@
+{
+  "domain": "security-deploy",
+  "generated_at": "2026-08-06T00:50:00Z",
+  "model": "claude-sonnet-5",
+  "scope": {
+    "files_analyzed": 24,
+    "files_total": 24,
+    "sampling_criterion": "Full grep sweep of apps/ and packages/ for dangerouslySetInnerHTML, import.meta.env/VITE_, target=\"_blank\"; full read of apps/portfolio/public/_redirects, root Dockerfile, .dockerignore, docker-compose.yml, apps/blog/vite.config.js, apps/blog/src/mdx/mdxComponents.tsx, apps/blog/src/content/loader.ts, .gitignore, .github/workflows/deploy.yml; live HTTP header/caching verification against https://luanncurioso.dev via curl (production Cloudflare Pages deployment). No files excluded from the grep sweep.",
+    "tools_used": [
+      "pnpm audit",
+      "gitleaks",
+      "hadolint",
+      "trivy",
+      "curl (live production headers)"
+    ]
+  },
+  "findings": [
+    {
+      "id": "SEC-001",
+      "title": "No Content-Security-Policy, Strict-Transport-Security, or Permissions-Policy on the production deployment",
+      "severity": "medium",
+      "confidence": 0.95,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "live curl https://luanncurioso.dev/ (2026-08-06T00:48Z)",
+          "repo-wide search: no _headers file exists anywhere in the repo (find -iname '_headers' returned nothing)"
+        ],
+        "tool_output": "curl -sD - -o /dev/null https://luanncurioso.dev/ | grep -i 'strict-transport|content-security-policy|permissions-policy|x-frame-options' -> no match (all four headers absent). Present: x-content-type-options: nosniff, referrer-policy: strict-origin-when-cross-origin (Cloudflare Pages platform defaults, not repo-configured)."
+      },
+      "impact": "No CSP means there is no defense-in-depth against injected script if an XSS vector is ever introduced later (there is none today, see SEC-004). No HSTS means a user who ever reaches the site over plain HTTP (e.g. a stale bookmark, a typed URL without scheme on a hostile network) is not instructed by the browser to force HTTPS on subsequent visits, leaving a narrow SSL-stripping window. No Permissions-Policy leaves powerful browser APIs (camera, microphone, geolocation, etc.) unrestricted by default, which is irrelevant functionally today but is a missing hardening layer for a public production origin.",
+      "correction": "Add an `apps/portfolio/public/_headers` file (the only `_headers` Cloudflare Pages reads, alongside the existing `_redirects`) setting `Content-Security-Policy` (default-src 'self'; explicitly no `unsafe-inline` — use hashes for the two required inline scripts: the theme-flash-prevention script in each app's index.html, see CLAUDE.md 'Touch theming or first paint'), `Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`, and `Permissions-Policy` with an explicit deny-list matching the site's actual API usage (none).",
+      "effort": "S",
+      "regression_risk": "medium",
+      "verification": "Deploy, then curl -sD - https://luanncurioso.dev/ and confirm all four headers present; load every route in both themes and confirm no CSP console errors (the inline theme-toggle script must be allow-listed by hash/nonce or it will be blocked).",
+      "verification_needed_before_merge": true,
+      "exploitable_here": "unclear - no XSS sink exists today (see SEC-004), so CSP absence has no active exploit path right now, but it removes a defense-in-depth layer that would matter the moment one is introduced; HSTS absence is a real, currently-live gap for any plain-HTTP-first visit.",
+      "related_domains": ["deployment"]
+    },
+    {
+      "id": "SEC-002",
+      "title": "Hashed, immutable JS/CSS assets served with a 4-hour cache instead of far-future immutable caching",
+      "severity": "low",
+      "confidence": 0.95,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "live curl https://luanncurioso.dev/assets/index-BWZnk8F2.js"
+        ],
+        "tool_output": "cache-control: public, max-age=14400, must-revalidate (Cloudflare Pages platform default). Filename contains a content hash (index-BWZnk8F2.js), so it is safe to cache indefinitely, but the served header caps it at 4 hours and forces revalidation."
+      },
+      "impact": "Repeat visitors re-request and revalidate every hashed asset every 4 hours instead of reading from the browser disk cache for up to a year, costing avoidable latency and edge bandwidth. Not a security vulnerability, but a real, verified deviation from the 'immutable assets hashed and far-future cached' rule the audit was asked to check.",
+      "correction": "Add a `Cache-Control: public, max-age=31536000, immutable` rule for `/assets/*` in `apps/portfolio/public/_headers`, alongside the CSP/HSTS headers from SEC-001, since Cloudflare Pages' own default for this path does not do it.",
+      "effort": "XS",
+      "regression_risk": "low",
+      "verification": "curl -sD - https://luanncurioso.dev/assets/<any-hashed-file> after deploy and confirm max-age=31536000 and immutable are present; confirm apps/portfolio/index.html and apps/blog/index.html still show max-age=0, must-revalidate (already correct, do not change).",
+      "exploitable_here": "n/a - performance/caching finding, not a vulnerability",
+      "related_domains": ["deployment", "performance"]
+    },
+    {
+      "id": "SEC-003",
+      "title": "react-router HIGH advisory (GHSA-qwww-vcr4-c8h2, RSC-mode CSRF bypass) in a genuine production dependency, unpatched on the 7.x line",
+      "severity": "medium",
+      "confidence": 0.9,
+      "evidence": {
+        "type": "tool",
+        "references": [
+          ".audit/tools/pnpm-audit.raw.json:16-25",
+          "apps/portfolio/package.json:11 (react-router ^7.18.0)",
+          "apps/blog/package.json (react-router ^7.18.0)"
+        ],
+        "tool_output": "pnpm audit: react-router@7.18.1, vulnerable_versions '>=7.12.0 <8.3.0', patched_versions '>=8.3.0', severity high, CWE-352, title 'React Router: RSC Mode CSRF Bypass Allows Action Execution Before 400 Response'."
+      },
+      "impact": "The advisory is specific to React Router's RSC (React Server Components) framework mode, where router actions can execute server-side before CSRF validation returns its 400. Both apps here use `createBrowserRouter` + `<RouterProvider>` in plain client-only SPA mode (confirmed: no `@react-router/dev`, no SSR/framework-mode config in either vite.config.js, no server backend to receive a POST action at all) — there is no server-side action handler for a forged request to reach. The vulnerable code path is not invoked in this project's runtime.",
+      "correction": "No urgent action required given non-exploitability. Track the upstream fix and take the 7.x -> 8.x major upgrade during a normal maintenance window (verify no breaking API changes affect either app's router usage before bumping).",
+      "effort": "M",
+      "regression_risk": "medium",
+      "verification": "pnpm audit --prod after upgrading react-router to >=8.3.0 in both apps' package.json, plus full e2e suite for both apps (routing-heavy).",
+      "exploitable_here": "no - this project runs react-router exclusively in client-only SPA mode (createBrowserRouter/RouterProvider, no RSC/framework mode, no server action handler exists to target), which is outside the vulnerable code path described by the advisory.",
+      "related_domains": ["dependencies"]
+    },
+    {
+      "id": "SEC-004",
+      "title": "brace-expansion DoS advisories (3 findings) are transitive lint-tooling dependencies, not shipped to production runtime or client bundle",
+      "severity": "low",
+      "confidence": 0.9,
+      "evidence": {
+        "type": "tool",
+        "references": [
+          ".audit/tools/pnpm-audit.raw.json:81-89 (id 1130588, GHSA-mh99-v99m-4gvg)",
+          ".audit/tools/pnpm-audit.raw.json:109-117 (id 1130734, GHSA-rgw5-rvv9-x895)",
+          ".audit/tools/pnpm-audit.raw.json:174-181 (id 1130737, GHSA-rgw5-rvv9-x895)",
+          "apps/portfolio/package.json:39,53 (@portfolio/config-eslint and eslint under devDependencies)",
+          "packages/config-eslint/package.json:6-12 (eslint-plugin-jsx-a11y, eslint-plugin-react, typescript-eslint listed under 'dependencies' in this config-only package's own manifest)"
+        ],
+        "tool_output": "pnpm audit --prod marks these findings 'dev: false', but every dependency path in the advisories routes exclusively through packages__config-eslint > eslint / eslint-plugin-* / typescript-eslint. @portfolio/config-eslint is declared as a devDependency in both apps' package.json; pnpm audit's dev-flag does not correctly propagate through a workspace package that is itself a devDependency of the apps but declares its own deps as regular 'dependencies' in its own manifest — a known pnpm-audit workspace limitation, not evidence these packages reach production."
+      },
+      "impact": "brace-expansion is used only by minimatch, used only by ESLint's config-array/eslintrc resolution and by typescript-eslint's file glob matching, both lint/typecheck-time-only tools invoked via `pnpm --filter <app> lint` / `typecheck` in CI. None of this code is imported by any app's `src/`, bundled by Vite, or shipped to the browser or the Cloudflare Pages deploy.",
+      "correction": "No production risk to remediate urgently. Bump the transitive brace-expansion resolution via `pnpm up` the next time lint tooling deps are refreshed, primarily for CI-runner hygiene (the DoS is a local out-of-memory crash of the lint/typecheck process on adversarial glob input, not a network-facing exploit).",
+      "effort": "XS",
+      "regression_risk": "low",
+      "verification": "pnpm audit --prod after a lockfile refresh shows 0 findings for brace-expansion; pnpm --filter portfolio lint / pnpm --filter blog lint still exit 0.",
+      "exploitable_here": "no - reaches only ESLint/typescript-eslint's own dependency resolution at lint/typecheck time in local dev and CI; never imported by app source, never bundled, never present in the deployed static output.",
+      "related_domains": ["dependencies", "ci"]
+    },
+    {
+      "id": "SEC-005",
+      "title": "Dockerfile has no USER directive; dev containers run as root (dev-only, not a production gap)",
+      "severity": "low",
+      "confidence": 1.0,
+      "evidence": {
+        "type": "tool",
+        "references": [
+          "Dockerfile:9-53",
+          ".audit/tools/trivy-config.raw.json:19-40"
+        ],
+        "tool_output": "trivy config: DS-0002 'Image user should not be root', Severity HIGH per trivy's generic rubric, Status FAIL — no USER instruction in any of the Dockerfile's three stages (base, portfolio-dev, blog-dev)."
+      },
+      "impact": "Per CLAUDE.md standing decision 3, this Dockerfile is dev-only tooling to run the apps locally without Node; neither app runs as a server in production, both deploy as static builds via wrangler, and this image is never pushed to a registry (docker-compose.yml bind-mounts the full repo over the image's own files at runtime, and `context` is local-only). Root-in-container here is a local dev-environment hygiene item — a container escape would only matter on a developer's own machine, not in the deployed product. Trivy's generic HIGH severity for DS-0002 does not reflect that context.",
+      "correction": "Optional: add a non-root USER to the dev stages for defense-in-depth on developer machines, if desired. Do not reframe this as a production hardening gap or add a production build stage — that reverses standing decision 3 and is out of scope for this audit.",
+      "effort": "S",
+      "regression_risk": "low",
+      "verification": "docker compose up --build followed by whoami inside each container, if the USER directive is added.",
+      "exploitable_here": "no - image is local-dev-only, never registry-pushed, never deployed; the apps it builds are static sites served by Cloudflare Pages, not by this container.",
+      "related_domains": ["deployment"]
+    },
+    {
+      "id": "SEC-006",
+      "title": ".dockerignore does not exclude .env* files",
+      "severity": "low",
+      "confidence": 0.85,
+      "evidence": {
+        "type": "code",
+        "references": [".dockerignore:1-13"]
+      },
+      "impact": "`COPY . .` in the Dockerfile's base stage would copy a developer's local `.env.local` (which holds CLOUDFLARE_API_TOKEN per CLAUDE.md) into the image layer if present at build time. Actual exposure is minimal: the image is built and run only locally via docker-compose, is never pushed to a registry, and docker-compose.yml immediately bind-mounts the full host repo (`.:/app`) over the image's copied files at container start, so the copied .env.local inside the image layer is never what's actually served — but it would still persist in the local image's layer history on disk.",
+      "correction": "Add `.env*` (or explicitly `.env.local` and friends, mirroring root .gitignore) to .dockerignore for defense-in-depth, consistent with treating build-time secrets carefully per CLAUDE.md hard rules.",
+      "effort": "XS",
+      "regression_risk": "none",
+      "verification": "Build the image with a dummy .env.local present, then `docker run --rm <image> find / -name '.env.local'` and confirm it is absent.",
+      "exploitable_here": "unclear - only reachable by a developer with a local .env.local who runs docker build; image never leaves the local machine, but the gap is real and easy to close.",
+      "related_domains": ["deployment"]
+    }
+  ],
+  "unverified_hypotheses": [
+    {
+      "description": "Cloudflare Pages base image / edge platform version pinning (e.g. whether the Pages build environment itself is pinned) was not assessed — out of repo scope, no config file governs it.",
+      "why_unverified": "No wrangler.toml or Pages-specific build config exists in the repo to inspect; Pages build environment is managed entirely in the Cloudflare dashboard, which this audit has no access to."
+    },
+    {
+      "description": "Whether the `access-control-allow-origin: *` header seen on live responses is a Cloudflare Pages platform default or something explicitly configured was not resolved.",
+      "why_unverified": "No _headers file exists in the repo to set it explicitly, so it is presumed to be a platform default; low risk either way since the site serves no credentialed cross-origin data, but the origin was not independently confirmed against Cloudflare's own documentation (no network access to Cloudflare's docs from this environment)."
+    }
+  ],
+  "blockers": []
+}

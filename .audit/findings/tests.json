@@ -1,0 +1,166 @@
+{
+  "domain": "tests",
+  "generated_at": "2026-08-05T20:30:00Z",
+  "model": "claude-sonnet-5",
+  "scope": {
+    "files_analyzed": 24,
+    "files_total": 54,
+    "sampling_criterion": "All 14 e2e spec files (apps/portfolio/e2e/*.spec.ts x8, apps/blog/e2e/*.spec.ts x6) read/grepped in full; both Playwright JSON reporter outputs (.audit/tools/playwright-{portfolio,blog}.json, 128+118 expected across 2x repeat-each=2 runs) parsed programmatically for every result entry; App.tsx (both apps) and Contact.tsx read for route/journey mapping; all 40 Vitest *.test.{ts,tsx} files grepped for anti-patterns (not individually read in full — grep-only sample for waitForTimeout/shared-state/ordering patterns). playwright.config.* read for both apps for project/viewport setup.",
+    "tools_used": [
+      "playwright (pre-existing JSON reports, parsed)",
+      "grep",
+      "python3 json analysis"
+    ]
+  },
+  "findings": [
+    {
+      "id": "TEST-001",
+      "title": "22 accessibility tests flip pass/fail across identical repeated runs — real flakiness invisible to Playwright's own flaky counter",
+      "severity": "critical",
+      "confidence": 0.97,
+      "evidence": {
+        "type": "tool",
+        "references": [
+          "apps/portfolio/e2e/accessibility.spec.ts",
+          "apps/blog/e2e/accessibility.spec.ts",
+          ".audit/tools/playwright-portfolio.json (stats: flaky=0, but 4 spec titles show mixed passed/failed results across the run set)",
+          ".audit/tools/playwright-blog.json (stats: flaky=0, but 14 spec titles show mixed passed/failed results across the run set)"
+        ],
+        "tool_output": "Programmatic grouping of every playwright-{app}.json result by (file,title) across the full run set: portfolio has 4 titles with both 'passed' and 'failed' outcomes (all under accessibility.spec.ts, e.g. '/about ... (light, en)', '/contact ... (light, en)', '/about ... (light, pt-BR)', '/contact ... (light, pt-BR)'); blog has 14 such titles (e.g. '/ ... (light, en)', '/blog ... (light, en)', '/does-not-exist ... (light, en)', plus pt-BR equivalents and dark-theme variants for some routes). For blog's '/does-not-exist (light, en)' specifically: 2 of 4 result entries failed with an identical 64-node axe violation payload, the other 2 passed with 0 violations, same route/theme/locale, no code change between attempts. This is genuine run-to-run non-determinism. Playwright's own 'flaky' stat is 0 in both files because --repeat-each creates independent test entries rather than same-test retries, so its flaky detector never compares across them — the stats block undercounts real flakiness for this exact config."
+      },
+      "impact": "The 'flaky: 0' figure in both JSON reports is not trustworthy evidence of suite stability for this project's config. At least 18 of the 22 unique failing a11y test titles (all 14 blog + 4 of portfolio's 8) are non-deterministic, not durable regressions — a CI run picking the 'pass' side would silently ship whatever the (still-unfixed) underlying a11y issue is. Downstream: a11y-auditor's finding of '26 unique failing tests, all light-theme' does not match direct measurement (22 unique titles fail at least once; 2 of portfolio's are dark-theme, not light: '/ ... (dark, en)' and '/ ... (dark, pt-BR)' fail in all 4 attempts, not just light).",
+      "correction": "Investigate why identical navigations produce different axe results — most likely a font/content settle race (fonts still loading or an async i18n string swap not yet committed to the DOM at scan time), worsened by parallel workers (actualWorkers:8) under CPU contention. Replace ad hoc timing (see TEST-002) with an explicit settle condition (e.g. `document.fonts.ready` + a stable-DOM check) before calling `new AxeBuilder({page}).analyze()`, in both apps' accessibility.spec.ts. Re-run with --repeat-each=4+ after the fix and confirm 0 titles flip.",
+      "effort": "M",
+      "regression_risk": "low",
+      "verification": "Re-run `pnpm --filter portfolio e2e -g accessibility` and `pnpm --filter blog e2e -g accessibility` with `--repeat-each=4`; group results by test title and confirm no title has mixed pass/fail outcomes.",
+      "related_domains": ["a11y"]
+    },
+    {
+      "id": "TEST-002",
+      "title": "Fixed `waitForTimeout(1600)` anti-pattern in portfolio's accessibility.spec.ts",
+      "severity": "medium",
+      "confidence": 0.95,
+      "evidence": {
+        "type": "code",
+        "references": ["apps/portfolio/e2e/accessibility.spec.ts:34"]
+      },
+      "impact": "A hardcoded 1600ms wait tied to a guessed CSS transition duration ('Hero's up to 1500ms fade, +margin') runs before every one of the 20 portfolio a11y tests (5 routes x 2 themes x 2 locales), adding ~32s of pure sleep to that spec's total runtime. It is also not sufficient to fully eliminate the flip-flopping in TEST-001 — portfolio still has 4 titles with mixed pass/fail despite this wait, while blog (no wait at all) has proportionally more (14). The wait masks the real problem (missing an explicit settle signal) without solving it, and will silently under- or over-wait if the transition duration or content changes.",
+      "correction": "Replace with an explicit wait condition, e.g. asserting the element's computed opacity/transform has settled, or waiting on a `transitionend` event / `prefers-reduced-motion` bypass in test setup, rather than a magic duration.",
+      "effort": "S",
+      "regression_risk": "low",
+      "verification": "Remove the fixed timeout, substitute an explicit settle wait, re-run `pnpm --filter portfolio exec playwright test accessibility.spec.ts --repeat-each=4` and confirm both correctness (no flips) and a lower total spec duration.",
+      "related_domains": ["a11y", "performance"]
+    },
+    {
+      "id": "TEST-003",
+      "title": "Portfolio app has no client-side 404/catch-all route and zero e2e coverage for unmatched paths",
+      "severity": "high",
+      "confidence": 0.95,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/portfolio/src/App.tsx:73-84 (routes array: only '/', '/about', '/resume', '/projects', '/contact' — no '*' entry)",
+          "apps/blog/src/App.tsx:57 ({ path: \"*\", element: <NotFound /> }) — for comparison, blog has one"
+        ]
+      },
+      "impact": "Any URL under the portfolio's own path space that isn't one of the 5 known routes (typo, stale bookmark, removed route) falls through to React Router's default unstyled error boundary client-side, with no test ever exercising this path. The user-journey checklist this audit was asked to map (`... -> error -> 404`) has literally no destination in the portfolio app to test against. Blog's equivalent journey is covered (`apps/blog/e2e/navigation.spec.ts:14`, `'an unknown route shows the not-found page'`, plus `/does-not-exist` in blog's accessibility.spec.ts) — the asymmetry between the two apps is the tell.",
+      "correction": "Decide whether this is in-scope for this audit phase (product gap, not just a test gap) and, if so, add a `NotFound` component + `{ path: \"*\", element: <NotFound/> }` entry to apps/portfolio/src/App.tsx's routes, mirroring the blog. Then add the matching e2e coverage (navigation + accessibility, both themes) per the 'Add a route' recipe in CLAUDE.md.",
+      "effort": "S",
+      "regression_risk": "low",
+      "verification": "Navigate to an unmapped path in a portfolio dev build and confirm a styled NotFound page renders instead of the router's default error boundary; add and pass an e2e spec asserting this.",
+      "related_domains": ["a11y", "product"]
+    },
+    {
+      "id": "TEST-004",
+      "title": "Blog app has no dedicated keyboard-navigation e2e coverage despite shipping a skip-link",
+      "severity": "high",
+      "confidence": 0.9,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/blog/src/App.tsx:34,40 (skip-to-content anchor + #main-content tabIndex=-1 target implemented)",
+          "apps/blog/e2e/ (directory listing: accessibility.spec.ts, homepage.spec.ts, language-switcher.spec.ts, mobile-nav.spec.ts, navigation.spec.ts, scroll-restoration.spec.ts — no keyboard-nav.spec.ts)",
+          "apps/portfolio/e2e/keyboard-nav.spec.ts (portfolio's equivalent, 3 tests: skip-link focus/jump, focus-ring token color, keyboard-operable Details toggle)"
+        ]
+      },
+      "impact": "The skip-link is real product code in the blog (mirrors the portfolio's), but nothing verifies it is the first focusable element, that it actually moves focus to #main-content on activation, or that focus-visible styling matches the design tokens. Blog's mobile-nav.spec.ts exercises Tab/Escape only inside the mobile nav overlay — a narrower scope than a real keyboard-nav journey through the page.",
+      "correction": "Port apps/portfolio/e2e/keyboard-nav.spec.ts's skip-link and focus-ring tests to the blog, adjusted for its routes (/, /blog, /blog/:slug, /adr, /adr/:slug).",
+      "effort": "S",
+      "regression_risk": "low",
+      "verification": "New apps/blog/e2e/keyboard-nav.spec.ts passes locally via `pnpm --filter blog exec playwright test keyboard-nav.spec.ts`.",
+      "related_domains": ["a11y"]
+    },
+    {
+      "id": "TEST-005",
+      "title": "No e2e test exercises the theme-toggle's actual click/persist behavior in either app — only its touch-target size",
+      "severity": "medium",
+      "confidence": 0.85,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/portfolio/e2e/mobile-nav.spec.ts:124-136 (only asserts the theme toggle button meets 44px touch-target minimum)",
+          "apps/blog/e2e/mobile-nav.spec.ts:64 (same, blog side)",
+          "apps/portfolio/e2e/accessibility.spec.ts:28 / apps/blog/e2e/accessibility.spec.ts:35 (theme is set via page.emulateMedia — OS-level signal driving the FOUC-prevention script — never via clicking the real ThemeToggle component)"
+        ]
+      },
+      "impact": "Unit tests cover ThemeToggle.tsx and useTheme.ts in isolation (apps/{portfolio,blog}/src/{components/ThemeToggle.test.tsx,hooks/useTheme.test.ts}), but nothing end-to-end verifies: clicking the toggle actually flips `.light` on `<html>`, the choice persists to localStorage across a reload, or the synchronous inline FOUC-prevention `<script>` in index.html (called out in CLAUDE.md as fragile — 'must stay synchronous, stay inline, and stay before first paint') correctly reads that persisted choice on the next load. This is exactly the kind of cross-cutting, easy-to-silently-break behavior unit tests structurally cannot catch.",
+      "correction": "Add a theme-switching e2e spec per app: click the toggle, assert `<html>` class change, reload, assert the class persists, and assert no flash (e.g. via a screenshot-free check on the html class immediately after navigation start).",
+      "effort": "S",
+      "regression_risk": "low",
+      "verification": "New theme.spec.ts passes in both apps.",
+      "related_domains": ["a11y"]
+    },
+    {
+      "id": "TEST-006",
+      "title": "`.text-plate` CSS-class selector used in two portfolio e2e assertions",
+      "severity": "low",
+      "confidence": 0.8,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/portfolio/e2e/mobile-nav.spec.ts:111 (page.$$eval(\".text-plate\", ...))",
+          "apps/portfolio/e2e/language-switcher.spec.ts:97 (same selector)"
+        ]
+      },
+      "impact": "Both tests assert line-height ratios by selecting a utility-style class name (`.text-plate`) rather than a role/testid. A future styling refactor that renames this class (plausible given the 'drastic future redesign' noted for the portfolio) silently breaks both tests without touching any behavior, and the failure won't obviously read as 'selector renamed' — CSS-selector brittleness, per the audit's own definition.",
+      "correction": "Either add a stable `data-testid=\"text-plate\"` hook decoupled from styling, or move the assertion to something semantic (heading role + computed style), consistent with how apps/portfolio/e2e/keyboard-nav.spec.ts resolves colors via computed style rather than class names.",
+      "effort": "XS",
+      "regression_risk": "none",
+      "verification": "Rename the `.text-plate` class in source and confirm the two e2e tests still pass unmodified after switching to a stable hook.",
+      "related_domains": []
+    }
+  ],
+  "unverified_hypotheses": [
+    {
+      "description": "The TEST-001 flip-flop's root cause is a font/content settle race worsened by parallel worker CPU contention (actualWorkers: 8).",
+      "why_unverified": "Inferred from timing (all mixed-result failures are fast, 1.1-1.3s, well under the timeout) and from the fact that blog (no waitForTimeout) flips more titles than portfolio (has a 1600ms wait), which is consistent with a settle-race theory but was not confirmed by instrumenting the actual page load (e.g. Performance/font-loading traces) — no such trace was captured in this phase."
+    },
+    {
+      "description": "Mailto link correctness (`mailto:luannmcurioso@gmail.com` in apps/portfolio/src/components/Contact.tsx:25) has no e2e assertion.",
+      "why_unverified": "Confirmed absent via grep (no 'mailto' match in apps/portfolio/e2e/*.spec.ts), but not escalated to a numbered finding — low risk (a wrong mailto address is a content bug, not a functional break, and would likely be caught by manual QA before a personal-site release) rather than a structural test gap."
+    }
+  ],
+  "blockers": [],
+  "recommended_tests": [
+    {
+      "journey": "portfolio: any-route -> unmatched path -> 404",
+      "risk_rationale": "Highest risk in this list: the destination itself (a 404 route) does not exist in the portfolio app, per TEST-003. Every other journey gap in this audit is 'add a test for existing behavior'; this one is 'behavior doesn't exist yet.' A production visitor hitting any stale/mistyped portfolio URL currently sees an unstyled React Router error boundary.",
+      "sketch": "After adding a NotFound route+component (see TEST-003 correction): `test('an unknown path shows the styled 404 page', async ({ page }) => { await page.goto('/does-not-exist'); await expect(page.getByRole('heading', { name: /not found/i })).toBeVisible(); await expect(page.getByRole('link', { name: /home/i })).toBeVisible(); })` plus the matching accessibility.spec.ts route entry in both themes, per CLAUDE.md's 'Add a route' recipe."
+    },
+    {
+      "journey": "blog: page load -> Tab to skip-link -> Enter -> focus lands in main content",
+      "risk_rationale": "Real shipped a11y-critical code (skip-link + tabIndex=-1 target, apps/blog/src/App.tsx:34,40) with zero e2e coverage, while the identical portfolio feature is tested (keyboard-nav.spec.ts). Keyboard-only users are the population this feature exists for; a silent regression here is invisible to every other test in the blog suite, including the axe scans (axe does not verify Tab order or focus movement).",
+      "sketch": "Port apps/portfolio/e2e/keyboard-nav.spec.ts's first test verbatim, adjusted for blog routes: `test('a skip-to-content link is the first focusable element and jumps to main', async ({ page }) => { await page.goto('/blog'); await page.keyboard.press('Tab'); await expect(page.getByRole('link', { name: 'Skip to content' })).toBeFocused(); await page.keyboard.press('Enter'); await expect(page.locator('#main-content')).toBeFocused(); });`"
+    },
+    {
+      "journey": "either app: click theme toggle -> reload -> theme persists (no FOUC)",
+      "risk_rationale": "CLAUDE.md flags the synchronous inline FOUC-prevention script as the single most fragile piece of theming infrastructure ('must stay synchronous, stay inline, and stay before first paint'), duplicated independently in both apps' index.html. No e2e test currently exercises the real click-then-reload path that script depends on; only unit tests (which don't execute index.html's inline script) and a touch-target-size check on the button itself.",
+      "sketch": "`test('theme choice persists across reload with no flash', async ({ page }) => { await page.goto('/'); const toggle = page.getByRole('button', { name: /switch to (light|dark) theme/i }); await toggle.click(); const htmlClassAfterClick = await page.locator('html').getAttribute('class'); await page.reload(); await expect(page.locator('html')).toHaveClass(htmlClassAfterClick ?? ''); });` — run in both apps."
+    },
+    {
+      "journey": "portfolio + blog: accessibility.spec.ts route scans (existing, but non-deterministic)",
+      "risk_rationale": "TEST-001: this is not a new-coverage gap but the highest-risk existing gap — 22 tests that are supposed to gate every route in both themes are currently unreliable, which means the axe regression they did catch (a11y-auditor's finding) could just as easily have been missed on a differently-timed CI run. Fixing this doesn't add a test; it makes the existing 40 tests trustworthy again.",
+      "sketch": "Replace apps/portfolio/e2e/accessibility.spec.ts:34's `await page.waitForTimeout(1600)` with an explicit settle wait (e.g. `await page.waitForFunction(() => document.fonts.status === 'loaded')` plus asserting the animated element's opacity has reached its final value), add the same explicit wait to apps/blog/e2e/accessibility.spec.ts (which currently has none), then re-run both specs at `--repeat-each=4` and confirm zero titles flip between passed/failed."
+    }
+  ]
+}

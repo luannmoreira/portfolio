@@ -1,0 +1,156 @@
+{
+  "domain": "perf",
+  "generated_at": "2026-08-06T00:52:26Z",
+  "model": "claude-sonnet-5",
+  "scope": {
+    "files_analyzed": 24,
+    "files_total": 169,
+    "sampling_criterion": "Read/grepped: both apps' index.html, App.tsx (routing/lazy-loading), i18n setup (packages/i18n/src/createI18n.ts, resolveInitialLocale.ts, formatDate.ts, apps/*/src/i18n.ts, locale JSON files), reportWebVitals.ts + entry points, apps/portfolio/src/components/About.tsx (only <img> usage in portfolio), apps/blog/src/mdx/mdxComponents.tsx + vite.config.js (MDX/Shiki/Mermaid pipeline), apps/blog/src/content/schema.ts import graph (zod runtime-vs-buildtime), apps/portfolio/src/content/skills.ts (simple-icons usage), package.json for both apps + packages/i18n + packages/ui, plus a fresh pnpm build:portfolio / pnpm build:blog for real chunk sizes. files_total is tsx+ts source file count from .audit/facts.json's file_counts_by_extension (96+73); this is not a full-repo line-by-line read, it's targeted at every audit checklist item (bundle, splitting, images, fonts, MDX, React) cross-referenced against the two real Lighthouse reports.",
+    "tools_used": ["lighthouse", "build output"]
+  },
+  "findings": [
+    {
+      "id": "PERF-001",
+      "title": "Portfolio homepage throws an unhandled error in the production build and renders React Router's default ErrorBoundary instead of real content",
+      "severity": "critical",
+      "confidence": 0.9,
+      "evidence": {
+        "type": "tool",
+        "references": [
+          ".audit/tools/lhci-portfolio/*.report.json#audits.errors-in-console",
+          ".audit/tools/lhci-portfolio/*.report.json#audits.largest-contentful-paint-element.details",
+          "apps/portfolio/src/App.tsx (no errorElement defined on any route)"
+        ],
+        "tool_output": "errors-in-console: score 0, item: {source: 'console.error', description: \"Error handled by React Router default ErrorBoundary: [object Ae]\", sourceLocation: 'assets/useDocumentMeta-Bay84Hfw.js:3:2015'}. largest-contentful-paint-element: node selector 'body > div#root > p', nodeLabel starts 'You can provide a way better UX than this when your app throws errors by provid…' — this exact string is react-router's own built-in default error-boundary fallback text (confirmed present in node_modules/react-router/dist/production/chunk-*.js), not app content. Both audits succeeded independently of the separate tslib tooling bug, so this is a real, reproducible signal, not a Lighthouse artifact."
+      },
+      "impact": "In this staticDistDir Lighthouse run, the portfolio's '/' route never painted its real homepage content (hero text, DotCanvas, nav) — the Largest Contentful Paint element Lighthouse measured was React Router's generic, unstyled 'something went wrong' fallback. Every other perf conclusion about this route (image priority, font loading, initial JS weight) is secondary to the fact that the page may render nothing useful for at least some visitors/environments. The thrown error surfaces from the useDocumentMeta.js chunk, which also bundles i18next/react-i18next — a plausible but unconfirmed root cause given only a minified stack frame is available.",
+      "correction": "Reproduce locally with sourcemaps (`pnpm --filter portfolio build && pnpm --filter portfolio preview`, open the real browser console) to get an unminified stack trace and fix the root cause. Independently of the root cause, add a custom `errorElement` to the router config (apps/portfolio/src/App.tsx) so a real crash degrades to a branded fallback instead of react-router's default developer-facing message.",
+      "effort": "M",
+      "regression_risk": "low",
+      "verification": "Re-run lhci (or manually load the built dist in a real browser with devtools open) against '/' and confirm the LCP element is real homepage content, not react-router's default boundary text; confirm errors-in-console returns score 1 with zero items.",
+      "related_domains": ["correctness", "a11y"]
+    },
+    {
+      "id": "PERF-002",
+      "title": "Blog has no route-level code splitting — Post, ContentIndex, NotFound and the entire MDX authoring component registry all ship in one eager chunk",
+      "severity": "high",
+      "confidence": 0.8,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/blog/src/App.tsx:10-13 (static imports of ContentIndex, Post, NotFound, mdxComponents)",
+          "apps/blog/src/App.tsx:78 (<MDXProvider components={mdxComponents}> mounted at the app root, not per-route)",
+          "apps/portfolio/src/App.tsx:20-23 (contrast: portfolio already lazy()-splits About/Resume/Projects/Contact)"
+        ],
+        "tool_output": "script-treemap-data for the blog's single built chunk assets/index-BiE5_JWq.js: resourceBytes 321095, encodedBytes 103232, unusedBytes 163607 (51% unused on the tested page load). Build output (pnpm build:blog) confirms one 321.16 kB / gzip 102.50 kB main chunk versus several tiny separate per-post MDX chunks (hello-world-CvEHn6fX.js 0.66 kB, placeholder-*.js ~0.7 kB each, building-this-blogs-content-pipeline-*.js 26.44 kB) — so per-post code-splitting (content/loader.ts's lazy import.meta.glob, the load-bearing split CLAUDE.md documents) is intact and NOT the problem; the problem is everything else (routes + MDX component registry) is not split at all."
+      },
+      "impact": "Every blog page load — including the /blog index, which needs neither Post's rendering logic nor any of the 9 MDX authoring components (Pre/Decision/Tradeoff/Warning/Tip/Note/FileTree*/Terminal) — downloads and parses all of it upfront. Caveat: this specific Lighthouse run's captured page was actually the NotFound route ('Não Encontrado', see blockers), not the /blog index, because LHCI requested the literal .../index.html path rather than '/', which doesn't match this SPA's absolute-path routes and falls through to the catch-all. That confounds the exact 51%-unused figure's precision but if anything strengthens the underlying finding: even the 404 page paid for all of it.",
+      "correction": "Mirror the pattern already used in apps/portfolio/src/App.tsx: `const Post = lazy(() => import('./components/Post'))`, wrap the Outlet in <Suspense>, and move the MDXProvider's `components` registry to load alongside Post's chunk (or lazy-load the registry itself) rather than at the app root. Keep ContentIndex eager since '/blog' is the landing route.",
+      "effort": "S",
+      "regression_risk": "low",
+      "verification": "pnpm build:blog and confirm Post.tsx and mdx/mdxComponents.tsx's constituent components no longer appear in the main entry chunk's module list; re-run lhci against an actual '/blog' navigation (not the literal index.html path) and check script-treemap-data's unusedBytes ratio drops.",
+      "related_domains": []
+    },
+    {
+      "id": "PERF-003",
+      "title": "Both locale bundles (en + pt-BR) ship eagerly regardless of the resolved locale, in both apps",
+      "severity": "medium",
+      "confidence": 0.75,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/portfolio/src/i18n.ts:2-3,10-13 (static import of both locales/en and locales/pt-BR translation.json)",
+          "packages/i18n/src/createI18n.ts:11 (comment: 'no lazy backend/namespace-loading, which the instant switch requirement needs anyway and this string count doesn't justify avoiding')"
+        ],
+        "tool_output": "apps/portfolio/src/locales/{en,pt-BR}/translation.json: 14554 + 15720 bytes raw (30274 total). Lighthouse script-treemap-data for portfolio: assets/useDocumentMeta-Bay84Hfw.js (the chunk i18next/react-i18next/both locale JSONs land in) is resourceBytes 108456 with unusedBytes 80144 — 74% unused on the '/' page load, the highest unused-ratio of any chunk in that run."
+      },
+      "impact": "A visitor in either locale downloads translation strings for the language they aren't using, on every page load, on both apps. This was a considered tradeoff (see the code comment), and the blog's own locale files are small (2088 + 2249 bytes) so this matters far less there — the bulk of the 74%-unused figure is i18next/react-i18next's own internal code paths not exercised by a single simple page, not solely the unused locale, so treat the byte-savings estimate as a partial, not full, share of that number.",
+      "correction": "Dynamic-import only the resolved locale's JSON (`import(`./locales/${locale}/translation.json`)`) in apps/portfolio/src/i18n.ts and the blog's equivalent, prefetching the other locale in the background once idle (e.g. requestIdleCallback) so the language switcher stays instant.",
+      "effort": "S",
+      "regression_risk": "low",
+      "verification": "pnpm build:portfolio and confirm only one locale's translation.json content appears in the initial chunk graph; re-run lhci and check the i18n-bearing chunk's resourceBytes drops by roughly one locale file's size.",
+      "related_domains": []
+    },
+    {
+      "id": "PERF-004",
+      "title": "Google Fonts are loaded from a third-party origin (fonts.googleapis.com / fonts.gstatic.com) rather than self-hosted, creating a CSS-then-font request waterfall",
+      "severity": "medium",
+      "confidence": 0.7,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/portfolio/index.html:55-60",
+          "apps/blog/index.html:13-18"
+        ],
+        "tool_output": "network-requests audit (real, not tooling-errored): portfolio loads a Google Fonts stylesheet (1464 bytes) then 2 font files from fonts.gstatic.com (48983 + 21935 bytes); blog loads its Google Fonts stylesheet (1741 bytes) then 1 font file (22350 bytes) from fonts.gstatic.com. font-display and uses-rel-preconnect audits both scored 1 (pass) — preconnect hints for both font origins and `display=swap` are already present in both index.html files, so this is not a from-scratch fix, only the remaining self-hosting step."
+      },
+      "impact": "Even with preconnect eliminating DNS/TCP/TLS setup cost, the browser cannot request the actual .woff2 files until the Google Fonts CSS response comes back and defines the @font-face src — a same-origin self-hosted font with `<link rel=preload as=font>` can start downloading in parallel with HTML parsing, removing that hop entirely. No lab timing number backs a specific millisecond figure here (blocked — see blockers); this is a qualitative, well-understood web-perf pattern, not a measured gain. Assumption: eliminates one network round-trip in the font critical path, whose absolute value depends on the visitor's RTT to Google's edge vs. this site's own origin.",
+      "correction": "Self-host the actual weights in use (Hanken Grotesk 600/700/800, Inter 400/500/600, JetBrains Mono 500, plus Material Symbols Outlined for the blog) via a one-time subset+download (e.g. `@fontsource/*` packages or google-webfonts-helper), serve from /public, and replace the Google Fonts <link> with a local @font-face + `<link rel=preload as=font type=font/woff2 crossorigin>` for the above-the-fold weights.",
+      "effort": "S",
+      "regression_risk": "low",
+      "verification": "Confirm no requests to fonts.googleapis.com/fonts.gstatic.com remain in network-requests after the change; re-run lhci once the tslib tooling bug (see blockers) is fixed and compare LCP.",
+      "related_domains": []
+    },
+    {
+      "id": "PERF-005",
+      "title": "Core Web Vitals field data (RUM) never actually fires — reportWebVitals() is called with no callback, so the guard short-circuits before the web-vitals import",
+      "severity": "low",
+      "confidence": 0.85,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/portfolio/src/index.tsx:17",
+          "apps/portfolio/src/reportWebVitals.ts:4",
+          "apps/blog/src/main.tsx:14"
+        ],
+        "tool_output": null
+      },
+      "impact": "`reportWebVitals()` is invoked with zero arguments in both apps' entry points; reportWebVitals.ts's own guard (`if (onPerfEntry && onPerfEntry instanceof Function)`) is false whenever no callback is passed, so `import(\"web-vitals\")` never runs and no field CWV data is ever collected in production. This is also part of why this audit has no historical field data to lean on and had to rely entirely on a single lab run.",
+      "correction": "Pass a real callback (e.g., send to an analytics endpoint, or at minimum `console.log` behind a debug flag during rollout) so field CWV data starts accumulating: `reportWebVitals(sendToAnalytics)`.",
+      "effort": "XS",
+      "regression_risk": "none",
+      "verification": "Confirm the web-vitals chunk is fetched on a real page load (Network tab) and that the callback receives metric objects.",
+      "related_domains": []
+    }
+  ],
+  "unverified_hypotheses": [
+    {
+      "description": "apps/portfolio/src/components/About.tsx:31-38 marks the profile <img> as loading=\"lazy\" while it likely sits in the initial viewport of the /about route, which could deprioritize a visible image.",
+      "why_unverified": "Lighthouse (staticDistDir mode) only exercised the '/' route for both apps; /about was never loaded or measured, so there is no LCP-element or timing evidence for that route."
+    },
+    {
+      "description": "simple-icons named imports in apps/portfolio/src/content/skills.ts (26 icons imported from the full simple-icons package) may or may not tree-shake cleanly, affecting the About page's chunk weight.",
+      "why_unverified": "About.tsx is lazy-loaded and was never network-requested in this Lighthouse run (only '/' was tested), so no script-treemap-data or coverage evidence exists for that chunk; only its aggregate build-output size (About-BS8Ms2_W.js, 19.70 kB / gzip 7.01 kB) was observed, which doesn't isolate simple-icons' contribution."
+    },
+    {
+      "description": "Long lists (ContentIndex's post/ADR listing) may eventually need virtualization.",
+      "why_unverified": "Not currently reproducible as a problem: .audit/facts.json records only 4 total MDX content files across blog+projects+adr, well below any threshold where virtualization would matter. No evidence either way for future content volume."
+    },
+    {
+      "description": "Whether any component actually suffers from missed memoization / unnecessary re-renders at runtime.",
+      "why_unverified": "No React DevTools Profiler trace or runtime re-render count is part of the available tooling output; only static source review was possible, which did confirm there is no custom React.createContext usage in either app (grepped, zero matches), so the specific 'context causing whole-tree rerenders' pattern named in the audit brief is not present as a static risk — but this doesn't rule out non-context re-render costs (e.g. inline object/array props), which weren't measured."
+    }
+  ],
+  "blockers": [
+    {
+      "tool": "lighthouse",
+      "reason": "All duration-based Core Web Vitals audits (largest-contentful-paint, first-contentful-paint, total-blocking-time, speed-index, interactive, max-potential-fid) and the overall performance category score return score:null, scoreDisplayMode:'error', errorMessage 'tslib_1.__spreadArray is not a function', for BOTH apps. Root cause per the error stack: Lighthouse's own bundled intl-messageformat@10.7.18 (used internally by lighthouse/core/lib/i18n/i18n.js to format audit display strings) resolves to an incompatible tslib version somewhere in this repo's node_modules — a tooling/environment defect in this audit run, not a defect in either app under test. Only cumulative-layout-shift survived (portfolio: 0.03323124268265496, blog: 0). LCP, FCP, TBT, Speed Index, TTI and the performance score are therefore null and not estimated anywhere in this file. Fix the tslib/intl-messageformat version conflict in node_modules (or run lhci in a clean environment) and re-run before any of those numbers can be reported."
+    },
+    {
+      "tool": "lighthouse",
+      "reason": "numberOfRuns was 1 for both apps (staticDistDir, single Playwright-bundled-Chromium run). Even the one surviving metric (CLS) carries single-sample variance risk and should not be treated as a stable baseline without repeated runs."
+    },
+    {
+      "tool": "lighthouse",
+      "reason": "The blog's captured page was actually the NotFound route ('Não Encontrado' — see PERF-002), not the /blog index, because LHCI's staticDistDir mode requested the literal http://localhost:.../index.html path, which does not match this SPA's absolute-path routes ('/', '/blog', ...) and falls through to the catch-all '*' route. All blog-side per-page byte/coverage figures in this report describe the NotFound page's render, not the blog listing page's."
+    },
+    {
+      "tool": "lighthouse",
+      "reason": "The portfolio's captured page was actually react-router's default ErrorBoundary fallback (see PERF-001), not real homepage content. All portfolio-side per-page evidence in this report reflects what was requested over the network (which happens before/regardless of the later render crash) but NOT what a user would see paint, since the real Home page content apparently never rendered in this run."
+    },
+    {
+      "tool": "lighthouse",
+      "reason": "Only one URL per app was exercised (index.html / staticDistDir mode). No Lighthouse data exists for /about, /resume, /projects, /contact (portfolio) or /blog/:slug, /adr, /adr/:slug (blog) — several findings above are therefore marked unverified rather than measured."
+    }
+  ]
+}

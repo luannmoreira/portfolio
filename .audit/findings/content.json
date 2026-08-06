@@ -1,0 +1,124 @@
+{
+  "domain": "content",
+  "generated_at": "2026-08-05T19:45:00Z",
+  "model": "claude-haiku-4-5-20251001",
+  "scope": {
+    "files_analyzed": 612,
+    "files_total": 612,
+    "sampling_criterion": "All source files: *.ts, *.tsx, *.js, *.jsx, *.md, *.mdx, *.json (excluding node_modules, dist, .git)",
+    "tools_used": ["cspell", "grep", "manual inspection"]
+  },
+  "findings": [
+    {
+      "id": "CONTENT-001",
+      "title": "Portuguese component names violate language policy",
+      "severity": "high",
+      "confidence": 0.95,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/portfolio/src/components/Experiencia.tsx:11 (export default function Experiencia)",
+          "apps/portfolio/src/components/Habilidades.tsx:4 (export default function Habilidades)",
+          "apps/portfolio/src/components/CardExperiencia.tsx:1 (export interface CardExperienciaProps)",
+          "apps/portfolio/src/components/CardExperiencia.tsx:9 (export default function CardExperiencia)",
+          "apps/portfolio/src/pages/About.tsx:5 (import Habilidades)",
+          "apps/portfolio/src/pages/About.tsx:7 (import Experiencia)"
+        ]
+      },
+      "impact": "CLAUDE.md Hard rule violation: 'Code, identifiers, comments, commit messages, documentation, config are English only.' Component names and identifiers in Portuguese make the codebase inconsistent and harder to maintain across a distributed team. These are interface definitions and exports, not user-facing content.",
+      "correction": "Rename components to English: Experiencia → Experience, Habilidades → Skills, CardExperiencia → ExperienceCard, Entrada → Entry",
+      "effort": "M",
+      "regression_risk": "low",
+      "verification": "Run typecheck and tests after rename; audit imports across all files for references; check e2e tests for accessibility assertions on the renamed components",
+      "related_domains": ["architecture", "maintainability"]
+    },
+    {
+      "id": "CONTENT-002",
+      "title": "GithubIcon component uses 'Github' instead of 'GitHub'",
+      "severity": "high",
+      "confidence": 0.98,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/portfolio/src/components/icons/GithubIcon.tsx:3 (// comment mentions faGithub)",
+          "apps/portfolio/src/components/icons/GithubIcon.tsx:9 (export default function GithubIcon)",
+          "apps/blog/src/components/icons/GithubIcon.tsx:10 (export default function GithubIcon)",
+          "apps/portfolio/src/components/Footer.tsx:2 (import GithubIcon)",
+          "apps/blog/src/components/Footer.tsx:2 (import GithubIcon)"
+        ]
+      },
+      "impact": "Proper noun 'GitHub' is capitalized incorrectly in component naming. This appears in both apps (portfolio & blog). All visible user-facing aria-labels correctly say 'GitHub', but the component name is mislabeled, inconsistent with the brand name and the cspell dictionary.",
+      "correction": "Rename GithubIcon component files and exports to GitHubIcon across both apps. Update all imports in Footer.tsx and Contact.tsx in both apps.",
+      "effort": "S",
+      "regression_risk": "low",
+      "verification": "Grep for 'GithubIcon' should return zero results; verify Footer and Contact components render correctly in e2e tests",
+      "related_domains": ["naming", "branding"]
+    },
+    {
+      "id": "CONTENT-003",
+      "title": "Inconsistent TypeScript capitalization in skills.ts",
+      "severity": "medium",
+      "confidence": 0.9,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/portfolio/src/content/skills.ts:2 (import siTypescript)",
+          "apps/portfolio/src/content/skills.ts:44 (display name uses 'TypeScript')"
+        ]
+      },
+      "impact": "Variable name 'siTypescript' (from simple-icons) is a library-provided identifier and cannot be changed. However, this is not a finding in user content. TypeScript is universally written 'TypeScript' with capital S and T — this is the official spelling. The display name (line 44) is correct.",
+      "correction": "No correction needed — the import name is from an external library (simple-icons). The display name is already correct ('TypeScript'). This is not a violation, cspell flagged a library export name.",
+      "effort": "XS",
+      "regression_risk": "none",
+      "verification": "Verify cspell can be configured to exclude library-generated identifiers, or add 'siTypescript' to the project dictionary if needed for CI",
+      "related_domains": ["tooling"]
+    },
+    {
+      "id": "CONTENT-004",
+      "title": "Front-end capitalization variant: 'Front-end' is canonical",
+      "severity": "low",
+      "confidence": 0.88,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/portfolio/src/locales/en/translation.json:16 (hero.body mentions 'front-end')",
+          "apps/portfolio/src/locales/en/translation.json:25 (bioParagraph1 mentions 'front-end-heavy background')",
+          "apps/portfolio/src/locales/en/translation.json:82 ('frontEnd' property maps to display 'Front-end')",
+          "apps/portfolio/src/locales/en/translation.json:128 ('Front-end Engineer' job title)",
+          "apps/portfolio/src/locales/en/translation.json:130 ('Front-end Developer')",
+          "apps/portfolio/src/locales/en/translation.json:133 ('Front-end Developer Trainee')"
+        ]
+      },
+      "impact": "Grep shows 11 occurrences of 'Front-end' (with hyphen) vs 0 of 'frontend' (no hyphen) and 0 of 'front end' (two words). This is consistent. Canonical form is 'Front-end' with hyphen.",
+      "correction": "No correction needed — variant is consistent throughout the project.",
+      "effort": "XS",
+      "regression_risk": "none",
+      "verification": "Grep confirms zero deviations from 'Front-end' format",
+      "related_domains": ["terminology"]
+    },
+    {
+      "id": "CONTENT-005",
+      "title": "Duplicate theme toggle logic in portfolio and blog",
+      "severity": "low",
+      "confidence": 0.7,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/portfolio/src/hooks/useTheme.ts (theme toggle hook)",
+          "apps/blog/src/hooks/useTheme.ts (identical theme toggle hook)",
+          "CLAUDE.md Standing decisions #1: 'useTheme.ts / ThemeToggle.tsx are duplicated in both apps. Known and accepted.'"
+        ]
+      },
+      "impact": "CLAUDE.md explicitly states this is deliberate (extract-on-second-use rule: code moves to packages/ only after a *second* app actually needs it). Not a violation, but noted for completeness.",
+      "correction": "No correction needed — this is a standing decision, not a defect.",
+      "effort": "XS",
+      "regression_risk": "none",
+      "verification": "Confirm both implementations are byte-identical or have intentional, documented differences",
+      "related_domains": ["architecture"]
+    }
+  ],
+  "unverified_hypotheses": [
+    "Portuguese words in e2e test files (Sobre, Construindo, sistemas, escalam) appear only in test assertions checking translated UI output — these are legitimate and do not violate the language policy for code/identifiers. Confirmed by inspection of test files: they are string literals being compared against translated UI, not identifiers or comments."
+  ],
+  "blockers": []
+}

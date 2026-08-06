@@ -1,0 +1,253 @@
+{
+  "domain": "docs",
+  "generated_at": "2026-08-06T00:51:24Z",
+  "model": "claude-sonnet-5",
+  "scope": {
+    "files_analyzed": 32,
+    "files_total": 235,
+    "sampling_criterion": "All tracked documentation (README.md) read in full; CLAUDE.md read in full and cross-checked line-by-line against repo state; all files named in .audit/tools/{doc-commands,doc-paths,links}.json outputs; highest-comment-density files per facts.json/task brief (Dockerfile, apps/blog/src/feed/plugin.ts, apps/blog/vite.config.js, packages/ui/src/Navbar.tsx); every exported symbol in packages/i18n/src and packages/ui/src (index.ts barrel files) read individually for JSDoc coverage; package.json (root + all 4 app/package manifests), .github/workflows/{ci,deploy}.yml, docker-compose.yml, .gitignore cross-checked against doc claims.",
+    "tools_used": ["linkinator", "doc-commands", "doc-paths", "cspell"]
+  },
+  "findings": [
+    {
+      "id": "DOCS-001",
+      "title": "README documents `pnpm deploy` with no mention of the required CLOUDFLARE_API_TOKEN credential",
+      "severity": "critical",
+      "confidence": 0.95,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "README.md:38",
+          "package.json:18",
+          "CLAUDE.md:62",
+          ".gitignore:35 (CLAUDE.md gitignored)"
+        ],
+        "tool_output": "README.md:38 reads: `pnpm deploy              # build both apps and publish to Cloudflare Pages (luanncurioso.dev)`. package.json's deploy script (`pnpm build:site && wrangler pages deploy ...`) requires an authenticated wrangler session; CLOUDFLARE_API_TOKEN is the documented way to supply that, but the only place this requirement is written down is CLAUDE.md:62 (\"needs CLOUDFLARE_API_TOKEN in the environment (kept in .env.local, gitignored)\") — a file the project's own Hard rules (CLAUDE.md:109) say is gitignored and invisible to a fresh clone."
+      },
+      "impact": "A newcomer following README literally (per the newcomer test) reaches the deploy command, runs it, and gets an opaque wrangler auth failure with zero guidance in any file a fresh clone can see about what credential is missing or how to obtain/set it.",
+      "wrong_side": "documentation",
+      "correction": "Add a line to README's Docker/Getting Started section (or a short new 'Deploying' subsection) stating that `pnpm deploy` requires CLOUDFLARE_API_TOKEN (Cloudflare Pages token) set in the environment or `.env.local`, and that most contributors will never need to run it directly.",
+      "effort": "XS",
+      "regression_risk": "none",
+      "verification": "Re-read README.md after the edit; confirm the credential requirement appears before the `pnpm deploy` line or immediately after it.",
+      "related_domains": ["security"]
+    },
+    {
+      "id": "DOCS-002",
+      "title": "README has no testing/lint/typecheck guidance at all — the only tracked doc is silent about the project's entire test suite",
+      "severity": "high",
+      "confidence": 0.9,
+      "evidence": {
+        "type": "code",
+        "references": ["README.md:32-40"],
+        "tool_output": "README's 'Getting started' section (lines 24-59) lists only pnpm install / dev:portfolio / dev:blog / build:portfolio / build:blog / deploy / format. There is no mention of `pnpm --filter <app> test`, `lint`, `typecheck`, or `e2e` anywhere in README.md. Those commands exist and are enforced in CI (.github/workflows/ci.yml jobs `portfolio`, `blog`, `portfolio-e2e`, `blog-e2e`) and are the entire content of CLAUDE.md's 'Definition of done' (CLAUDE.md:21-34), which is gitignored."
+      },
+      "impact": "A fresh-clone reader who wants to verify their environment works, or who is about to contribute a change, has no tracked pointer to how this project is tested. They would have to discover `pnpm --filter <app> test` by reading package.json scripts directly, or fail CI with no local warning.",
+      "wrong_side": "documentation",
+      "correction": "Add a short 'Testing' subsection to README covering `pnpm --filter <app> lint|typecheck|test|e2e` (matching CLAUDE.md's Commands table), and note the one-time Playwright browser install step for e2e.",
+      "effort": "S",
+      "regression_risk": "none",
+      "verification": "Re-read README.md; confirm a newcomer can run the full local gate suite using only README instructions.",
+      "related_domains": ["testing"]
+    },
+    {
+      "id": "DOCS-003",
+      "title": "packages/i18n's cross-app-boundary exported API has zero JSDoc; packages/ui's LanguageSwitcher has the same gap",
+      "severity": "high",
+      "confidence": 0.9,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "packages/i18n/src/createI18n.ts:13",
+          "packages/i18n/src/resolveInitialLocale.ts:12,30",
+          "packages/i18n/src/useLocale.ts:9",
+          "packages/i18n/src/withLocale.ts:7",
+          "packages/i18n/src/formatDate.ts:6",
+          "packages/i18n/src/locale.ts:7",
+          "packages/ui/src/LanguageSwitcher.tsx:26"
+        ],
+        "tool_output": "grep for '/**' JSDoc blocks across packages/i18n/src and packages/ui/src (non-test files) matches only packages/ui/src/useFocusTrap.ts and packages/ui/src/Navbar.tsx. Every other exported symbol in the barrel files (packages/i18n/src/index.ts: createI18n, pickLocale, resolveInitialLocale, useLocale, withLocale, formatDate, isSupportedLocale; packages/ui/src/index.ts's LanguageSwitcher) has only a plain `//` rationale comment above it, not a `/** */` JSDoc block consumers' editors will surface on hover."
+      },
+      "impact": "packages/i18n and packages/ui are the only two runtime packages consumed across the portfolio/blog app boundary — exactly the case this project's own instructions call out as 'the one place signature-level docs pay for themselves.' A developer in apps/blog importing `withLocale` or `createI18n` from apps/portfolio's sibling package gets no inline signature documentation in their editor; they have to open the source file in packages/i18n to find the existing (good) rationale comments.",
+      "wrong_side": "code",
+      "correction": "Convert the existing `//` rationale comments on createI18n, pickLocale, resolveInitialLocale, useLocale, withLocale, formatDate, isSupportedLocale, and LanguageSwitcher into `/** */` JSDoc blocks (the content is already there and already explains 'why', not just 'what' — this is a reformat, not a rewrite).",
+      "effort": "S",
+      "regression_risk": "none",
+      "verification": "Confirm hover-documentation appears in an editor/TS language server for each converted export from a consuming file in the other app.",
+      "related_domains": []
+    },
+    {
+      "id": "DOCS-004",
+      "title": "CLAUDE.md is the project's only architecture/troubleshooting reference and is entirely untracked — a documented single point of failure",
+      "severity": "high",
+      "confidence": 0.9,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "CLAUDE.md:230-236",
+          "CLAUDE.md:109",
+          ".gitignore:35-36"
+        ],
+        "tool_output": ".gitignore lines 35-36 gitignore both `.claude/` and `CLAUDE.md`. CLAUDE.md's own Hard rule (line 109) states this explicitly: 'README.md is the only tracked documentation... CLAUDE.md, ROADMAP.md and .claude/ are untracked, so a fresh clone sees none of them.' CLAUDE.md's 'Gotchas' section (lines 230-236) is the project's only troubleshooting content (SITE_URL warning explanation, Playwright browser install requirement, blog base/dist-merge coupling, _redirects ordering footgun, theme.css cross-app drift) and has zero tracked equivalent anywhere."
+      },
+      "impact": "This is a deliberate, acknowledged tradeoff per CLAUDE.md itself, not a surprise — but per the tracked-vs-untracked audit rule, untracked knowledge with no tracked equivalent is a High finding by definition: a second machine, a collaborator, or GitHub's own web UI never sees any of the routing/theming/deployment rationale or the troubleshooting content, only README's ~60 lines.",
+      "wrong_side": "documentation",
+      "correction": "Not a drift bug to fix by editing content — flagging per the audit's fixed severity rule for untracked architectural knowledge with no tracked equivalent. If broader (non-agent) audience access is ever wanted, extracting the Gotchas/Architecture sections into a tracked docs/ARCHITECTURE.md would close the gap without duplicating the agent-specific operating-rules content.",
+      "effort": "M",
+      "regression_risk": "low",
+      "verification": "N/A — this is a structural observation about tracking policy, not a bug in a specific line.",
+      "related_domains": []
+    },
+    {
+      "id": "DOCS-005",
+      "title": "Stale runtime warning in feed/plugin.ts still frames the deploy target as undecided",
+      "severity": "medium",
+      "confidence": 0.85,
+      "evidence": {
+        "type": "code",
+        "references": ["apps/blog/src/feed/plugin.ts:26-29"],
+        "tool_output": "this.warn(`SITE_URL is not set — sitemap.xml and rss.xml will use the placeholder ${PLACEHOLDER_SITE_URL}. Set SITE_URL once the blog's deploy target is decided.`); — but the deploy target has been decided (Cloudflare Pages, luanncurioso.dev, confirmed by DNS + wrangler project name + user per .audit/facts.json's domain.resolution field), and CLAUDE.md's own Gotchas section (line 232) already documents this warning as expected/by-design for standalone `pnpm build:blog`, not as a sign of an open decision."
+      },
+      "impact": "A developer running `pnpm build:blog` standalone (a normal, expected local workflow per CLAUDE.md's own Gotchas) sees a warning that reads as if the project's deployment target is still an open question, when it has been settled for a while. This costs a reader time re-investigating a closed decision.",
+      "wrong_side": "code",
+      "correction": "Reword the warning to reflect that SITE_URL is simply unset for this particular invocation (e.g. \"...Set SITE_URL (or run the root `build:site`/`deploy` scripts, which set it automatically) to get real URLs.\") rather than implying the deploy target itself is undecided.",
+      "effort": "XS",
+      "regression_risk": "none",
+      "verification": "Re-run `pnpm build:blog` standalone and read the new warning text.",
+      "related_domains": []
+    },
+    {
+      "id": "DOCS-006",
+      "title": "apps/blog/vite.config.js comment points to 'SITE_URL below' but SITE_URL is not in this file",
+      "severity": "low",
+      "confidence": 0.8,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/blog/vite.config.js:61",
+          "apps/blog/src/feed/plugin.ts:7-10,23"
+        ],
+        "tool_output": "vite.config.js:61 comment: '...(see SITE_URL below for the same undecided-until-merge pattern).' grep for SITE_URL in apps/blog/vite.config.js returns no matches — SITE_URL only exists in the imported apps/blog/src/feed/plugin.ts, a separate file, not 'below' in this one."
+      },
+      "impact": "Minor — a reader following the comment's 'below' pointer inside this file finds nothing, and has to know to instead open feed/plugin.ts.",
+      "wrong_side": "code",
+      "correction": "Change 'see SITE_URL below' to 'see SITE_URL in feed/plugin.ts' (or drop the cross-reference and just state the pattern inline).",
+      "effort": "XS",
+      "regression_risk": "none",
+      "verification": "Re-read the comment after edit; confirm the reference resolves within the stated file.",
+      "related_domains": []
+    },
+    {
+      "id": "DOCS-007",
+      "title": "packages/i18n has no CI job (lint/typecheck/test), unlike packages/ui, and no doc names the gap",
+      "severity": "medium",
+      "confidence": 0.85,
+      "evidence": {
+        "type": "code",
+        "references": [
+          ".github/workflows/ci.yml:22-45",
+          "packages/i18n/package.json:11-16",
+          "CLAUDE.md:21-34"
+        ],
+        "tool_output": "ci.yml has a dedicated 'ui' job running `pnpm --filter @portfolio/ui lint|typecheck|test` (lines 22-45) but no equivalent job for `@portfolio/i18n`, even though packages/i18n/package.json defines the identical lint/typecheck/test scripts. CLAUDE.md's 'Definition of done' (lines 21-34) and Commands table (lines 46-64) only ever say `pnpm --filter <app> ...`, never mentioning a package-level gate for either packages/i18n or packages/ui."
+      },
+      "impact": "A change confined to packages/i18n can introduce a lint or type error that CI will never catch directly (it's only exercised indirectly through whichever consuming app's own build happens to touch the changed code path), and CLAUDE.md gives no documented command to check it locally either.",
+      "wrong_side": "code",
+      "correction": "Add an 'i18n' CI job mirroring the existing 'ui' job, and add a row/note to CLAUDE.md's Commands table covering `pnpm --filter @portfolio/<i18n|ui> <script>` for package-level changes.",
+      "effort": "S",
+      "regression_risk": "low",
+      "verification": "Confirm the new CI job runs on a push touching packages/i18n and fails on an introduced lint error.",
+      "related_domains": ["testing"]
+    },
+    {
+      "id": "DOCS-008",
+      "title": "ADR content type exists but holds only a placeholder — real architectural decisions are pointed at `git log -p` instead",
+      "severity": "medium",
+      "confidence": 0.75,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/blog/content/adr/placeholder.mdx:1-9",
+          "CLAUDE.md:123"
+        ],
+        "tool_output": "apps/blog/content/adr/placeholder.mdx's entire body: 'This is a placeholder. A real architecture decision record lands here later.' Meanwhile CLAUDE.md's standing decision 6 (BrowserRouter vs HashRouter) explicitly says 'git log -p has the reasoning' instead of citing an ADR, despite the project having a working ADR pipeline (schema, /adr route, RSS/sitemap inclusion) built and shipped."
+      },
+      "impact": "The project built ADR infrastructure but has never used it for an actual decision, so real architectural rationale (BrowserRouter switch, data-router requirement, ScrollRestoration workaround) lives only in CLAUDE.md prose and git history — both harder to browse than the ADR reader the blog already ships.",
+      "wrong_side": "documentation",
+      "correction": "Either write 1-2 real ADRs for the decisions CLAUDE.md currently defers to git-log for (BrowserRouter vs HashRouter is the clearest candidate), or, if that's judged not worth maintaining at this project's size, remove/relabel the placeholder so it doesn't imply ADRs are an active practice.",
+      "effort": "M",
+      "regression_risk": "none",
+      "verification": "Check apps/blog/content/adr/ for entries beyond placeholder.mdx after the fix, or confirm the placeholder's wording no longer implies imminent real content if the decision is to drop it.",
+      "related_domains": []
+    },
+    {
+      "id": "DOCS-009",
+      "title": "README's pnpm-direct path never explains how to obtain pnpm itself before the first command",
+      "severity": "low",
+      "confidence": 0.7,
+      "evidence": {
+        "type": "code",
+        "references": ["README.md:28-34", "package.json:7"],
+        "tool_output": "README.md:30 says 'Node version is pinned in .node-version (works with fnm/nvm/volta)' then line 33 immediately runs `pnpm install`. Nothing tells the reader how to get pnpm, and package.json:7 pins packageManager to pnpm@11.17.0 specifically (matching pnpm-lock.yaml's lockfileVersion 9.0 format), so an arbitrary already-installed pnpm version is not guaranteed to work."
+      },
+      "impact": "A newcomer test failure point: the very first command in the 'Directly with pnpm' path assumes a tool (pnpm, at a specific major version) the reader is expected to already have, with no mention of `corepack enable` or an install method.",
+      "wrong_side": "documentation",
+      "correction": "Add one line noting pnpm is required (version per package.json's packageManager field) and that `corepack enable` (bundled with Node ≥16.13) will pick it up automatically.",
+      "effort": "XS",
+      "regression_risk": "none",
+      "verification": "Re-read README.md; confirm the pnpm-acquisition step appears before the first `pnpm` command.",
+      "related_domains": []
+    },
+    {
+      "id": "DOCS-010",
+      "title": "Root package.json's `name` field still reads the pre-rename project identity",
+      "severity": "low",
+      "confidence": 0.6,
+      "evidence": {
+        "type": "code",
+        "references": ["package.json:2"],
+        "tool_output": "\"name\": \"luannmoreira-dev\" — the domain/title rename to luanncurioso.dev (already applied to README.md's title and deploy line this session) did not touch this field."
+      },
+      "impact": "Low — the field is private:true and unpublished, so there's no functional consumer, but it's residual drift from the same rename and would confuse anyone diffing package.json against the now-corrected README title.",
+      "wrong_side": "code",
+      "correction": "Rename to something matching the current identity (e.g. \"luanncurioso-dev\" or a neutral \"portfolio-monorepo\"), consistent with the rename already applied elsewhere.",
+      "effort": "XS",
+      "regression_risk": "none",
+      "verification": "grep package.json after the change; confirm no script or CI step references the old literal name string.",
+      "related_domains": []
+    },
+    {
+      "id": "DOCS-011",
+      "title": "linkinator's 2 'broken' localhost links are confirmed false positives",
+      "severity": "low",
+      "confidence": 0.95,
+      "evidence": {
+        "type": "tool",
+        "references": [
+          "README.md:53",
+          "README.md:54",
+          "docker-compose.yml:7-8,19-20"
+        ],
+        "tool_output": ".audit/tools/links.json flags http://localhost:5173/portfolio/ and http://localhost:5174/ as BROKEN (status 0) with parent README.md. docker-compose.yml maps portfolio to host port 5173 (5173:5173) and blog to host port 5174 (5174:5173) — matching README.md:53-54 exactly. A status-0 result means no server answered, consistent with a static scan run without `docker compose up` active, not a real mismatch."
+      },
+      "impact": "None — confirming the prior judgment rather than overturning it. No doc change needed.",
+      "wrong_side": "documentation",
+      "correction": "No action — false positive confirmed by cross-referencing docker-compose.yml's port mapping, which matches README's stated ports exactly.",
+      "effort": "XS",
+      "regression_risk": "none",
+      "verification": "Run `docker compose up --build` and re-run linkinator; both URLs should resolve.",
+      "related_domains": []
+    }
+  ],
+  "unverified_hypotheses": [
+    {
+      "description": "Whether a rollback procedure for a bad Cloudflare Pages deploy is documented anywhere (Cloudflare dashboard rollback vs a git-based re-tag) was not found in README, CLAUDE.md, or the workflows — could not confirm whether this is a real gap or intentionally out of scope for a personal static site with low deploy risk.",
+      "why_unverified": "No Cloudflare Pages dashboard access from this environment to confirm whether rollback is a one-click dashboard action that wouldn't need repo documentation at all."
+    },
+    {
+      "description": "Dockerfile's comment claiming 'the base image bundles npm... 1 critical, 4 high [CVEs]' (line 24) could not be re-verified against a live Trivy image scan in this session — .audit/tools/trivy-config.raw.json only covers a Dockerfile config-lint, not an image vulnerability scan, so the specific CVE counts are unconfirmed either way.",
+      "why_unverified": "Image vulnerability scanning is a security-domain tool run (docker-scan job in ci.yml / Trivy image scan), out of this pass's read-only doc-audit scope."
+    }
+  ],
+  "blockers": []
+}

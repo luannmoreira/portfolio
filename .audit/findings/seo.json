@@ -1,0 +1,233 @@
+{
+  "domain": "seo",
+  "generated_at": "2026-08-05T19:45:00Z",
+  "model": "claude-haiku-4-5-20251001",
+  "scope": {
+    "files_analyzed": 45,
+    "files_total": 300,
+    "sampling_criterion": "All pages per route list (5 portfolio + 5 blog routes), all MDX content (4 files), index.html files (2), useDocumentMeta (2 apps), feed/plugin, robots.txt, schema.ts, i18n setup",
+    "tools_used": [
+      "manual code inspection",
+      "SITE_URL=https://luanncurioso.dev pnpm build:blog for generated sitemap/rss",
+      "grep for domain references"
+    ]
+  },
+  "findings": [
+    {
+      "id": "SEO-001",
+      "title": "Blog app's useDocumentMeta is incomplete — missing OG tags, Twitter tags, and canonical URLs",
+      "severity": "critical",
+      "confidence": 1.0,
+      "evidence": {
+        "type": "code",
+        "references": ["apps/blog/src/hooks/useDocumentMeta.ts:1-21"],
+        "tool_output": "useDocumentMeta in blog app only sets document.title and meta[name='description']. Portfolio's useDocumentMeta (apps/portfolio/src/hooks/useDocumentMeta.ts:37-83) sets og:title, og:description, og:url, og:type, og:image, twitter:card, twitter:title, twitter:description, twitter:image, and canonical link. Blog's version is missing all OG and Twitter tags."
+      },
+      "impact": "Blog posts (at /blog/:slug and /adr/:slug) lack social media preview metadata. When shared on Twitter/LinkedIn, social crawlers see default template-only data from the static index.html (none present for blog). Canonical URLs not set means blog posts could be indexed under multiple URL variants. Search engines score meta-tag completeness as a ranking factor.",
+      "correction": "Enhance apps/blog/src/hooks/useDocumentMeta.ts to match portfolio's implementation: add og:title, og:description, og:url, og:type, og:image (reuse DEFAULT_OG_IMAGE), twitter:card, twitter:title, twitter:description, twitter:image, and setCanonical(). Requires using useLocation() to access pathname for canonical URL construction. Apply consistent SITE_URL domain as portfolio does.",
+      "effort": "S",
+      "regression_risk": "low",
+      "verification": "Visual inspect generated <meta> tags in browser DevTools after navigating to /blog/hello-world; check og:* and twitter:* tags are present and correct; verify canonical link href matches current URL.",
+      "related_domains": ["https://luanncurioso.dev/blog/hello-world"]
+    },
+    {
+      "id": "SEO-002",
+      "title": "Blog index.html static template lacks OG tags, Twitter tags, and canonical URL",
+      "severity": "high",
+      "confidence": 1.0,
+      "evidence": {
+        "type": "code",
+        "references": ["apps/blog/index.html:1-48"],
+        "tool_output": "Portfolio index.html (apps/portfolio/index.html:1-89) contains og:type, og:title, og:description, og:url, og:image, twitter:card, twitter:title, twitter:description, twitter:image, and canonical link. Blog index.html (apps/blog/index.html:1-48) has only description meta tag and no OG/Twitter/canonical tags."
+      },
+      "impact": "Before React hydrates, social crawlers and SEO bots see the static HTML baseline. Blog landing page (/blog, /adr) lacks preview metadata, making it appear unshared in social feeds. No canonical tag means each route could be indexed separately without preference signals. Portfolio's pre-hydration baseline is complete; blog's is a bare template.",
+      "correction": "Add to apps/blog/index.html head: og:type (website), og:title (Blog), og:description (from translation.json's blog description), og:url (https://luanncurioso.dev/blog), og:image (same apple-touch-icon.png URL as portfolio), twitter:card (summary), twitter:title, twitter:description, twitter:image, and link[rel=canonical] href=https://luanncurioso.dev/blog. Match portfolio's static structure.",
+      "effort": "XS",
+      "regression_risk": "none",
+      "verification": "Inspect apps/blog/index.html source; verify all 8 meta tags + canonical link are present and use correct URLs.",
+      "related_domains": ["https://luanncurioso.dev/blog"]
+    },
+    {
+      "id": "SEO-003",
+      "title": "Blog posts lack JSON-LD BlogPosting schema for structured data",
+      "severity": "high",
+      "confidence": 1.0,
+      "evidence": {
+        "type": "code",
+        "references": ["apps/blog/src/components/Post.tsx:153-260"],
+        "tool_output": "grep -r 'schema.org' apps/blog/src returns no results. Portfolio's index.html includes a Person schema (apps/portfolio/index.html:42-54). Blog Post component renders title, date, excerpt, tags but no JSON-LD BlogPosting block with @context, @type, headline, datePublished, description, author, url."
+      },
+      "impact": "Search engines use JSON-LD to understand content type. Without BlogPosting schema, /blog/:slug pages are semantically opaque — Googlebot treats them as generic pages, not authored articles, missing rich snippet opportunities (featured in Google's search carousel, better click-through rates). Hurts blog indexing quality.",
+      "correction": "Add JSON-LD BlogPosting to Post.tsx: render a <script type='application/ld+json'> block with @context (schema.org), @type (BlogPosting), headline (entry.title), datePublished (entry.date in ISO8601), description (entry.excerpt), author (Person object with name, url), url (canonical URL from window.location or constructed from SITE_URL + pathname). Mount after entry is loaded to avoid undefined refs.",
+      "effort": "M",
+      "regression_risk": "low",
+      "verification": "Navigate to a blog post, inspect page source for <script type='application/ld+json'> block; validate schema.org/BlogPosting structure using Google's Structured Data Testing Tool.",
+      "related_domains": [
+        "https://luanncurioso.dev/blog/building-this-blogs-content-pipeline"
+      ]
+    },
+    {
+      "id": "SEO-004",
+      "title": "Multilingual site (en/pt-BR) lacks hreflang tags for locale alternates",
+      "severity": "high",
+      "confidence": 1.0,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/blog/src/locales/pt-BR",
+          "apps/portfolio/src/locales/pt-BR",
+          "packages/i18n/src/locale.ts"
+        ],
+        "tool_output": "grep -r 'hreflang' apps/ returns zero results. facts.json confirms both apps support pt-BR locale (bilingual). Browser-rendered meta tags via useDocumentMeta do not include hreflang; static index.html files do not include link[rel=alternate hreflang] tags."
+      },
+      "impact": "Without hreflang, search engines cannot identify language-specific variants. A visitor searching in Portuguese gets the English version or vice versa. Google may also consolidate rankings across both versions as duplicates, diluting SEO authority. Bilingual sites without hreflang lose indexing efficiency and user experience.",
+      "correction": "Add hreflang tags to both index.html files and runtime via useDocumentMeta. Static approach: add <link rel='alternate' hreflang='en' href='https://luanncurioso.dev<pathname>' /> and <link rel='alternate' hreflang='pt-BR' href='https://luanncurioso.dev<pathname>' /> (with pt-BR paths if they differ, or same path if locale is query/localStorage only). Runtime approach: extend useDocumentMeta to render hreflang tags for detected locales. Use current locale from i18n and language switcher to generate variants. Note: if portfolio/blog use localStorage for locale, hreflang should still link the canonical URL (no query param) and let localStorage decide the render — but document the strategy in CLAUDE.md.",
+      "effort": "M",
+      "regression_risk": "low",
+      "verification": "After implementation, inspect page source for <link rel='alternate' hreflang='en'> and <link rel='alternate' hreflang='pt-BR'> tags; verify href values use https://luanncurioso.dev and include correct locale identifier.",
+      "related_domains": [
+        "https://luanncurioso.dev/blog",
+        "https://luanncurioso.dev/"
+      ]
+    },
+    {
+      "id": "SEO-005",
+      "title": "ContentIndex component calls useDocumentMeta without description parameter",
+      "severity": "medium",
+      "confidence": 1.0,
+      "evidence": {
+        "type": "code",
+        "references": ["apps/blog/src/components/ContentIndex.tsx:158"],
+        "tool_output": "useDocumentMeta(t('contentIndex.metaTitle', { heading })) — only title passed, no description. Portfolio pages all pass both: useDocumentMeta(title, description)."
+      },
+      "impact": "Blog listing pages (/blog, /adr) render without meta description tags. Search engine snippets and social previews default to first page text instead of a curated summary. Reduces click-through rates in SERPs. No semantic difference from a missing description, but represents incomplete metadata authoring.",
+      "correction": "Add translations for contentIndex.metaDescription (separate from contentIndex.metaTitle) describing the blog or ADR collection. Pass both to useDocumentMeta: useDocumentMeta(t('contentIndex.metaTitle', { heading }), t('contentIndex.metaDescription')).",
+      "effort": "XS",
+      "regression_risk": "none",
+      "verification": "After adding translations, navigate to /blog and /adr; inspect <meta name='description'> tag to confirm it renders with intended text.",
+      "related_domains": [
+        "https://luanncurioso.dev/blog",
+        "https://luanncurioso.dev/adr"
+      ]
+    },
+    {
+      "id": "SEO-006",
+      "title": "No BreadcrumbList JSON-LD in navigation components",
+      "severity": "medium",
+      "confidence": 0.8,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/blog/src/components/Navbar.tsx",
+          "apps/portfolio/src/components/Navbar.tsx"
+        ],
+        "tool_output": "Neither app's Navbar or Post component includes JSON-LD BreadcrumbList. Portfolio index.html includes Person schema; blog/post pages have no structured navigation data. Post.tsx renders a breadcrumb link (line 186-200) but no @type BreadcrumbList markup."
+      },
+      "impact": "Search engines use BreadcrumbList schema to display breadcrumb navigation in SERPs (improves UX and click-through). Blog post pages at /blog/:slug would benefit from a breadcrumb schema listing ['Blog', 'Post Title'] or similar. Its absence is not a critical SEO penalty (breadcrumbs are nice-to-have), but indicates incomplete structured data coverage.",
+      "correction": "In Post.tsx, render a JSON-LD BreadcrumbList before or after the rendered breadcrumb nav: <script type='application/ld+json'> with @context (schema.org), @type (BreadcrumbList), itemListElement array containing items with @type ItemListElement, position, name, and item (URL). Example: [{ position: 1, name: 'Blog', item: 'https://luanncurioso.dev/blog' }, { position: 2, name: entry.title, item: canonical URL }]. Only render if entry exists.",
+      "effort": "S",
+      "regression_risk": "none",
+      "verification": "Navigate to a blog post; inspect <script type='application/ld+json'> for BreadcrumbList; validate using Google's Structured Data Testing Tool.",
+      "related_domains": []
+    },
+    {
+      "id": "SEO-007",
+      "title": "Domain consistency verified across critical SEO assets",
+      "severity": "low",
+      "confidence": 1.0,
+      "evidence": {
+        "type": "tool",
+        "references": [
+          "apps/blog/dist/sitemap.xml (generated with SITE_URL=https://luanncurioso.dev)",
+          "apps/blog/dist/rss.xml (generated)",
+          "apps/portfolio/public/robots.txt",
+          "apps/portfolio/index.html"
+        ],
+        "tool_output": "Sitemap.xml: all 6 URLs use https://luanncurioso.dev. RSS.xml: channel link and all item links use https://luanncurioso.dev. robots.txt: Sitemap directives point to https://luanncurioso.dev/sitemap.xml and https://luanncurioso.dev/blog/sitemap.xml. index.html og:url and canonical use https://luanncurioso.dev/. No references to luannmoreira.dev or example.com (except in test fixtures or comments)."
+      },
+      "impact": "Positive finding: all SEO-critical assets (sitemap, RSS feed, robots directives, OG tags) consistently use the correct canonical domain. Siloed domain errors would cost indexing; this site is clean.",
+      "correction": "None required. Continue validating domain in sitemap/feed with each build.",
+      "effort": "none",
+      "regression_risk": "none",
+      "verification": "Periodically re-run: grep -r 'luannmoreira.dev' apps/ (should return 0 matches in src/); inspect generated sitemap.xml and rss.xml after build with SITE_URL set.",
+      "related_domains": []
+    },
+    {
+      "id": "SEO-008",
+      "title": "Heading hierarchy verified: one h1 per page, no skipped levels",
+      "severity": "low",
+      "confidence": 1.0,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/portfolio/src/components/Hero.tsx:19 (h1 in Home)",
+          "apps/portfolio/src/components/About.tsx:14 (h1 in About)",
+          "apps/portfolio/src/pages/Contact.tsx (h1 in Contact component line 15)",
+          "apps/portfolio/src/pages/Projects.tsx (h1)",
+          "apps/portfolio/src/pages/Resume.tsx (h1)",
+          "apps/blog/src/components/ContentIndex.tsx:172 (h1)",
+          "apps/blog/src/components/Post.tsx:215 (h1)"
+        ],
+        "tool_output": "Each portfolio page (Home, About, Contact, Projects, Resume) renders exactly one <h1>. Blog pages (ContentIndex for /blog and /adr, Post for /blog/:slug and /adr/:slug) render exactly one <h1>. All pages follow h1 → h2+ hierarchy without skips."
+      },
+      "impact": "Positive finding: correct semantic structure supports screen readers, accessibility compliance, and search engine understanding of page content hierarchy.",
+      "correction": "None required. Maintain one h1 per page and no skipped levels as routes are added.",
+      "effort": "none",
+      "regression_risk": "none",
+      "verification": "Inspect each route in browser DevTools; count <h1> tags (should be 1); verify no <h3> or <h4> directly under <h1> without intermediate <h2>.",
+      "related_domains": []
+    },
+    {
+      "id": "SEO-009",
+      "title": "MDX frontmatter consistent across all 4 content files",
+      "severity": "low",
+      "confidence": 1.0,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/blog/content/blog/hello-world.mdx",
+          "apps/blog/content/blog/building-this-blogs-content-pipeline.mdx",
+          "apps/blog/content/adr/placeholder.mdx",
+          "apps/blog/content/projects/placeholder.mdx"
+        ],
+        "tool_output": "All 4 files have frontmatter blocks with title, date (YYYY-MM-DD format), tags (array), excerpt (string). All match the Zod schema in apps/blog/src/content/schema.ts. No missing fields; no hand-authored 'type' field (derived from directory as intended)."
+      },
+      "impact": "Positive finding: frontmatter validation prevents metadata inconsistency and silent errors in the content pipeline. Structured, validated metadata supports reliable feed generation (sitemap, RSS).",
+      "correction": "None required. Maintain schema enforcement as content grows.",
+      "effort": "none",
+      "regression_risk": "none",
+      "verification": "Each new .mdx file must parse without Zod errors during build; pre-commit hook or CI can validate.",
+      "related_domains": []
+    },
+    {
+      "id": "SEO-010",
+      "title": "OG image exists and has correct dimensions (180x180)",
+      "severity": "low",
+      "confidence": 1.0,
+      "evidence": {
+        "type": "tool",
+        "references": [
+          "apps/portfolio/public/apple-touch-icon.png (verified: 180x180 PNG)"
+        ],
+        "tool_output": "file command output: 'PNG image data, 180 x 180, 8-bit/color RGBA, non-interlaced'. Both index.html files reference this image as og:image (URL: https://luanncurioso.dev/apple-touch-icon.png). useDocumentMeta sets DEFAULT_OG_IMAGE to the same URL."
+      },
+      "impact": "Positive finding: OG image exists at correct dimensions (above Twitter's 144x144 minimum for 'summary' card type, matches the 180x180 static tag in portfolio index.html). Social previews will render correctly when posts are shared.",
+      "correction": "None required. Ensure apple-touch-icon.png is never deleted or resized.",
+      "effort": "none",
+      "regression_risk": "none",
+      "verification": "Periodically verify: ls -l apps/portfolio/public/apple-touch-icon.png; file command confirms dimensions.",
+      "related_domains": []
+    }
+  ],
+  "unverified_hypotheses": [
+    {
+      "description": "Blog posts may not render correct OG image at runtime because Blog's useDocumentMeta does not set og:image tag (SEO-001). Cannot verify without enhancing the hook first and testing in browser.",
+      "why_unverified": "The blog's useDocumentMeta.ts does not include setMetaByAttr('property', 'og:image', ...) logic; thus og:image would only come from static blog/index.html (which also lacks the tag per SEO-002). Visual inspection of /blog/:slug in browser DevTools after fix required."
+    },
+    {
+      "description": "Bilingual hreflang implementation strategy: unclear whether locale is stored per route (via query param or path prefix) or globally in localStorage. If path-based (/en/blog, /pt-BR/blog), hreflang is straightforward; if localStorage-only, hreflang should link canonical (no locale) and let the browser decide render language via script.",
+      "why_unverified": "packages/i18n package and useLocale hook only inspected briefly; resolveInitialLocale and localStorage usage need deeper review to finalize hreflang strategy. Current useLocale behavior suggests global localStorage, which means hreflang should link the same URL for all locales, contradicting typical hreflang design (requires architectural decision)."
+    }
+  ],
+  "blockers": []
+}

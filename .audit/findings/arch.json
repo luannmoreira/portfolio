@@ -1,0 +1,294 @@
+{
+  "domain": "arch",
+  "generated_at": "2026-08-06T00:53:15Z",
+  "model": "claude-opus-5",
+  "scope": {
+    "files_analyzed": 208,
+    "files_total": 221,
+    "sampling_criterion": "All 208 non-binary tracked files under apps/ and packages/ were covered at graph level: full directory tree, cross-directory import edges extracted by grep for every .ts/.tsx/.js/.css, per-module consumer counts for every portfolio component/hook/content module, and cross-app byte-diffs of every file that exists at the same relative path in both apps. 26 files were opened and read in full or in part, chosen only where the graph raised a question (both app Navbars + packages/ui/src/Navbar.tsx; packages/{ui,i18n}/src/index.ts + withLocale.ts; both apps' src/i18n.ts; apps/blog/src/{feed/plugin.ts,feed/contentEntries.ts,feed/generate.ts,content/contentIndexPlugin.ts,content/loader.ts,mdx/mdxComponents.tsx,components/mdx/Note.tsx}; apps/blog/vite.config.js; apps/portfolio/src/{App.tsx,pages/Home.tsx,pages/About.tsx,pages/Contact.tsx,components/Reveal.tsx,components/TimelineItem.tsx (excerpt),components/icons/Icon.tsx,theme.css (head)}; root package.json; the two content placeholders). The 13 excluded files are images/icons/manifest/robots/sitemap binaries and static assets with no import-graph meaning. Ignored by design: node_modules/, dist/, test-results/ (gitignored).",
+    "tools_used": [
+      "madge",
+      "knip",
+      "facts.json import graph",
+      "git ls-files",
+      "grep-based import edge map",
+      "diff"
+    ]
+  },
+  "findings": [
+    {
+      "id": "ARCH-001",
+      "title": "Directory-level cycle: content/ and feed/ import each other because readContentEntries lives in the wrong folder",
+      "severity": "medium",
+      "confidence": 0.95,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/blog/src/content/contentIndexPlugin.ts:2",
+          "apps/blog/src/feed/contentEntries.ts:8",
+          "apps/blog/src/feed/contentEntries.ts:9",
+          "apps/blog/src/feed/generate.ts:1"
+        ],
+        "tool_output": "madge --circular apps/blog/src -> [] (no FILE-level cycle; the cycle is at directory level: content/contentIndexPlugin.ts -> feed/contentEntries.ts -> content/schema.ts + content/readingTime.ts)"
+      },
+      "impact": "readContentEntries() is the single content-reading primitive of the blog: it walks apps/blog/content/**, applies the Zod schema and computes reading time. It is the source of truth for BOTH the runtime virtual module (content/contentIndexPlugin.ts) and the build-time feed (feed/plugin.ts). It currently lives under feed/, an OUTPUT concern, so the content layer has to reach up into the feed layer to read its own content, while the feed layer reaches back into content/ for schema and readingTime. The dependency arrow between the two directories points both ways, which makes it impossible to reason about which is the lower layer, and it means anyone deleting or reshaping the feed feature would silently break per-post code-splitting. The wrong dependency is content/ -> feed/; the correct direction is feed/ -> content/ only.",
+      "correction": "Commit 1 (mechanical, no behavior change): git mv apps/blog/src/feed/contentEntries.ts apps/blog/src/content/contentEntries.ts and the matching contentEntries.test.ts; fix the four import specifiers (contentIndexPlugin.ts's '../feed/contentEntries' becomes './contentEntries'; feed/plugin.ts's './contentEntries' becomes '../content/contentEntries'; contentEntries.ts's '../content/schema' and '../content/readingTime' become './schema' and './readingTime'). Nothing else moves. Commit 2 (optional, separate): update the comment block at apps/blog/src/content/contentEntries.ts:11-17 which currently describes the module by its old location. After commit 1 the edge set is feed/ -> content/ only, in one direction.",
+      "effort": "XS",
+      "regression_risk": "low",
+      "verification": "pnpm --filter blog typecheck && pnpm --filter blog test && pnpm build:blog, then confirm dist/sitemap.xml and dist/rss.xml still list the same URLs as before the move, and that the built output still emits one JS chunk per .mdx post (the code-splitting invariant in CLAUDE.md). Re-run pnpm audit:madge:blog; it must stay [].",
+      "related_domains": ["build", "content"]
+    },
+    {
+      "id": "ARCH-002",
+      "title": "packages/i18n exports withLocale(), a dead abstraction whose own comment contradicts the current single-origin architecture",
+      "severity": "medium",
+      "confidence": 0.95,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "packages/i18n/src/withLocale.ts:3",
+          "packages/i18n/src/withLocale.ts:7",
+          "packages/i18n/src/index.ts:11",
+          "apps/portfolio/src/components/Navbar.tsx:14",
+          "apps/blog/src/components/Navbar.tsx:12"
+        ],
+        "tool_output": "grep -rn '\\bwithLocale\\b' apps packages --include=*.ts --include=*.tsx -l  ->  packages/i18n/src/withLocale.test.ts, packages/i18n/src/withLocale.ts, packages/i18n/src/index.ts   (zero consumers in either app). Same check for pickLocale -> only resolveInitialLocale.ts + its own test + index.ts."
+      },
+      "impact": "withLocale(url, locale) appends ?lang= to cross-app links. Its comment states 'localStorage can't cross the portfolio/blog origin boundary, so an explicit locale choice is carried across via the URL'. That premise is false in the shipped architecture: both apps are one origin (luanncurioso.dev, blog under /blog), and both Navbars carry comments saying exactly the opposite ('theme/locale now travel for free via shared same-origin localStorage', 'no query-param carrying here'). So this is a leftover from an earlier two-origin design, still exported as public API of packages/i18n, still tested, still shipped in the package's type surface. It is actively misleading: the next reader has two contradictory accounts of how locale crosses apps, and the wrong one is the one presented as a supported API. It also mentions 'each app's own withTheme() helper', which no longer exists anywhere in the repo (grep: zero hits outside this comment). This is the clearest piece of accidental complexity in the repo - it exists only because of the order things were built in.",
+      "correction": "Commit 1: delete packages/i18n/src/withLocale.ts, packages/i18n/src/withLocale.test.ts, and the export line at packages/i18n/src/index.ts:11. Nothing imports it, so no call sites change. Commit 2 (independent): narrow the rest of the package's public surface to what is actually consumed across the boundary - pickLocale (packages/i18n/src/index.ts:8) is only used internally by resolveInitialLocale.ts, and SUPPORTED_LOCALES / LOCALE_STORAGE_KEY / isSupportedLocale have no consumer outside the package either; either drop them from index.ts (keeping the modules for internal use) or add a one-line comment saying they are deliberately exported as the package's stable vocabulary. Do the two commits separately so the first is a pure deletion with a trivially provable blast radius.",
+      "effort": "XS",
+      "regression_risk": "none",
+      "verification": "pnpm --filter portfolio typecheck && pnpm --filter blog typecheck && pnpm --filter portfolio test && pnpm --filter blog test && pnpm build:portfolio && pnpm build:blog. A grep for withLocale returning zero hits before deletion is itself the proof of zero blast radius.",
+      "related_domains": ["quality", "docs"]
+    },
+    {
+      "id": "ARCH-003",
+      "title": "pages/Contact.tsx is a pure forwarding layer over components/Contact.tsx, and the name collision forces an import alias",
+      "severity": "low",
+      "confidence": 0.9,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/portfolio/src/pages/Contact.tsx:2",
+          "apps/portfolio/src/pages/Contact.tsx:9",
+          "apps/portfolio/src/components/Contact.tsx:1",
+          "apps/portfolio/src/pages/About.tsx:4"
+        ],
+        "tool_output": "Consumer count over apps/portfolio/src (non-test importers per module): components/Contact.tsx -> 1 (only pages/Contact.tsx). pages/Contact.tsx body is 12 lines: useDocumentMeta(...) then `return <ContactSection />;`."
+      },
+      "impact": "The route component adds one hook call and forwards. It exists only so that the 127-line section component can keep living in components/. The cost shows up as an aliased import ('ContactSection', and 'AboutSection' at pages/About.tsx:4) purely to dodge a name collision between two same-named files in two directories - a reliable tell that the directory split is not carrying meaning here. Note the asymmetry: pages/About.tsx and pages/Home.tsx genuinely compose several sections plus their own layout, so they earn their place; only Contact is a pass-through. This is a small, local defect, not a layering problem.",
+      "correction": "Single commit, one file each way: move the useDocumentMeta call from pages/Contact.tsx into components/Contact.tsx, then git mv components/Contact.tsx pages/Contact.tsx (replacing the forwarder) and update the one import in App.tsx:23 (the lazy() specifier already points at ./pages/Contact, so it needs no change at all). Existing tests reference the component by rendered output, not path. Do NOT do the same to About/Home - they are real compositions. Leave the components/ vs pages/ split intact everywhere else.",
+      "effort": "XS",
+      "regression_risk": "low",
+      "verification": "pnpm --filter portfolio typecheck && pnpm --filter portfolio test && pnpm --filter portfolio e2e (the /contact axe checks in both themes already cover this route), then confirm document.title on /contact still resolves from contact.metaTitle.",
+      "related_domains": []
+    },
+    {
+      "id": "ARCH-004",
+      "title": "Reveal is a 4-variant generic wrapper with one consumer using one variant, and its logic is re-implemented inline in TimelineItem",
+      "severity": "low",
+      "confidence": 0.9,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/portfolio/src/components/Reveal.tsx:5",
+          "apps/portfolio/src/components/Reveal.tsx:15",
+          "apps/portfolio/src/components/CardProjects.tsx:55",
+          "apps/portfolio/src/components/TimelineItem.tsx:85",
+          "apps/portfolio/src/components/TimelineItem.tsx:88"
+        ],
+        "tool_output": "grep -rn 'fade-left|fade-right|flip-right|fade-up' apps/portfolio/src --include=*.tsx  ->  the only variant passed anywhere is \"fade-up\" (CardProjects.tsx:55, Reveal.test.tsx:29, Reveal.test.tsx:44). fade-left / fade-right / flip-right appear only in Reveal.tsx's own type and lookup table."
+      },
+      "impact": "Both failure modes at once, on the same concept. Over-abstracted: a variant union with three entries no caller has ever used, including a perspective/rotateY transform. Under-abstracted where it counts: TimelineItem.tsx:88-97 hand-rolls the identical opacity/transform/transition/prefers-reduced-motion logic, with a comment explaining it cannot use Reveal because Reveal hardcodes a <div> wrapper that would break <ol>/<li> semantics. The reusable part was extracted at the wrong level - as a component, when the shared thing is the style calculation. Impact is contained (two call sites, one app, no correctness bug), which is why this is low: the reveal timing can drift between cards and timeline items without any test noticing.",
+      "correction": "Commit 1: add apps/portfolio/src/hooks/useReveal.ts returning { ref, style } from useInView + usePrefersReducedMotion, generic over the element type, taking { variant, duration, offset }; move the hiddenTransforms table into it. Commit 2: reduce Reveal.tsx to a <div> that spreads the hook's ref/style - its tests and CardProjects are untouched. Commit 3 (independent): switch TimelineItem.tsx to useReveal<HTMLLIElement>() and delete the inline revealStyle block. Commit 4 (independent, optional): drop 'fade-left' | 'fade-right' | 'flip-right' from the union and the table once nothing references them. Each commit is independently revertable.",
+      "effort": "S",
+      "regression_risk": "low",
+      "verification": "pnpm --filter portfolio test (Reveal.test.tsx, Timeline.test.tsx and TimelineItem.test.tsx - 526 lines of existing coverage - all exercise the reveal/visibility behavior, including the forceVisible path), then pnpm --filter portfolio e2e and a manual check that cards and timeline items still fade in with matching timing, plus prefers-reduced-motion honored in both.",
+      "related_domains": ["a11y"]
+    },
+    {
+      "id": "ARCH-005",
+      "title": "Four icon components are byte-identical across both apps while packages/ui already exists as their destination",
+      "severity": "low",
+      "confidence": 0.85,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/portfolio/src/components/icons/Icon.tsx:1",
+          "apps/blog/src/components/icons/Icon.tsx:1",
+          "apps/blog/src/components/icons/GithubIcon.tsx:5",
+          "apps/portfolio/src/components/icons/GithubIcon.tsx:5"
+        ],
+        "tool_output": "Cross-app diff of files present at the same relative path:\nIDENTICAL  components/icons/Icon.tsx (22 lines)\nDIFFERS    components/icons/GithubIcon.tsx (portfolio 11 / blog 12) diff-lines=3\nDIFFERS    components/icons/LinkedinIcon.tsx (portfolio 11 / blog 12) diff-lines=3\nDIFFERS    components/icons/WhatsappIcon.tsx (portfolio 11 / blog 12) diff-lines=3\nThe entire diff in all three 'DIFFERS' cases is one added comment line: '> // already rendering. Copied from apps/portfolio's icon of the same name - duplicated rather than shared, same precedent as useTheme/ThemeToggle.' The code is identical."
+      },
+      "impact": "Icon.tsx is the shared primitive that the other three call; it is byte-identical in both apps and has 10 consumers in the portfolio alone. Standing decision 2 is extract-on-second-use, and a second app now genuinely uses these - which is the stated trigger. The in-code comment claims the useTheme/ThemeToggle precedent, but Standing decision 1 names those two files specifically, and unlike them these carry no per-app divergence at all (ThemeToggle really does differ: 56 diff-lines). Impact is small - four tiny files, no logic - so this is low, and it is genuinely arguable either way. Flagging it because the code's stated justification broadens a narrowly-scoped standing decision without CLAUDE.md recording that broadening.",
+      "correction": "If the intent is to share: Commit 1 - move Icon.tsx to packages/ui/src/Icon.tsx and export it from packages/ui/src/index.ts, leaving both apps' copies in place (no consumer changes yet). Commit 2 - repoint apps/blog's three icons at @portfolio/ui and delete apps/blog/src/components/icons/Icon.tsx. Commit 3 - same for the portfolio. Commit 4 - move the three brand icons if they are still identical. If the intent is to keep them duplicated: no code change, add a line to CLAUDE.md Standing decisions explicitly extending decision 1 to cross-app icon primitives, so the next audit does not re-open this. Either resolution is fine; the current state (code asserting a precedent the docs do not) is the part worth fixing.",
+      "effort": "S",
+      "regression_risk": "low",
+      "verification": "pnpm --filter portfolio typecheck && pnpm --filter blog typecheck && both test suites && both e2e suites (footer/social-link rendering and the axe checks cover every icon usage), then pnpm build:portfolio && pnpm build:blog and confirm no icon regressions in the built output.",
+      "related_domains": ["dx"]
+    },
+    {
+      "id": "ARCH-006",
+      "title": "Both apps' i18n bootstrap files are byte-identical, so packages/i18n stops one step short of the seam it owns",
+      "severity": "low",
+      "confidence": 0.85,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/portfolio/src/i18n.ts:1",
+          "apps/blog/src/i18n.ts:1",
+          "packages/i18n/src/index.ts:8",
+          "packages/i18n/src/index.ts:9"
+        ],
+        "tool_output": "diff apps/portfolio/src/i18n.ts apps/blog/src/i18n.ts -> no output (identical, 14 lines each). Also IDENTICAL across apps: src/test-i18n.tsx (12 lines), src/reportWebVitals.ts (15 lines), src/hooks/useTheme.ts (26 lines, covered by Standing decision 1)."
+      },
+      "impact": "Every consumer of packages/i18n has to repeat the same four-step dance: resolveInitialLocale(), assign document.documentElement.lang, then createI18n({ locale, resources }). The side effect (setting <html lang>) is the part that matters and the part most easily forgotten - it is the kind of thing that silently degrades accessibility and SEO in a third consumer. The package already owns locale resolution; it does not own the one place that resolution has an observable effect. Genuinely low: only two consumers, both currently correct, and the duplication is 14 lines. Worth doing only because it is the same seam the package already exists to hold, not because 14 lines are expensive.",
+      "correction": "Single small commit: add setupI18n(resources) to packages/i18n (resolve locale, set document.documentElement.lang, return createI18n(...)), export it, and reduce each app's src/i18n.ts to two imports plus 'export const i18n = setupI18n({ en: { translation: en }, \"pt-BR\": { translation: ptBR } });'. Keep createI18n and resolveInitialLocale exported so the lower-level path stays available. Do the portfolio and the blog in two separate commits if you want the smaller blast radius; the package change is additive and can land first on its own.",
+      "effort": "XS",
+      "regression_risk": "low",
+      "verification": "pnpm --filter portfolio test && pnpm --filter blog test, plus both e2e language-switcher specs (apps/portfolio/e2e/language-switcher.spec.ts, apps/blog/e2e/language-switcher.spec.ts), and explicitly assert document.documentElement.lang is set on first load in both apps - that side effect is the thing being moved and the thing a refactor would most plausibly drop.",
+      "related_domains": ["a11y", "seo"]
+    },
+    {
+      "id": "ARCH-007",
+      "title": "The blog's 'project' content type is wired end to end but has no route, and placeholder fixtures ship as real content",
+      "severity": "low",
+      "confidence": 0.9,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/blog/src/feed/generate.ts:8",
+          "apps/blog/src/feed/generate.ts:12",
+          "apps/blog/src/content/contentEntries.ts:20",
+          "apps/blog/content/projects/placeholder.mdx:1",
+          "apps/blog/content/adr/placeholder.mdx:1"
+        ],
+        "tool_output": "facts.json blog routes: [\"/\", \"/blog\", \"/blog/:slug\", \"/adr\", \"/adr/:slug\", \"*\"] - no /projects route. generate.ts:12 'type RoutableType = \"post\" | \"adr\"' with the comment: '\"project\" content exists in the schema/loader for future use but has no route yet, so a sitemap/feed entry for it would point at a URL nothing serves.' adr/placeholder.mdx frontmatter has no draft: true, so it IS routable and IS emitted into sitemap.xml and rss.xml."
+      },
+      "impact": "Two related shapes. (1) Speculative generality: a whole content vertical (schema enum, CONTENT_DIRS entry, content/projects/ directory, loader glob) exists for a route that was never built, and generate.ts has to carry a RoutableType narrowing plus an explanatory comment purely to work around it. The cost is one extra concept every reader of the content pipeline must hold. Given it is already documented in-code and costs ~4 lines, leaving it is defensible. (2) The higher-impact half: apps/blog/content/adr/placeholder.mdx is not a draft, so a page whose body reads 'This is a placeholder. A real architecture decision record lands here later.' is served at /adr/placeholder and syndicated into rss.xml and sitemap.xml on the next release. That is a content/SEO release decision, surfaced here because the pipeline is what makes it automatic.",
+      "correction": "Content side (decide first, it is a product call, not a refactor): either add draft: true to apps/blog/content/adr/placeholder.mdx and apps/blog/content/projects/placeholder.mdx so isRoutable() (generate.ts:22) excludes them from feed and sitemap, or replace them with real entries before tagging the release. One commit, one line each. Structure side (optional, separate commit, only if 'project' is being abandoned rather than deferred): drop 'project' from content/schema.ts's type enum and from CONTENT_DIRS in content/contentEntries.ts, delete content/projects/, and simplify generate.ts's RoutableType to ContentType. If it is merely deferred, change nothing - the comment already carries the intent.",
+      "effort": "XS",
+      "regression_risk": "low",
+      "verification": "pnpm --filter blog test (schema.test.ts and generate.test.ts pin the routable-type behavior) && pnpm build:blog, then read the generated dist/sitemap.xml and dist/rss.xml and confirm no placeholder URL appears. If the schema enum is narrowed, pnpm --filter blog e2e must stay green (accessibility.spec.ts currently visits /adr/placeholder - that spec has to be updated in the same commit).",
+      "related_domains": ["content", "seo"]
+    },
+    {
+      "id": "ARCH-008",
+      "title": "apps/portfolio/src/theme.css holds component CSS, not tokens, colliding by name with the file that is the token source of truth",
+      "severity": "low",
+      "confidence": 0.85,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/portfolio/src/theme.css:1",
+          "apps/portfolio/src/index.css:8",
+          "apps/portfolio/src/index.css:10",
+          "packages/config-tailwind/theme.css:5"
+        ],
+        "tool_output": "apps/portfolio/src/index.css imports both: line 8 '@import \"@portfolio/config-tailwind/theme.css\";' then line 10 '@import \"./theme.css\";'. apps/portfolio/src/theme.css is 188 lines whose content is the .canvas-bg dotted-grid backdrop and related component rules - no @theme block, no token definitions. packages/config-tailwind/theme.css:5 itself says the tokens were 'Promoted here from apps/portfolio/src/theme.css', i.e. the local file kept the old name after its contents left."
+      },
+      "impact": "CLAUDE.md's 'Change a design token' recipe says to edit packages/config-tailwind/theme.css 'only - never an app-local override'. An app-local file literally named theme.css, imported two lines after the real one, is the single most likely place for a future contributor (or agent) to put a token override by mistake - the name promises exactly the thing the rule forbids. The file itself is legitimate and well-commented; only the name is wrong, and only because of the order things happened (tokens were promoted out, the name stayed). Pure accidental complexity, near-zero cost to fix.",
+      "correction": "One commit, one rename: git mv apps/portfolio/src/theme.css apps/portfolio/src/canvas.css (or fold it into the existing apps/portfolio/src/App.css, which already holds app-local component CSS) and update the single @import at apps/portfolio/src/index.css:10. Optionally a second commit updating the two stale cross-references at packages/config-tailwind/theme.css:5 and :31 that point at the old filename.",
+      "effort": "XS",
+      "regression_risk": "low",
+      "verification": "pnpm build:portfolio, then load / and /contact in both themes and confirm the Hero and Contact dotted-grid backdrop still renders (the .canvas-bg rules are the entire file's payload). pnpm --filter portfolio e2e covers both themes on both routes. pnpm format:check.",
+      "related_domains": ["style", "dx"]
+    },
+    {
+      "id": "ARCH-009",
+      "title": "Portuguese identifiers in portfolio component and prop names, against the English-only hard rule",
+      "severity": "low",
+      "confidence": 0.9,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/portfolio/src/components/Experiencia.tsx:11",
+          "apps/portfolio/src/components/Habilidades.tsx:1",
+          "apps/portfolio/src/components/CardExperiencia.tsx:1",
+          "apps/portfolio/src/components/Experiencia.tsx:27",
+          "apps/portfolio/src/components/Experiencia.tsx:28"
+        ],
+        "tool_output": "Files: components/Experiencia.tsx, components/Habilidades.tsx, components/CardExperiencia.tsx (+ their .test.tsx). Props at Experiencia.tsx:27-28: anoEntrada={...} anoSaida={...}. CLAUDE.md Hard rules: 'English only. Code, identifiers, comments, ... The one exception is authored site content (content/**/*.mdx, user-facing copy)'. These are identifiers, not copy - the user-facing strings already go through t()."
+      },
+      "impact": "Three of the twenty components in apps/portfolio/src/components/ are named in Portuguese while every other identifier in the repo is English, so the directory reads as two half-migrations. It also produces mixed-language call sites (a Portuguese-named component rendering English-named siblings, and English-named data from content/experience.ts flowing into anoEntrada/anoSaida). No functional impact whatsoever; the reason to fix is that the repo has an explicit hard rule and this is the only place violating it, which makes the rule look optional to the next reader.",
+      "correction": "One commit per component, three independent commits, each a pure rename with no logic change: Habilidades -> Skills, Experiencia -> Experience, CardExperiencia -> ExperienceCard (rename the .test.tsx alongside each). A fourth independent commit renames the anoEntrada/anoSaida props to startDate/endDate, matching the field names already used in apps/portfolio/src/content/experience.ts. Note the collision risk: apps/portfolio/src/content/skills.ts already exists, so 'Skills' as a component name is fine but keep the data module import explicit. Low priority - safe to defer past the release.",
+      "effort": "S",
+      "regression_risk": "low",
+      "verification": "pnpm --filter portfolio typecheck && pnpm --filter portfolio lint && pnpm --filter portfolio test (Habilidades.test.tsx and CardExperiencia.test.tsx move with their subjects) && pnpm --filter portfolio e2e, and grep the repo for the old names to confirm zero stragglers.",
+      "related_domains": ["dx", "quality"]
+    },
+    {
+      "id": "ARCH-010",
+      "title": "The root package is still named luannmoreira-dev after the canonical domain was resolved to luanncurioso.dev",
+      "severity": "low",
+      "confidence": 0.95,
+      "evidence": {
+        "type": "tool",
+        "references": ["package.json:2"],
+        "tool_output": ".audit/facts.json domain block: canonical 'https://luanncurioso.dev/', confirmed_by_user 2026-08-05; 'does_not_resolve: luannmoreira.dev -> no A/CNAME record'; 'resolution: ... luannmoreira.dev was a stale artifact from an earlier project iteration; README.md corrected in the same session'. package.json:2 still reads \"name\": \"luannmoreira-dev\", while package.json:18 deploys to --project-name luanncurioso-portfolio and package.json:17 sets SITE_URL=https://luanncurioso.dev."
+      },
+      "impact": "The workspace root advertises a domain that has no DNS record, two lines above the deploy script that uses the real one. README.md was already corrected for the same stale artifact, so this is the last remaining instance. It is private: true and never published, so nothing breaks - the cost is purely that the repo's own identity contradicts itself in the first file anyone opens.",
+      "correction": "One-line commit: set package.json:2 to \"luanncurioso-dev\". Nothing references the root package by name (it is private and not a workspace dependency target - the workspace packages are all @portfolio/*), so there is no call site to update. Verify with a repo-wide grep for luannmoreira before committing, to catch any remaining instance in .github/workflows or wrangler config.",
+      "effort": "XS",
+      "regression_risk": "none",
+      "verification": "grep -rn 'luannmoreira' . --exclude-dir=node_modules --exclude-dir=.git returns zero hits, then pnpm install (lockfile must not change meaningfully for a private root rename) and pnpm build:site.",
+      "related_domains": ["docs", "deploy"]
+    },
+    {
+      "id": "ARCH-011",
+      "title": "apps/blog/src/mdx/ holds the component registry plus three test fixtures, splitting one concern across two directories",
+      "severity": "low",
+      "confidence": 0.75,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "apps/blog/src/mdx/mdxComponents.tsx:1",
+          "apps/blog/src/mdx/mdxComponents.tsx:15",
+          "apps/blog/src/App.tsx:10",
+          "apps/blog/src/components/mdx/Callout.tsx:1"
+        ],
+        "tool_output": "apps/blog/src/mdx/ contains: mdxComponents.tsx (26 lines, the registry) + mermaid.mdx, provider-fixture.mdx, smoke.mdx (test fixtures) + mermaid.test.tsx, provider.test.tsx, smoke.test.tsx. All ten components it registers live in apps/blog/src/components/mdx/ (16 files). The registry's every import line is '../components/mdx/X'."
+      },
+      "impact": "Two directories named mdx in the same src/ tree, one holding the components and one holding the registry for those components plus unrelated pipeline test fixtures. A reader looking for 'the MDX components' finds the wrong one first about half the time, and the registry - which is the natural index of components/mdx/ - is the one file that does not sit with them. This is the weakest finding in the set: the current layout works, has clear tests, and the fixtures do need a home. Reporting it as a cohesion observation, not a defect.",
+      "correction": "Only if touching this area anyway, and as one commit: git mv apps/blog/src/mdx/mdxComponents.tsx to apps/blog/src/components/mdx/mdxComponents.tsx (its ten imports collapse from '../components/mdx/X' to './X'), update the single consumer at apps/blog/src/App.tsx:10 and the one at mdx/provider.test.tsx:3. src/mdx/ then contains only the pipeline test fixtures and their specs, which is a coherent reason for it to exist - optionally rename it to src/mdx-fixtures/ in a separate commit to say so. Do not merge the two directories wholesale; components/mdx/ and the fixtures are genuinely different things.",
+      "effort": "XS",
+      "regression_risk": "low",
+      "verification": "pnpm --filter blog typecheck && pnpm --filter blog test (provider.test.tsx directly asserts the registry reaches MDXProvider) && pnpm build:blog, then load a post that uses Callout/Terminal/FileTree and confirm the authoring components still render rather than falling back to plain HTML - a broken registry degrades silently, which is exactly the failure this move could cause.",
+      "related_domains": ["content"]
+    }
+  ],
+  "unverified_hypotheses": [
+    {
+      "description": "The DotCanvas call-to-action block (inverse-surface section, heading, body, two buttons) appears near-verbatim in apps/portfolio/src/pages/Home.tsx:66-95 and apps/portfolio/src/pages/About.tsx:54-84 and may warrant a <CtaSection> component.",
+      "why_unverified": "Only two occurrences, and the copy plus one of the two button targets differ between them. My own threshold for calling out under-engineering is three or more sites. Extracting at two would be the premature abstraction this audit is otherwise flagging. Recorded so a third occurrence triggers the extraction rather than a fourth."
+    },
+    {
+      "description": "apps/portfolio/src/pages/About.tsx:33-52 embeds a fake terminal window with six hardcoded hex colors (#1E293B, #FF5F56, #FFBD2E, #27C93F, #94A3B8, #7DD3FC, #6EE7B7, #FDE047, #F472B6) inline in a route component, bypassing the design-token system that packages/config-tailwind/theme.css is the sole source of.",
+      "why_unverified": "The colors are a deliberate imitation of a syntax-highlighting palette, not theme surface colors, so they arguably should NOT be tokens - a light-theme user seeing a dark code window is likely intended. Deciding this needs a design call I cannot make from the graph. Flagged for the style/design reviewer, not resolved here."
+    },
+    {
+      "description": "apps/blog/src/components/Navbar.tsx:18-20 states its nav item list is 'kept in sync by hand' with apps/portfolio/src/components/Navbar.tsx, and the four long Tailwind class strings for nav links are duplicated across the two apps' desktop and mobile lists.",
+      "why_unverified": "The hand-sync is forced by the 'never import across apps' hard rule and is honestly documented in-code. Moving the nav item list into packages/ui would couple the shared component to product content, which is worse than the duplication. A shared className constant in packages/ui is possible but the two apps' active-state rules genuinely differ (the portfolio computes isActive from pathname, the blog hardcodes Blog as active), so I could not confirm the strings would stay identical. Verdict: leave it; recorded so the next reviewer does not spend time re-deriving the same conclusion."
+    },
+    {
+      "description": "Build-time Node code (content/contentEntries.ts, content/contentIndexPlugin.ts, feed/plugin.ts, feed/generate.ts - all using node:fs or being imported by vite.config.js) lives under apps/blog/src/, the same root as browser code, and is inside the app's tsconfig include.",
+      "why_unverified": "I did not inspect the built bundle to confirm none of it leaks into a client chunk. Nothing in src/ imports these modules at runtime (only vite.config.js:12-13 does, at config time), so leakage is unlikely, and the colocation is deliberately justified at contentEntries.ts:11-17 by the shared schema types. Confirming would need a bundle-content check, which belongs to the build/perf domain."
+    }
+  ],
+  "blockers": [],
+  "notes_on_standing_decisions": [
+    {
+      "note": "packages/ui and packages/i18n both earn their keep - no disagreement, recording the verdict so it is not re-litigated. packages/ui/src/Navbar.tsx (143 lines) holds only behavior that is genuinely identical in both apps and expensive to get right twice: focus trap, imperative inert toggling with a documented @types/react gap, body-scroll lock that restores the prior value, Escape handling, and click-delegation to close. Everything app-specific is passed in as a ReactNode slot (brand, desktopNav, mobileNav, themeToggle, languageSwitcher, desktopCta). That is the correct seam, and the two app-level Navbars are configuration, not a forwarding layer. packages/i18n is thinner but still justified: resolveInitialLocale, useLocale and formatDate each have 2-6 real consumers spread across both apps. The one dead export is ARCH-002."
+    },
+    {
+      "note": "Standing decisions checked and deliberately NOT reported as findings: #1 useTheme.ts / ThemeToggle.tsx duplication (confirmed - useTheme.ts is byte-identical across apps, ThemeToggle.tsx differs by 56 lines; both left alone). #2 extract-on-second-use for packages/. #3 Docker dev-only. #4/#5 data router and ScrollRestoration rendering null. #6 BrowserRouter over HashRouter. #7 no basename on the blog router. #8 single _redirects. #9 tag-only deploy. #10 dark as the unprefixed default. #11 no ROADMAP.md. The Conventions section is likewise treated as settled: the blog having no pages/ directory, one component per file (which is why the five 17-line Callout wrappers - Note/Tip/Warning/Tradeoff/Decision, each forwarding to Callout with a different variant - are NOT reported as a forwarding-layer finding; collapsing them into one module would break the stated convention, and they are a deliberate MDX authoring surface), and colocated tests."
+    },
+    {
+      "note": "ARCH-005 is the one finding that brushes against a standing decision, so read it as a note if you prefer. The comment added to the blog's copies of GithubIcon/LinkedinIcon/WhatsappIcon claims 'same precedent as useTheme/ThemeToggle', but Standing decision 1 names those two files specifically and they are the case where per-app divergence exists. The icons have zero divergence. I am not asking to reverse decision 1 - I am pointing out that the code broadened it unilaterally and CLAUDE.md does not record the broadening. Either resolution (share them, or write the broader decision down) closes it."
+    },
+    {
+      "note": "Verdicts of 'good enough' worth recording, since a later audit will otherwise re-derive them. (a) Zero circular dependencies at file level in both apps, confirmed by madge, and the only directional problem found is ARCH-001. (b) apps/portfolio/src/components/ is flat with 20 files mixing single-use page sections (Hero, About, Contact, Habilidades, Principles, Experiencia, Uses, EcosystemSection, Timeline) with genuinely reusable primitives (DotCanvas 4 consumers, Icon 10, useDocumentMeta 5). A components/sections/ split is available but not warranted at this size - the flat directory is still legible and no import is ambiguous. Not a bucket. (c) apps/portfolio/src/content/ (six static data modules) and apps/blog/src/content/ (the MDX pipeline) share a name while holding different kinds of thing, which briefly misleads across apps, but each is internally coherent and neither app can see the other. Left alone. (d) apps/blog/src/feed/ is well layered: plugin.ts is Vite glue, generate.ts is pure string building with 117 lines of tests, contentEntries.ts is I/O - no component in either app fetches, formats and decides business rules at once. (e) No dumping-ground directory exists anywhere in the repo; there is no utils/, helpers/ or common/. (f) knip's four flagged files are minor: two unused typescript-eslint devDependencies in packages/{ui,i18n}, and two unused exported types (TimelineLink at apps/portfolio/src/content/timeline.ts:3, MaterialIconName at apps/portfolio/src/components/icons/MaterialIcon.tsx:27) - dead type exports, not dead abstractions, and correctly left to the quality domain."
+    }
+  ]
+}

@@ -1,0 +1,185 @@
+{
+  "generated_at": "2026-08-05T19:40:00Z",
+  "phase": 0,
+  "environment": {
+    "node": "v24.18.0",
+    "node_version_pinned": "24.18.0",
+    "package_manager": "pnpm@11.17.0",
+    "git_branch": "main",
+    "git_commit": "03b639a",
+    "git_dirty_files": [
+      ".gitignore",
+      "package.json",
+      "pnpm-lock.yaml",
+      ".audit/ (untracked)"
+    ]
+  },
+  "workspace": {
+    "type": "pnpm workspace monorepo",
+    "packages_glob": ["apps/*", "packages/*"],
+    "apps": [
+      {
+        "name": "portfolio",
+        "path": "apps/portfolio",
+        "router": "createBrowserRouter + RouterProvider (data router)",
+        "routes": ["/", "/about", "/resume", "/projects", "/contact"],
+        "vite_base": "default (\"/\")",
+        "deps_shared_packages": ["@portfolio/i18n", "@portfolio/ui"]
+      },
+      {
+        "name": "blog",
+        "path": "apps/blog",
+        "router": "createBrowserRouter + RouterProvider (data router), no basename",
+        "routes": ["/", "/blog", "/blog/:slug", "/adr", "/adr/:slug", "*"],
+        "vite_base": "process.env.BASE_PATH ?? \"/\" (set to \"/blog/\" only by root build:site script)",
+        "deps_shared_packages": ["@portfolio/i18n", "@portfolio/ui"],
+        "mdx_content": {
+          "total_files": 4,
+          "dirs": ["content/blog", "content/projects", "content/adr"]
+        }
+      }
+    ],
+    "packages": [
+      { "name": "@portfolio/config-typescript", "kind": "config only" },
+      { "name": "@portfolio/config-eslint", "kind": "config only" },
+      {
+        "name": "@portfolio/config-tailwind",
+        "kind": "config only (theme.css design tokens)"
+      },
+      {
+        "name": "@portfolio/i18n",
+        "kind": "RUNTIME — not documented in CLAUDE.md",
+        "consumers": ["portfolio", "blog"]
+      },
+      {
+        "name": "@portfolio/ui",
+        "kind": "RUNTIME — not documented in CLAUDE.md",
+        "consumers": ["portfolio", "blog"]
+      }
+    ]
+  },
+  "loc_top_20": [
+    {
+      "file": "apps/portfolio/src/components/TimelineItem.test.tsx",
+      "lines": 303
+    },
+    { "file": "apps/blog/src/components/ContentIndex.tsx", "lines": 271 },
+    { "file": "apps/blog/src/components/Post.tsx", "lines": 260 },
+    { "file": "apps/portfolio/src/components/TimelineItem.tsx", "lines": 249 },
+    { "file": "apps/portfolio/src/components/Timeline.test.tsx", "lines": 223 },
+    { "file": "packages/ui/src/Navbar.test.tsx", "lines": 201 },
+    { "file": "apps/portfolio/src/components/Timeline.tsx", "lines": 147 },
+    { "file": "packages/ui/src/Navbar.tsx", "lines": 143 },
+    { "file": "apps/portfolio/e2e/mobile-nav.spec.ts", "lines": 141 },
+    { "file": "apps/portfolio/e2e/navigation.spec.ts", "lines": 139 },
+    {
+      "file": "apps/portfolio/src/hooks/useDocumentMeta.test.tsx",
+      "lines": 137
+    },
+    { "file": "apps/portfolio/src/components/Navbar.tsx", "lines": 137 },
+    { "file": "apps/portfolio/src/content/timeline.ts", "lines": 131 },
+    { "file": "apps/portfolio/src/components/Contact.tsx", "lines": 127 },
+    {
+      "file": "apps/portfolio/src/hooks/useActiveTimelineItem.test.ts",
+      "lines": 124
+    },
+    { "file": "apps/blog/src/feed/generate.test.ts", "lines": 117 },
+    { "file": "apps/portfolio/e2e/language-switcher.spec.ts", "lines": 112 },
+    { "file": "apps/blog/src/components/Navbar.tsx", "lines": 112 },
+    { "file": "apps/portfolio/src/App.tsx", "lines": 110 },
+    { "file": "apps/portfolio/src/pages/Home.tsx", "lines": 97 }
+  ],
+  "file_counts_by_extension": {
+    "tsx": 96,
+    "ts": 73,
+    "json": 16,
+    "png": 7,
+    "mdx": 7,
+    "js": 7,
+    "css": 6,
+    "ico": 2,
+    "html": 2,
+    "xml": 1,
+    "webp": 1,
+    "webmanifest": 1,
+    "txt": 1
+  },
+  "ci": {
+    "workflows": [".github/workflows/ci.yml", ".github/workflows/deploy.yml"],
+    "deploy_trigger": "push tags v*.*.*",
+    "ci_trigger": "every push to main (per CLAUDE.md; not independently re-verified in Phase 0)"
+  },
+  "config_presence": {
+    ".node-version": true,
+    ".env.example": false,
+    "Dockerfile": true,
+    "docker-compose.yml": true,
+    "vite_configs": [
+      "apps/portfolio/vite.config.js",
+      "apps/blog/vite.config.js"
+    ]
+  },
+  "documentation_inventory": [
+    {
+      "path": "README.md",
+      "tracked": true,
+      "last_commit": "2026-07-25",
+      "fresh_clone_sees_it": true
+    },
+    {
+      "path": "CLAUDE.md",
+      "tracked": false,
+      "gitignored": true,
+      "fresh_clone_sees_it": false
+    },
+    {
+      "path": "ROADMAP.md",
+      "tracked": false,
+      "gitignored": true,
+      "fresh_clone_sees_it": false,
+      "note": "file does not exist in working tree at all; deliberately deleted per user (roadmap phases were for developing already-shipped features, not a pending backlog)"
+    },
+    {
+      "path": ".claude/docs/auditoria-release-prompt-v2.md",
+      "tracked": false,
+      "gitignored": true,
+      "fresh_clone_sees_it": false
+    },
+    {
+      "path": ".claude/agents/*.md (13 files)",
+      "tracked": false,
+      "gitignored": true,
+      "fresh_clone_sees_it": false,
+      "note": "created this session; tracking policy deferred by user until after release"
+    },
+    {
+      "path": ".claude/skills/*/SKILL.md (5 files)",
+      "tracked": false,
+      "gitignored": true,
+      "fresh_clone_sees_it": false
+    },
+    {
+      "path": "apps/blog/content/**/*.mdx (4 files)",
+      "tracked": true,
+      "last_commit": "2026-07-25",
+      "fresh_clone_sees_it": true,
+      "note": "authored site content, not documentation"
+    },
+    {
+      "path": "apps/blog/src/mdx/*.mdx (3 files)",
+      "tracked": true,
+      "last_commit": "2026-07-25",
+      "fresh_clone_sees_it": true,
+      "note": "test fixtures for the MDX pipeline, not documentation"
+    }
+  ],
+  "domain": {
+    "canonical": "https://luanncurioso.dev/",
+    "confirmed_by_user": "2026-08-05",
+    "canonical_per_wrangler_project": "luanncurioso-portfolio",
+    "canonical_per_deploy_script": "https://luanncurioso.dev (SITE_URL in package.json build:site)",
+    "resolves_via_dns": "luanncurioso.dev -> 172.67.149.115, 104.21.29.161 (Cloudflare)",
+    "does_not_resolve": "luannmoreira.dev -> no A/CNAME record",
+    "resolution": "RESOLVED — luanncurioso.dev is canonical, confirmed by user and consistent with all independent evidence (DNS, wrangler project name, deploy script). luannmoreira.dev was a stale artifact from an earlier project iteration; README.md corrected in the same session (title + deploy line)."
+  }
+}

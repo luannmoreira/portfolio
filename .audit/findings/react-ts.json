@@ -1,0 +1,100 @@
+{
+  "domain": "react-ts",
+  "generated_at": "2026-08-06T00:47:45Z",
+  "model": "claude-sonnet-5",
+  "scope": {
+    "files_analyzed": 12,
+    "files_total": 169,
+    "sampling_criterion": "Top-LOC files from facts.json loc_top_20 (ContentIndex.tsx 271, Post.tsx 260, TimelineItem.tsx 249, Timeline.tsx 147, packages/ui/Navbar.tsx 143, portfolio Navbar.tsx 137, timeline.ts 131, Contact.tsx 127, App.tsx 110) plus highest git-churn-in-30-days files not already covered (portfolio Navbar.tsx 19 touches, App.tsx 17 touches), plus hook-dense files reachable from those components (useActiveTimelineItem.ts, useDocumentMeta.ts) and one cross-app shared runtime hook consumed by 6 call sites (packages/i18n/src/useLocale.ts) since packages/i18n and packages/ui are real runtime code per facts.json, not config. 169 = total .ts+.tsx files repo-wide (96 tsx + 73 ts).",
+    "tools_used": ["knip", "eslint", "tsc", "madge"]
+  },
+  "findings": [
+    {
+      "id": "REACT-TS-001",
+      "title": "useLocale duplicates i18next language into local useState with no cross-instance sync — locale-dependent formatting goes stale on other pages after a language switch",
+      "severity": "high",
+      "confidence": 0.85,
+      "evidence": {
+        "type": "code",
+        "references": [
+          "packages/i18n/src/useLocale.ts:9-19",
+          "apps/portfolio/src/pages/Resume.tsx:17",
+          "apps/portfolio/src/pages/Resume.tsx:56-57",
+          "apps/portfolio/src/components/Experiencia.tsx:13",
+          "apps/portfolio/src/components/Experiencia.tsx:27-28"
+        ],
+        "tool_output": null
+      },
+      "impact": "useLocale() seeds `locale` via useState(i18n.language as Locale) once, then only ever updates it inside its own setLocale closure. Navbar.tsx (portfolio and blog) calls its own useLocale() instance to drive the LanguageSwitcher; Resume.tsx and Experiencia.tsx call independent useLocale() instances just to read the current locale for formatDate(). react-i18next's useTranslation() (used internally by useLocale and by every t()-consuming component) forces a re-render on i18next's `languageChanged` event, so all page text updates correctly when the user flips language from the Navbar. But Resume/Experiencia's own `locale` state was never told about that change — no effect subscribes to `languageChanged` — so their formatDate() calls keep using the pre-switch locale. Net effect: switch to Portuguese anywhere, then visit /resume — headings/labels are in Portuguese but the employment dates stay formatted in English month names (or vice versa) until the component unmounts and remounts. Confirmed unmounted by existing tests: useLocale.test.tsx (packages/i18n/src/useLocale.test.tsx) only exercises a single hook instance's own setter, and e2e/language-switcher.spec.ts only asserts nav-link text and <html lang>, never a second, independent locale consumer — so this gap is real and currently untested. Compounding factor: the cast `i18n.language as Locale` (useLocale.ts:11) bypasses the isSupportedLocale() guard that resolveInitialLocale.ts uses everywhere else, so this hook doesn't participate in the same runtime-validated data model the rest of the i18n package enforces.",
+      "correction": "Stop mirroring i18n.language into local component state. Either derive it fresh on every render — `const locale = i18n.language as Locale` read directly from useTranslation()'s own `i18n` (no useState at all, since useTranslation() already re-renders this component on languageChanged) — or, if a stable snapshot decoupled from render timing is truly needed, subscribe with useSyncExternalStore against i18n's `languageChanged` event so every hook instance observes the same external source of truth instead of keeping its own private copy.",
+      "effort": "S",
+      "regression_risk": "low",
+      "verification": "Add a Testing Library test that mounts two independent useLocale() consumers under the same I18nextProvider, calls setLocale from one, and asserts the other's returned locale also updates without remounting; extend language-switcher.spec.ts to switch language from the Navbar on any page, then navigate to /resume and assert the rendered date strings are in the new locale.",
+      "related_domains": []
+    },
+    {
+      "id": "REACT-TS-002",
+      "title": "Post.tsx's ShareRow copy-link timer has no unmount cleanup",
+      "severity": "low",
+      "confidence": 0.6,
+      "evidence": {
+        "type": "code",
+        "references": ["apps/blog/src/components/Post.tsx:33-37"]
+      },
+      "impact": "handleCopy() calls setTimeout(() => setCopied(false), 2000) with no cleanup. If the user navigates away (client-side, via the data router) within that 2s window, the timer still fires and calls setCopied on an unmounted ShareRow. React 18 no longer warns on this, so it's silent, but it's a real dangling side effect and the pattern is worth not propagating to a component that does something more consequential than a boolean flag.",
+      "correction": "Track the timeout id in a ref and clear it in a useEffect cleanup on unmount, or switch the copied-feedback timer to a small custom hook that owns its own cleanup.",
+      "effort": "XS",
+      "regression_risk": "none",
+      "verification": "Unit test: render Post, click copy, unmount before 2s elapse, assert no act() warning and no error is thrown."
+    },
+    {
+      "id": "REACT-TS-003",
+      "title": "knip-flagged unused type exports are real dead code, not false positives",
+      "severity": "low",
+      "confidence": 0.9,
+      "evidence": {
+        "type": "tool",
+        "references": [
+          "apps/portfolio/src/content/timeline.ts:3",
+          "apps/portfolio/src/components/icons/MaterialIcon.tsx:27"
+        ],
+        "tool_output": ".audit/tools/knip.raw.json: types [{name:\"TimelineLink\", line:3}, {name:\"MaterialIconName\", line:27}]"
+      },
+      "impact": "Confirmed by grep: `TimelineLink` (timeline.ts) and `MaterialIconName` (MaterialIcon.tsx) are used only within their own declaring file and never imported anywhere else in the repo. Both are genuinely unused public exports, not knip false positives from a dynamic-import pattern this repo uses elsewhere (e.g. loader.ts's import.meta.glob).",
+      "correction": "Drop the `export` keyword on both (keep them as internal types) unless there's a near-term consumer planned.",
+      "effort": "XS",
+      "regression_risk": "none",
+      "verification": "pnpm --filter portfolio typecheck after removing `export`, plus a re-run of knip to confirm the two issues clear."
+    },
+    {
+      "id": "REACT-TS-004",
+      "title": "knip-flagged unused typescript-eslint devDependency in packages/ui and packages/i18n is real, not transitively used",
+      "severity": "low",
+      "confidence": 0.7,
+      "evidence": {
+        "type": "tool",
+        "references": [
+          "packages/ui/package.json:43",
+          "packages/i18n/package.json:39"
+        ],
+        "tool_output": ".audit/tools/knip.raw.json: devDependencies [{name:\"typescript-eslint\", line:43}] (packages/ui), [{name:\"typescript-eslint\", line:39}] (packages/i18n)"
+      },
+      "impact": "Neither package has its own eslint.config.* — both rely on @portfolio/config-eslint, so declaring typescript-eslint directly in these two packages' devDependencies looks like leftover scaffolding rather than an active need.",
+      "correction": "Remove the typescript-eslint devDependency from both package.json files unless a package-local eslint config is planned; run pnpm --filter <pkg> lint afterward to confirm the shared config still resolves it transitively.",
+      "effort": "XS",
+      "regression_risk": "low",
+      "verification": "pnpm --filter ui lint && pnpm --filter i18n lint after removal, both exit 0."
+    }
+  ],
+  "unverified_hypotheses": [
+    {
+      "description": "Timeline.tsx recomputes `resolvedMilestones` (map over 18 items, each with 2 i18n.exists() lookups plus 4 t() calls) on every render, including on every scrollspy-driven activeId update from useActiveTimelineItem, without useMemo.",
+      "why_unverified": "No profiling data available in this pass to confirm this is expensive enough to matter at 18 items; flagging as a hypothesis rather than a finding since the fixed, small milestone count makes real-world cost plausible-but-unconfirmed."
+    },
+    {
+      "description": "The `i18n.language as Locale` cast in useLocale.ts (line 11) could produce an invalid Locale value if i18next ever resolves a language through a path other than resolveInitialLocale.ts's isSupportedLocale-guarded flow (e.g. a future i18next-browser-languagedetector plugin).",
+      "why_unverified": "Currently the only initialization path is resolveInitialLocale.ts, which is guarded, so this is a latent risk rather than a currently-reachable bug; folded into REACT-TS-001's impact rather than filed standalone since fixing REACT-TS-001 by deriving locale from i18n.language directly would carry the same cast either way."
+    }
+  ],
+  "blockers": []
+}
