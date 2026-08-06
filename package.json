@@ -17,9 +17,29 @@
     "build:site": "pnpm build:portfolio && SITE_URL=https://luanncurioso.dev BASE_PATH=/blog/ pnpm build:blog && rm -rf apps/portfolio/dist/blog && mkdir -p apps/portfolio/dist/blog && cp -r apps/blog/dist/. apps/portfolio/dist/blog/",
     "deploy": "pnpm build:site && wrangler pages deploy apps/portfolio/dist --project-name luanncurioso-portfolio --branch main",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "audit:knip": "knip --reporter json > .audit/tools/knip.raw.json",
+    "audit:depcheck": "depcheck --json > .audit/tools/depcheck.raw.json",
+    "audit:madge:portfolio": "madge --circular --json apps/portfolio/src > .audit/tools/madge-portfolio.raw.json",
+    "audit:madge:blog": "madge --circular --json apps/blog/src > .audit/tools/madge-blog.raw.json",
+    "audit:cspell": "cspell \"**/*.{md,mdx,ts,tsx}\" --no-progress --no-summary",
+    "audit:links": "linkinator \"README.md\" \"CLAUDE.md\" \".claude/docs/**/*.md\" \"apps/blog/content/**/*.mdx\" --markdown --format json",
+    "audit:pnpm": "pnpm audit --prod --json",
+    "audit:gitleaks": "docker run --rm -v \"$PWD:/repo:ro\" -v \"$PWD/.audit/tools:/out:rw\" docker.io/zricethezav/gitleaks:latest detect --source /repo --report-format json --report-path /out/gitleaks.raw.json --redact -v",
+    "audit:hadolint": "docker run --rm -i docker.io/hadolint/hadolint hadolint --format json - < Dockerfile > .audit/tools/hadolint.raw.json",
+    "audit:trivy-config": "docker run --rm -v \"$PWD:/repo:ro\" docker.io/aquasec/trivy:latest config --format json /repo/Dockerfile > .audit/tools/trivy-config.raw.json",
+    "audit:lhci:portfolio": "pnpm build:portfolio && lhci autorun --config=.audit/lighthouserc.portfolio.json",
+    "audit:lhci:blog": "pnpm build:blog && lhci autorun --config=.audit/lighthouserc.blog.json",
+    "audit:doc-commands": "node .audit/scripts/doc-commands.mjs",
+    "audit:doc-paths": "node .audit/scripts/doc-paths.mjs"
   },
   "devDependencies": {
+    "@lhci/cli": "^0.15.1",
+    "cspell": "^10.0.1",
+    "depcheck": "^1.4.7",
+    "knip": "^6.31.0",
+    "linkinator": "^8.0.3",
+    "madge": "^8.0.0",
     "prettier": "^3.9.6",
     "wrangler": "^4.114.0"
   }
