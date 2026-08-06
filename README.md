@@ -45,6 +45,20 @@ pnpm format              # format the whole repo with Prettier
 To run any other script directly against one app: `pnpm --filter <portfolio|blog> <script>`
 (e.g. `pnpm --filter portfolio test`, `pnpm --filter blog typecheck`).
 
+### Testing
+
+Each app has its own lint, typecheck, unit test, and end-to-end suite, run per app:
+
+```sh
+pnpm --filter <portfolio|blog> lint        # ESLint (lint:fix to autofix)
+pnpm --filter <portfolio|blog> typecheck   # tsc --noEmit
+pnpm --filter <portfolio|blog> test        # Vitest (test:watch for watch mode)
+pnpm --filter <portfolio|blog> e2e         # Playwright
+```
+
+First e2e run needs the browsers installed once:
+`pnpm --filter <portfolio|blog> exec playwright install --with-deps chromium`.
+
 ### With Docker Compose
 
 No local Node/pnpm install needed — just Docker.

@@ -54,6 +54,18 @@ function resolvePnpmCommand(cmdLine, scopes) {
   );
   if (filterMatch) {
     const [, app, script] = filterMatch;
+    // `<portfolio|blog>`-style placeholders (a real README convention here,
+    // e.g. "pnpm --filter <portfolio|blog> <script>") aren't a literal app
+    // name — check every app the placeholder could expand to instead of
+    // flagging it as one broken literal scope.
+    const placeholderMatch = app.match(/^<(.+)>$/);
+    if (placeholderMatch) {
+      const candidates = placeholderMatch[1].split("|");
+      const exists = candidates.every((candidate) =>
+        (scopes[candidate] ?? []).includes(script)
+      );
+      return { scope: app, script, exists };
+    }
     const known = scopes[app] ?? [];
     return { scope: app, script, exists: known.includes(script) };
   }
