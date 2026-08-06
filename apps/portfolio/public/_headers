@@ -1,0 +1,34 @@
+# Only this file ships (see CLAUDE.md standing decision 8, same reasoning
+# as _redirects) — it covers both apps, since the blog's own dist merges
+# under /blog at deploy time and a second _headers there would be discarded.
+#
+# script-src/style-src need 'unsafe-inline': both apps' index.html run a
+# synchronous inline theme-detection script before first paint (see
+# CLAUDE.md "Touch theming or first paint"), plus build-time and
+# runtime-injected JSON-LD <script> tags (Person, BlogPosting,
+# BreadcrumbList) whose content isn't static across posts — a static
+# per-file hash allowlist can't cover the latter, and nonces need
+# per-request generation this static host can't do. Still meaningfully
+# restricts against an attacker-injected <script src="https://evil.tld">
+# or a fetch()/XHR to an arbitrary origin, which is the more realistic risk
+# for a site with no user-generated content or auth. font-src needs data:
+# too — Vite inlines small @fontsource subset files as base64 data: URIs
+# rather than separate hashed requests (confirmed via a real browser: this
+# was blocked without it).
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
+
+# Vite content-hashes every filename under assets/ — a new deploy always
+# produces new URLs, so these are safe to cache as effectively permanent.
+# Two rules, not one: /blog/assets/* is a distinct path prefix from
+# /assets/*, not something a single glob covers.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/blog/assets/*
+  Cache-Control: public, max-age=31536000, immutable
