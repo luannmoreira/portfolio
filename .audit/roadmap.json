@@ -306,7 +306,9 @@
       "title": "reportWebVitals() called with no callback -- field CWV never collected",
       "effort": "XS",
       "confidence": 0.85,
-      "priority": 0.85
+      "priority": 0.85,
+      "outcome": "fixed",
+      "verification": "Real browser check: console now logs '[web-vitals] TTFB ...' and '[web-vitals] FCP ...' on load, both apps."
     },
     {
       "id": "SEC-006",
@@ -366,7 +368,9 @@
       "title": "Both locale bundles ship eagerly regardless of resolved locale",
       "effort": "S",
       "confidence": 0.75,
-      "priority": 0.75
+      "priority": 0.75,
+      "outcome": "attempted, reverted",
+      "verification": "Implemented as a blocking top-level await (dynamic-import the resolved locale only, prefetch the other on idle) to avoid a flash of untranslated content. Real e2e measurement showed a genuine regression instead: splitting locale JSON into its own chunk turns one bundle fetch into a serial waterfall (main bundle parses -> discovers the dynamic import -> fetches the locale chunk), measurably delaying first render. Broke 5 portfolio e2e tests that interact immediately after page.goto() (keyboard-nav, focus-ring, scroll-restoration, and 2 axe scans -- one caught page-has-heading-one because the page genuinely hadn't rendered yet). Reverted to the original synchronous both-locales-eager version; confirmed the revert restored the clean 85/85 e2e baseline. Not re-attempted differently in this pass -- the original finding's own estimated gain was already flagged as uncertain, and a real regression is worse than the modest bytes saved."
     },
     {
       "id": "ARCH-011",
@@ -396,7 +400,22 @@
       "title": "Google Fonts third-party-hosted, adds a request hop",
       "effort": "S",
       "confidence": 0.7,
-      "priority": 0.7
+      "priority": 0.7,
+      "outcome": "fixed",
+      "verification": "Self-hosted via @fontsource/* (Hanken Grotesk, Inter, JetBrains Mono, both apps; Material Symbols Outlined, blog only), replacing the Google Fonts <link> with local @font-face imports in each app's index.css. Did not, on its own, fix the CLS regression found during this wave (see PERF-006) -- that turned out to be a separate, unrelated cause -- but is a legitimate independent improvement (same-origin font files, no fonts.googleapis.com/fonts.gstatic.com round trip), shipped regardless."
+    },
+    {
+      "id": "PERF-006",
+      "wave": 3,
+      "domain": "perf",
+      "severity": "critical",
+      "title": "Suspense fallback={null} on every lazy route causes a real CLS regression (0.26, \"poor\") once the real Lighthouse tooling started working",
+      "effort": "S",
+      "confidence": 0.98,
+      "priority": 1.96,
+      "outcome": "fixed",
+      "note": "Not in the original audit -- Lighthouse's CWV audits were broken (tslib_1.__spreadArray tooling bug, see facts.json) until this wave, so this was unmeasurable before. Root cause, confirmed with a real PerformanceObserver layout-shift trace: every lazy-loaded route (About/Resume/Projects/Contact in portfolio; Post/NotFound in blog) rendered `null` while its chunk fetched, so <main> sat empty and the page briefly settled at exactly viewport height with the footer visible at the bottom; once the chunk resolved and real content rendered, the page grew far taller, and that footer-visible-then-gone transition registered as a huge layout shift. Two wrong hypotheses were tried and measured first (About.tsx's image aspect-ratio; PERF-004's font self-hosting) before the real cause was found via direct trace instrumentation, not guessing. Fix: fallback={<div className=\"min-h-[150vh]\" />} instead of null, both apps. Verified via real Lighthouse: CLS 0.258-0.261 -> 0.000-0.004 on all 4 affected portfolio routes, performance score +10 to +15 points; blog's equivalent routes (already using the same fixed pattern from the start) measured 0.97-0.98 perf / near-zero CLS.",
+      "verification": "Lighthouse (startServerCommand mode, real routes): portfolio / .94 CLS .013, /about .90 CLS .004, /contact .93 CLS .002, /projects .93 CLS .001, /resume .93 CLS 0. Blog /blog .98 CLS 0, /blog/hello-world .97 CLS .002, /adr .98 CLS .001."
     },
     {
       "id": "DOCS-009",

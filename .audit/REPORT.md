@@ -72,20 +72,42 @@ Effort: S.
 
 ## 4. Roadmap by wave
 
-| Wave                  | Content                                                                                                                                                | Exit gate                                              |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------ |
-| **1 — Blockers**      | A11Y-001, A11Y-002, TEST-001 (+TEST-002), DOCS-001, SEO-001                                                                                            | `verify-gate` gates 1–9 green                          |
-| **2 — High priority** | A11Y-003, A11Y-004, DOCS-002/003/004, SEO-002/003/004, PERF-001+TEST-003 (merged, see §5 note), TEST-004, REACT-TS-001, PERF-002                       | Zero High in a11y/security/docs; journey coverage ≥80% |
-| **3 — Performance**   | PERF-003, PERF-004, PERF-005; re-run `lhci` once the `tslib_1.__spreadArray` tooling bug is fixed (Core Web Vitals are currently unmeasured, not zero) | Real CWV numbers exist and meet targets                |
-| **4 — Consistency**   | CONTENT-001/ARCH-009, CONTENT-002, A11Y-005, SEO-005/006, TEST-005/006                                                                                 | `cspell` dictionary applied; visual review             |
-| **5 — Architecture**  | ARCH-001 (dir cycle), ARCH-002 (dead export), ARCH-003/004/006/008/011 (small cleanups)                                                                | Zero cycles (already true); no regressions             |
-| **6 — Documentation** | DOCS-007, DOCS-008, DOCS-009, DOCS-010/ARCH-010, ARCH-005/007 (content decisions), SEC-001/002/005/006                                                 | Newcomer completes setup unaided                       |
+| Wave                  | Content                                                                                                                          | Exit gate                                              |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| **1 — Blockers**      | A11Y-001, A11Y-002, TEST-001 (+TEST-002), DOCS-001, SEO-001                                                                      | `verify-gate` gates 1–9 green                          |
+| **2 — High priority** | A11Y-003, A11Y-004, DOCS-002/003/004, SEO-002/003/004, PERF-001+TEST-003 (merged, see §5 note), TEST-004, REACT-TS-001, PERF-002 | Zero High in a11y/security/docs; journey coverage ≥80% |
+| **3 — Performance**   | PERF-003 (reverted, see below), PERF-004, PERF-005, PERF-006 (new, found this wave)                                              | Real CWV numbers exist and meet targets — **done**     |
+| **4 — Consistency**   | CONTENT-001/ARCH-009, CONTENT-002, A11Y-005, SEO-005/006, TEST-005/006                                                           | `cspell` dictionary applied; visual review             |
+| **5 — Architecture**  | ARCH-001 (dir cycle), ARCH-002 (dead export), ARCH-003/004/006/008/011 (small cleanups)                                          | Zero cycles (already true); no regressions             |
+| **6 — Documentation** | DOCS-007, DOCS-008, DOCS-009, DOCS-010/ARCH-010, ARCH-005/007 (content decisions), SEC-001/002/005/006                           | Newcomer completes setup unaided                       |
 
 **Order rationale:** performance work is placed after the a11y/docs/SEO blockers deliberately —
-several of Wave 3's numbers (Lighthouse CWV) are currently `null` from a tooling bug, not
-measured-and-bad, so there's nothing yet to optimize against with confidence. Architecture is
+several of Wave 3's numbers (Lighthouse CWV) were `null` from a tooling bug, not
+measured-and-bad, so there was nothing yet to optimize against with confidence. Architecture is
 last per the audit's own ground rules: none of it is urgent, most of it is `effort: XS`
 housekeeping, and touching it before the real bugs are fixed would be motion without progress.
+
+**Wave 3 outcome:** the `tslib_1.__spreadArray` tooling bug was a real node_modules/lockfile
+desync (`intl-messageformat`'s `tslib` dependency was declared but never linked on disk) — fixed
+with a clean reinstall, not a version pin. The `lighthouserc.*.json` configs were also broken
+(`staticDistDir` mode has no SPA fallback, so every route but `/` 404'd) and switched to
+`startServerCommand` against a real `vite preview` with explicit URLs. With real numbers finally
+available, they surfaced a genuine Critical (**PERF-006**, not in the original audit — CLS 0.26,
+"poor", on 4 of 5 portfolio routes) traced via a real `PerformanceObserver` layout-shift trace to
+`Suspense fallback={null}` on every lazy route: the page briefly settles at viewport height with
+the footer visible, then jumps to full height once the chunk loads. Fixed in both apps; CLS now
+0.000–0.004, performance scores +10 to +15 points. **PERF-004** (font self-hosting) shipped as a
+legitimate independent win, though it turned out not to be what fixed the CLS regression — two
+wrong hypotheses (an image's aspect-ratio, then the fonts) were tried and measured before the
+real cause was found. **PERF-005** (reportWebVitals callback) fixed and confirmed firing real
+metrics in a live browser. **PERF-003** (split locale bundles) was implemented, measured via a
+full e2e run, found to cause a real regression (a network waterfall delaying first paint enough
+to break 5 e2e tests, including an axe scan catching the page mid-render), and reverted — recorded
+as "tried, not worth it" rather than reattempted blind.
+
+Final measured numbers (Lighthouse, real routes): portfolio `/` 0.94 perf / 0.013 CLS, `/about`
+0.90 / 0.004, `/contact` 0.93 / 0.002, `/projects` 0.93 / 0.001, `/resume` 0.93 / 0. Blog `/blog`
+0.98 / 0, `/blog/hello-world` 0.97 / 0.002, `/adr` 0.98 / 0.001.
 
 ## 5. Full backlog
 
