@@ -1,14 +1,8 @@
-import { createI18n, resolveInitialLocale } from "@portfolio/i18n";
+import { setupI18n } from "@portfolio/i18n";
 import en from "./locales/en/translation.json";
 import ptBR from "./locales/pt-BR/translation.json";
 
-const locale = resolveInitialLocale();
-document.documentElement.lang = locale;
-
-export const i18n = createI18n({
-  locale,
-  resources: {
-    en: { translation: en },
-    "pt-BR": { translation: ptBR },
-  },
+export const i18n = setupI18n({
+  en: { translation: en },
+  "pt-BR": { translation: ptBR },
 });
