@@ -20,6 +20,10 @@ const routes = [
 // this exact gap hid a real contrast bug).
 const colorSchemes = ["light", "dark"] as const;
 
+// reducedMotion: "reduce" is set alongside colorScheme below, matching
+// portfolio's spec — removes any CSS-transition timing race deterministically
+// rather than guessing a settle duration.
+
 // ?lang= drives resolveInitialLocale() the same way ?theme= drives the
 // FOUC-prevention script above — covers both locales' translated chrome
 // per route × color scheme (article content itself stays English-only,
@@ -32,8 +36,13 @@ for (const colorScheme of colorSchemes) {
       test(`${route} has no automatically detectable accessibility violations (${colorScheme}, ${locale})`, async ({
         page,
       }) => {
-        await page.emulateMedia({ colorScheme });
+        await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
         await page.goto(`${route}?lang=${locale}`);
+        // Explicit settle signal instead of no wait at all: web fonts
+        // swapping in after first paint can shift layout/contrast enough
+        // for axe to catch a transient state a real user never perceives —
+        // this was the dominant source of this spec's run-to-run flip-flops.
+        await page.evaluate(() => document.fonts.ready);
 
         const results = await new AxeBuilder({ page }).analyze();
 

@@ -13,6 +13,14 @@ const routes = ["/", "/about", "/resume", "/projects", "/contact"];
 // OS happens to prefer.
 const colorSchemes = ["light", "dark"] as const;
 
+// reducedMotion: "reduce" is set alongside colorScheme below — Reveal.tsx
+// and TimelineItem.tsx both render fully settled (opacity 1, transition
+// none) under prefers-reduced-motion, so this removes the fade-in transition
+// race entirely rather than guessing how long it takes to finish (the
+// previous fixed waitForTimeout(1600) approach — replaced because it still
+// left 4 of these tests flipping pass/fail between identical runs; a
+// deterministic "no transition ever runs" beats a longer guessed wait).
+
 // ?lang= drives resolveInitialLocale() the same way ?theme= drives the
 // FOUC-prevention script above — covers both locales' translated content
 // (including pt-BR's generally longer strings) for layout/contrast
@@ -25,13 +33,12 @@ for (const colorScheme of colorSchemes) {
       test(`${route} has no automatically detectable accessibility violations (${colorScheme}, ${locale})`, async ({
         page,
       }) => {
-        await page.emulateMedia({ colorScheme });
+        await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
         await page.goto(`${route}?lang=${locale}`);
-        // Reveal fades content in via a CSS opacity transition (up to 1500ms,
-        // Hero's) — scanning mid-transition catches a genuinely-blended,
-        // lower-contrast color that isn't what a settled page ever shows a
-        // real user. Longest transition + margin, not a guess.
-        await page.waitForTimeout(1600);
+        // Explicit settle signal instead of a guessed duration: web fonts
+        // swapping in after first paint can shift layout/contrast enough
+        // for axe to catch a transient state a real user never perceives.
+        await page.evaluate(() => document.fonts.ready);
 
         const results = await new AxeBuilder({ page }).analyze();
 
