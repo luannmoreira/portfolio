@@ -1,7 +1,7 @@
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Plugin, ResolvedConfig } from "vite";
-import { readContentEntries } from "./contentEntries";
+import { readContentEntries } from "../content/contentEntries";
 import { buildRss, buildSitemap } from "./generate";
 
 // The root build:site/deploy scripts set SITE_URL=https://luanncurioso.dev,

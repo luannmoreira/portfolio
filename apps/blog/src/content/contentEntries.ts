@@ -5,8 +5,8 @@ import {
   parseFrontmatter,
   type ContentEntry,
   type ContentType,
-} from "../content/schema";
-import { estimateReadingMinutes } from "../content/readingTime";
+} from "./schema";
+import { estimateReadingMinutes } from "./readingTime";
 
 // Runs at Vite-config/build time (Node), not through Vite's module graph —
 // import.meta.glob only resolves inside files Vite itself transforms, which

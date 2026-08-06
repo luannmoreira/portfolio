@@ -1,5 +1,5 @@
 import type { Plugin } from "vite";
-import { readContentEntries } from "../feed/contentEntries";
+import { readContentEntries } from "./contentEntries";
 
 // Serves loader.ts's metadata as a virtual module — plain serialized data,
 // entirely decoupled from the compiled .mdx modules. That decoupling is the
