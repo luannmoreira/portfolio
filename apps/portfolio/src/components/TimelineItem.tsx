@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useInView } from "../hooks/useInView";
 import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
@@ -70,6 +70,17 @@ export default function TimelineItem({
   // discard cascade, and it still lets the user collapse it again after.
   const [expanded, setExpanded] = useState(forceExpanded);
   const [prevForceExpanded, setPrevForceExpanded] = useState(forceExpanded);
+  const detailsRef = useRef<HTMLDivElement>(null);
+
+  // `inert` set imperatively, not as a JSX prop — same reason and pattern as
+  // packages/ui/src/Navbar.tsx's overlay: this repo's pinned @types/react
+  // doesn't type `inert` on HTMLAttributes yet. Without this, the panel's
+  // links stay keyboard-Tab-reachable and screen-reader-discoverable while
+  // aria-hidden and visually collapsed (opacity 0, 0fr row) — a real
+  // aria-hidden-focus violation, not just a style concern.
+  useEffect(() => {
+    detailsRef.current?.toggleAttribute("inert", !expanded);
+  }, [expanded]);
   if (forceExpanded !== prevForceExpanded) {
     setPrevForceExpanded(forceExpanded);
     if (forceExpanded) setExpanded(true);
@@ -156,6 +167,7 @@ export default function TimelineItem({
                 content during the animation; the outer grid element itself
                 never clips. */}
             <div
+              ref={detailsRef}
               id={detailsId}
               aria-hidden={!expanded}
               style={
