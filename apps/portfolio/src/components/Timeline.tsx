@@ -134,7 +134,7 @@ export default function Timeline() {
           <button
             type="button"
             onClick={() => setShowAllMobile(true)}
-            className="mt-4 font-label-mono text-label-mono uppercase tracking-widest text-primary"
+            className="mt-4 py-1 font-label-mono text-label-mono uppercase tracking-widest text-primary"
           >
             {t("timeline.showAll", {
               count: resolvedMilestones.length - MOBILE_VISIBLE_COUNT,

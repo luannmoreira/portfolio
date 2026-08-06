@@ -154,7 +154,7 @@ export default function TimelineItem({
               aria-expanded={expanded}
               aria-controls={detailsId}
               onClick={() => setExpanded((value) => !value)}
-              className="mt-2 flex items-center gap-1 font-label-mono text-label-mono uppercase tracking-widest text-primary"
+              className="mt-2 flex items-center gap-1 py-1 font-label-mono text-label-mono uppercase tracking-widest text-primary"
             >
               <span aria-hidden="true">{expanded ? "▾" : "▸"}</span>
               {t("timeline.detailsToggle")}
