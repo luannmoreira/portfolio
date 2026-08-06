@@ -27,7 +27,10 @@ Two ways to run this locally — pick whichever fits.
 
 ### Directly with pnpm
 
-Node version is pinned in `.node-version` (works with `fnm`/`nvm`/`volta`).
+Node version is pinned in `.node-version` (works with `fnm`/`nvm`/`volta`). pnpm itself is
+pinned via `packageManager` in `package.json` — enable [Corepack](https://nodejs.org/api/corepack.html)
+once (`corepack enable`) and it installs the pinned pnpm version automatically on first use, or
+install pnpm directly per its [own docs](https://pnpm.io/installation).
 
 ```sh
 pnpm install
