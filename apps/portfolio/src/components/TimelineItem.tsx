@@ -214,7 +214,7 @@ export default function TimelineItem({
                             href={link.href}
                             target="_blank"
                             rel="noreferrer"
-                            className="font-body-md text-body-md text-primary underline"
+                            className="inline-block py-1 font-body-md text-body-md text-primary underline"
                           >
                             {link.label}
                           </a>
