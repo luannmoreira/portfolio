@@ -12,13 +12,13 @@ export default function Footer() {
   return (
     <footer className="mt-stack-lg w-full border-t border-outline-variant/30 bg-surface py-stack-md light:border-outline-variant/70 print:hidden">
       <div className="mx-auto flex max-w-container-max flex-col items-center justify-between gap-4 px-margin-mobile md:flex-row lg:px-gutter">
-        <p className="font-label-mono text-label-mono uppercase tracking-widest text-secondary">
+        <p className="font-label-mono text-label-mono uppercase tracking-widest text-primary">
           Luann Curioso
         </p>
         <ul className="flex items-center gap-4">
           <li>
             <a
-              href="/rss.xml"
+              href="/blog/rss.xml"
               aria-label={t("footer.rssFeed")}
               className="inline-flex items-center justify-center p-2.5 text-on-surface-variant opacity-80 transition-opacity hover:text-primary hover:opacity-100"
             >
