@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { MDXProvider } from "@mdx-js/react";
-import { mdxComponents } from "./mdxComponents";
+import { mdxComponents } from "../components/mdx/mdxComponents";
 import ProviderFixture from "./provider-fixture.mdx";
 
 // Proves the registry actually reaches compiled MDX content, not just that

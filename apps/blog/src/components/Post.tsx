@@ -9,7 +9,7 @@ import {
   type ContentEntry,
 } from "../content/loader";
 import { useDocumentMeta } from "../hooks/useDocumentMeta";
-import { mdxComponents } from "../mdx/mdxComponents";
+import { mdxComponents } from "./mdx/mdxComponents";
 import NotFound from "./NotFound";
 
 interface PostProps {
