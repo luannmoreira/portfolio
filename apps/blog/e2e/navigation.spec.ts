@@ -34,10 +34,15 @@ test("ADR index lists ADRs and links to the ADR page", async ({ page }) => {
     page.getByRole("heading", { name: "Architecture Decision Records" })
   ).toBeVisible();
 
-  await page.getByRole("link", { name: /ADR Placeholder/ }).click();
-  await expect(page).toHaveURL("/adr/placeholder");
+  await page
+    .getByRole("link", { name: /BrowserRouter Over HashRouter/ })
+    .click();
+  await expect(page).toHaveURL("/adr/browserrouter-over-hashrouter");
   await expect(
-    page.getByRole("heading", { name: "ADR Placeholder", level: 1 })
+    page.getByRole("heading", {
+      name: "BrowserRouter Over HashRouter",
+      level: 1,
+    })
   ).toBeVisible();
 });
 

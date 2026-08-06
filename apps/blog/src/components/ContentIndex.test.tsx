@@ -27,7 +27,9 @@ test("lists published entries of the given type, excluding other types", () => {
   expect(
     screen.queryByText("Project Write-Up Placeholder")
   ).not.toBeInTheDocument();
-  expect(screen.queryByText("ADR Placeholder")).not.toBeInTheDocument();
+  expect(
+    screen.queryByText("BrowserRouter Over HashRouter")
+  ).not.toBeInTheDocument();
 });
 
 test("links to the entry's basePath/:slug route", () => {
@@ -61,10 +63,9 @@ test("works for a second content type (ADR), proving the generalization", () => 
   expect(
     screen.getByRole("heading", { name: "Architecture Decision Records" })
   ).toBeInTheDocument();
-  expect(screen.getByRole("link", { name: /ADR Placeholder/ })).toHaveAttribute(
-    "href",
-    "/adr/placeholder"
-  );
+  expect(
+    screen.getByRole("link", { name: /BrowserRouter Over HashRouter/ })
+  ).toHaveAttribute("href", "/adr/browserrouter-over-hashrouter");
   expect(screen.queryByText("Hello, Blog")).not.toBeInTheDocument();
 });
 

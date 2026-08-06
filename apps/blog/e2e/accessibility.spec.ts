@@ -7,7 +7,7 @@ const routes = [
   "/blog/hello-world",
   "/blog/building-this-blogs-content-pipeline",
   "/adr",
-  "/adr/placeholder",
+  "/adr/browserrouter-over-hashrouter",
   "/does-not-exist",
 ];
 
