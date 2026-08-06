@@ -12,3 +12,7 @@ playwright-report
 coverage
 ROADMAP.md
 .claude
+
+# Never let a local secrets file leak into the dev image's build context.
+.env
+.env.*
