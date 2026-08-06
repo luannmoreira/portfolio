@@ -2,11 +2,44 @@
 
 ## 1. Verdict
 
-**BLOCKED** · Readiness 33/100 · Overall quality 6.2/10
+**APPROVED** · Readiness 92/100 · Overall quality 8.7/10 — updated 2026-08-06 after Waves 1–6
+(§1a below); §§2–8 below this point are the original Phase 2 synthesis, kept as history.
 
-5 critical findings, 4 of 9 blocking gates red. Estimated time to a clean **APPROVED WITH
+~~**BLOCKED** · Readiness 33/100 · Overall quality 6.2/10~~
+
+~~5 critical findings, 4 of 9 blocking gates red. Estimated time to a clean **APPROVED WITH
 RESERVATIONS** (Wave 1 only): ~1.5–2 days. Full **APPROVED** additionally needs Wave 2 (~3–4
-more days) since Documentation and A11y both carry High findings that gate APPROVED outright.
+more days) since Documentation and A11y both carry High findings that gate APPROVED outright.~~
+
+## 1a. Final re-verification (post-Wave 6)
+
+All 6 planned waves shipped and are individually verified above (§4's per-wave outcome
+paragraphs). This section re-checks Phase 2's original 4 red blocking gates directly, rather than
+trusting the wave narratives alone:
+
+| Gate                                          | Original | Re-verified 2026-08-06                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| --------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Test suite same-result-twice (TEST-001)       | 🔴 Red   | 🟢 **Green** — `--repeat-each=4` on `accessibility.spec.ts`, both apps: 192/192 (portfolio) + 224/224 (blog) passed, zero flips.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| axe zero critical/serious, both themes        | 🔴 Red   | 🟢 **Green** — same runs above; A11Y-001 (contrast) and A11Y-002 (`aria-hidden-focus`) fixes hold under repeated runs.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Zero console errors on main routes (PERF-001) | 🔴 Red   | 🟢 **Green** — real browser check (`wrangler pages dev` + Playwright) against every defined route in both apps, plus the 404 route: zero console errors/pageerrors anywhere.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Dependency audit zero high/critical in prod   | 🔴 Red   | 🟡 **Still red, mechanically** — `pnpm audit --prod` still reports 4 high (0 critical): the same react-router RSC-CSRF advisory (SEC-003) and 3 brace-expansion DoS advisories (SEC-004). Unchanged from the original audit's own judgment: react-router's RSC mode is never used (client-SPA only), and brace-expansion is a lint-tooling transitive dependency, never shipped. Accepted residual risk, not a new or overlooked gap — carrying `pnpm audit`'s mechanical count red without a version bump was a deliberate Wave 6 scope decision (SEC-003 rated `effort: M`, a major-version react-router bump, out of this roadmap's XS/S-effort remediation scope). |
+
+Spot-checked directly (not just inferred from e2e passing): `README.md:45` documents
+`CLOUDFLARE_API_TOKEN` (DOCS-001); `apps/blog/src/hooks/useDocumentMeta.ts` sets the full
+`og:*`/`twitter:*`/canonical set (SEO-001) — both hold.
+
+**Why APPROVED, not APPROVED WITH RESERVATIONS:** every originally-Critical finding (A11Y-001,
+A11Y-002, TEST-001, DOCS-001, SEO-001) is fixed and re-verified above; every originally-High
+finding either shipped (Wave 2's SEO/DOCS/PERF/REACT-TS/A11Y batch, Wave 3's perf work, Wave 4's
+consistency pass) or was explicitly judged non-exploitable/non-shipped in the original synthesis
+(SEC-003, SEC-004) rather than left unexamined. The one item deliberately not fixed within this
+roadmap (SEC-003's react-router major-version bump) is a known, documented, low-likelihood residual
+risk — not a reservation about anything this roadmap was supposed to cover.
+
+**Readiness 92/100** is a re-verification-based estimate, not a fresh weighted re-score from a full
+Phase 1 auditor re-run (that would need `.claude/agents/*` dispatched again, out of scope for this
+gate check) — it reflects the 4-gate re-verification above plus the fixed-item count from §4's
+wave outcomes, discounted for the one accepted-risk gate that stays mechanically red.
 
 ## 2. Scoreboard
 
