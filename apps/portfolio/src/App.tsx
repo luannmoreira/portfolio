@@ -62,7 +62,7 @@ function Layout() {
         tabIndex={-1}
         className="flex flex-1 flex-col pt-32 focus:outline-none print:pt-0"
       >
-        <Suspense fallback={null}>
+        <Suspense fallback={<div className="min-h-[150vh]" />}>
           <Outlet />
         </Suspense>
       </main>

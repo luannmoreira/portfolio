@@ -43,7 +43,7 @@ function Layout() {
       </a>
       <Navbar />
       <main id="main-content" tabIndex={-1} className="flex flex-1 flex-col focus:outline-none">
-        <Suspense fallback={null}>
+        <Suspense fallback={<div className="min-h-[150vh]" />}>
           <Outlet />
         </Suspense>
       </main>
