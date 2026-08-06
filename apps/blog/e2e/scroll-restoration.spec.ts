@@ -5,6 +5,18 @@ test.describe("scroll restoration", () => {
     page,
   }) => {
     await page.goto("/blog/building-this-blogs-content-pipeline");
+    // Post now loads behind two nested lazy() boundaries (the route itself,
+    // App.tsx, plus its MDX body, content/loader.ts) rather than one, so the
+    // page can still be Suspense-fallback-short right after goto — wait for
+    // the real heading before wheeling, or 2000px of scroll has nothing to
+    // move through yet and the poll below times out on a page that WILL
+    // become tall enough, just not instantly.
+    await expect(
+      page.getByRole("heading", {
+        name: /Building This Blog's Content Pipeline/i,
+        level: 1,
+      })
+    ).toBeVisible();
     await page.mouse.wheel(0, 2000);
     await expect
       .poll(() => page.evaluate(() => window.scrollY))

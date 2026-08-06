@@ -1,6 +1,7 @@
 import { Suspense, useState } from "react";
 import { Link, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
+import { MDXProvider } from "@mdx-js/react";
 import { formatDate, useLocale } from "@portfolio/i18n";
 import {
   getPostComponent,
@@ -8,6 +9,7 @@ import {
   type ContentEntry,
 } from "../content/loader";
 import { useDocumentMeta } from "../hooks/useDocumentMeta";
+import { mdxComponents } from "../mdx/mdxComponents";
 import NotFound from "./NotFound";
 
 interface PostProps {
@@ -277,16 +279,23 @@ function Post({ basePath }: PostProps) {
           </div>
         </header>
         <section className="prose font-body-lg text-body-lg leading-relaxed text-on-surface-variant">
-          <Suspense fallback={<p>{t("post.loading")}</p>}>
-            {/* eslint-disable-next-line react-hooks/static-components -- getPostComponent
-                caches by slug (loader.ts), so this reference is stable across
-                renders for a given slug; verified by loader.test.ts's
-                reference-equality test. The rule can't see through the cache
-                statically, but a runtime cache is the correct fix here — there's
-                no fixed set of components to hoist to module scope since slugs
-                come from a growing content collection, not known ahead of time. */}
-            <PostBody />
-          </Suspense>
+          {/* Colocated with its only real consumer rather than provided at
+              the app root (App.tsx) — keeps the MDX authoring component
+              registry (Callout, Note, Tip, Warning, Tradeoff, the FileTree
+              family, Terminal) out of the main bundle; it now loads inside
+              Post's own lazy chunk instead (see App.tsx's lazy import). */}
+          <MDXProvider components={mdxComponents}>
+            <Suspense fallback={<p>{t("post.loading")}</p>}>
+              {/* eslint-disable-next-line react-hooks/static-components -- getPostComponent
+                  caches by slug (loader.ts), so this reference is stable across
+                  renders for a given slug; verified by loader.test.ts's
+                  reference-equality test. The rule can't see through the cache
+                  statically, but a runtime cache is the correct fix here — there's
+                  no fixed set of components to hoist to module scope since slugs
+                  come from a growing content collection, not known ahead of time. */}
+              <PostBody />
+            </Suspense>
+          </MDXProvider>
         </section>
         <ShareRow title={entry.title} />
       </article>

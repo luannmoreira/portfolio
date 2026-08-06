@@ -1,3 +1,4 @@
+import { Suspense, lazy } from "react";
 import {
   createBrowserRouter,
   Navigate,
@@ -5,15 +6,19 @@ import {
   RouterProvider,
   ScrollRestoration,
 } from "react-router";
-import { MDXProvider } from "@mdx-js/react";
 import { I18nextProvider, useTranslation } from "react-i18next";
-import { mdxComponents } from "./mdx/mdxComponents";
 import ContentIndex from "./components/ContentIndex";
-import Post from "./components/Post";
-import NotFound from "./components/NotFound";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { i18n } from "./i18n";
+
+// Lazy — Post pulls in the full MDX authoring component registry
+// (Callout/Note/Tip/Warning/Tradeoff/FileTree*/Terminal, see its own
+// MDXProvider wrapping), which /blog and /adr's index pages never render.
+// ContentIndex and NotFound stay eager: ContentIndex is the landing route
+// (redirected to from "/"), and NotFound is small.
+const Post = lazy(() => import("./components/Post"));
+const NotFound = lazy(() => import("./components/NotFound"));
 
 // The persistent shell, mounted once for the app's lifetime as the parent
 // route wrapping every page via <Outlet> — the right place for
@@ -38,7 +43,9 @@ function Layout() {
       </a>
       <Navbar />
       <main id="main-content" tabIndex={-1} className="flex flex-1 flex-col focus:outline-none">
-        <Outlet />
+        <Suspense fallback={null}>
+          <Outlet />
+        </Suspense>
       </main>
       <Footer />
     </div>
@@ -75,9 +82,7 @@ interface AppProps {
 function App({ router = productionRouter }: AppProps) {
   return (
     <I18nextProvider i18n={i18n}>
-      <MDXProvider components={mdxComponents}>
-        <RouterProvider router={router} />
-      </MDXProvider>
+      <RouterProvider router={router} />
     </I18nextProvider>
   );
 }
