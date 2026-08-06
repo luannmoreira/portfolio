@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import EcosystemSection from "./EcosystemSection";
 
-export default function Habilidades() {
+export default function Skills() {
   const { t } = useTranslation();
 
   return (

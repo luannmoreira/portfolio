@@ -2,9 +2,9 @@ import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 
 import AboutSection from "../components/About";
-import Habilidades from "../components/Habilidades";
+import Skills from "../components/Skills";
 import Principles from "../components/Principles";
-import Experiencia from "../components/Experiencia";
+import Experience from "../components/Experience";
 import Uses from "../components/Uses";
 import DotCanvas from "../components/DotCanvas";
 import { useDocumentMeta } from "../hooks/useDocumentMeta";
@@ -18,9 +18,9 @@ function About() {
   return (
     <div className="mx-auto max-w-container-max px-margin-mobile md:px-gutter">
       <AboutSection />
-      <Habilidades />
+      <Skills />
       <Principles />
-      <Experiencia />
+      <Experience />
 
       <div className="mb-stack-lg">
         <Uses />
@@ -55,12 +55,15 @@ function About() {
         className="mb-stack-lg rounded-lg bg-inverse-surface px-6 py-stack-md text-center text-inverse-on-surface"
       >
         <h2 className="mb-6 font-headline-lg text-headline-lg">
-          <span className="text-plate text-plate-inverse">
+          <span data-text-plate className="text-plate text-plate-inverse">
             {t("about.ctaHeading")}
           </span>
         </h2>
         <p className="mx-auto mb-8 max-w-xl font-body-lg text-body-lg">
-          <span className="text-plate text-plate-inverse text-inverse-on-surface/80">
+          <span
+            data-text-plate
+            className="text-plate text-plate-inverse text-inverse-on-surface/80"
+          >
             {t("about.ctaBody")}
           </span>
         </p>

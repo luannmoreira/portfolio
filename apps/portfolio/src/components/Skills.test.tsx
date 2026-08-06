@@ -1,10 +1,10 @@
 import { screen } from "@testing-library/react";
 import { renderWithI18n } from "../test-i18n";
-import Habilidades from "./Habilidades";
+import Skills from "./Skills";
 import { skills } from "../content/skills";
 
 test("renders an anchor target and the section heading", () => {
-  const { container } = renderWithI18n(<Habilidades />);
+  const { container } = renderWithI18n(<Skills />);
 
   expect(container.querySelector("#skills")).toBeInTheDocument();
   expect(
@@ -16,7 +16,7 @@ test("renders an anchor target and the section heading", () => {
 });
 
 test("renders every category and every skill", () => {
-  renderWithI18n(<Habilidades />);
+  renderWithI18n(<Skills />);
 
   const categories = [...new Set(skills.map((skill) => skill.category))];
   for (const category of categories) {

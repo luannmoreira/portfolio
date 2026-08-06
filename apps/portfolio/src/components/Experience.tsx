@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { formatDate, useLocale } from "@portfolio/i18n";
-import CardExperiencia from "./CardExperiencia";
+import ExperienceCard from "./ExperienceCard";
 import { experience } from "../content/experience";
 
 const DATE_OPTIONS: Intl.DateTimeFormatOptions = {
@@ -8,7 +8,7 @@ const DATE_OPTIONS: Intl.DateTimeFormatOptions = {
   month: "short",
 };
 
-export default function Experiencia() {
+export default function Experience() {
   const { t } = useTranslation();
   const [locale] = useLocale();
 
@@ -19,13 +19,13 @@ export default function Experiencia() {
       </h2>
       <ul className="flex flex-col gap-stack-sm">
         {experience.map((entry) => (
-          <CardExperiencia
+          <ExperienceCard
             key={entry.id}
             name={t(`experience.entries.${entry.id}.name`)}
             issued={t(`experience.entries.${entry.id}.issued`)}
             desc={t(`experience.entries.${entry.id}.desc`)}
-            anoEntrada={formatDate(entry.startDate, locale, DATE_OPTIONS)}
-            anoSaida={formatDate(entry.endDate, locale, DATE_OPTIONS)}
+            startDate={formatDate(entry.startDate, locale, DATE_OPTIONS)}
+            endDate={formatDate(entry.endDate, locale, DATE_OPTIONS)}
           />
         ))}
       </ul>

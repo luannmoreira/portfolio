@@ -1,14 +1,14 @@
 import { render, screen } from "@testing-library/react";
-import CardExperiencia from "./CardExperiencia";
+import ExperienceCard from "./ExperienceCard";
 
 test("renders role, company, dates, and description", () => {
   render(
-    <CardExperiencia
+    <ExperienceCard
       name="Front-end Developer"
       issued="Acme Corp"
       desc="Built things."
-      anoEntrada="Jan 2020"
-      anoSaida="Present"
+      startDate="Jan 2020"
+      endDate="Present"
     />
   );
 
