@@ -8,15 +8,13 @@
 # actually happens, not by silently ignoring this forever.
 GHSA-qwww-vcr4-c8h2
 
-# CVE-2026-14257: brace-expansion ReDoS. This tree has two live major
-# lines of brace-expansion with incompatible APIs: 1.1.16 via the older
-# minimatch@3 (ESLint's own @eslint/config-array), and 5.x via
-# minimatch@10 (typescript-eslint) — the latter is patched via a
-# pnpm-workspace.yaml scoped override, but no fix was ever released
-# within the 1.x line itself (only in 5.x), so minimatch@3's copy can't
-# be patched without forcing an API-incompatible major bump onto code
-# that doesn't expect it — confirmed this breaks ESLint entirely by
-# testing it directly. Dev/lint-time only, parsing this repo's own
-# trusted glob patterns, never attacker-controlled input — not shipped
-# in either app's client bundle.
-CVE-2026-14257
+# CVE-2026-44705: tmp path traversal. Pulled in by @lhci/cli's legacy
+# inquirer/external-editor/rimraf/chrome-launcher chain — @lhci/cli is
+# already at its latest published release (0.15.1), which still resolves
+# tmp@0.0.33/0.1.0; no newer upstream version exists yet to bump to, and
+# there's no reasonable override target (tmp itself has no fixed release
+# in either of its own 0.0.x/0.1.x lines per the advisory — 0.2.6 is a
+# separate major with a different API). Dev/lint-time only (Lighthouse CI
+# tooling), never shipped in either app's client bundle. Revisit when
+# @lhci/cli releases a version with an updated dependency tree.
+CVE-2026-44705

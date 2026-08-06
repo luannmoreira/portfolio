@@ -10,8 +10,20 @@ overrides:
   # Scoped, not blanket: brace-expansion has two live major lines in this
   # tree (1.x via the older minimatch@3, used by @eslint/config-array; 5.x
   # via minimatch@10, used by typescript-eslint) with incompatible APIs —
-  # a blanket override to 5.x broke ESLint entirely (confirmed by testing).
-  # Only the minimatch@10 chain gets patched here; minimatch@3's copy
-  # (1.1.16, CVE-2026-14257) has no fix released within its own major line
-  # — see .trivyignore for why that one stays accepted/documented instead.
-  "minimatch@10>brace-expansion": ^5.0.8
+  # a blanket override merging them onto one line broke ESLint entirely
+  # (confirmed by testing), so each line is patched to its own latest
+  # same-major fix instead. 1.1.18 (1.x line) fixes both CVE-2026-14257
+  # and CVE-2026-69152, the latter a later-discovered bypass of the 5.x
+  # line's own CVE-2026-14257 mitigation — 5.0.9 (5.x line) fixes that
+  # bypass. Neither is a cross-major jump, so ESLint's own 3.x-API usage
+  # stays intact.
+  "minimatch@3>brace-expansion": ^1.1.18
+  "minimatch@10>brace-expansion": ^5.0.9
+  # CVE-2026-13697: undici DoS/info-disclosure. jsdom and wrangler's
+  # miniflare both resolve an older 7.x undici — jsdom's own range
+  # (^7.25.0) already permits the fixed version, miniflare pins undici
+  # exactly (7.28.0) and doesn't. Scoped per-parent, not blanket:
+  # linkinator's separate undici@8.x is already past the fixed 8.9.0
+  # threshold and would break if forced onto a 7.x override.
+  "jsdom>undici": ^7.29.0
+  "miniflare>undici": ^7.29.0
