@@ -4,8 +4,7 @@ import { test, expect } from "@playwright/test";
 const routes = [
   "/",
   "/blog",
-  "/blog/hello-world",
-  "/blog/building-this-blogs-content-pipeline",
+  "/blog/post-placeholder",
   "/adr",
   "/adr/browserrouter-over-hashrouter",
   "/does-not-exist",

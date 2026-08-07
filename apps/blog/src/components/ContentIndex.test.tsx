@@ -23,7 +23,9 @@ function renderBlogIndex() {
 test("lists published entries of the given type, excluding other types", () => {
   renderBlogIndex();
 
-  expect(screen.getByRole("link", { name: /Hello, Blog/ })).toBeInTheDocument();
+  expect(
+    screen.getByRole("link", { name: /Blog Post Placeholder/ })
+  ).toBeInTheDocument();
   expect(
     screen.queryByText("Project Write-Up Placeholder")
   ).not.toBeInTheDocument();
@@ -35,10 +37,9 @@ test("lists published entries of the given type, excluding other types", () => {
 test("links to the entry's basePath/:slug route", () => {
   renderBlogIndex();
 
-  expect(screen.getByRole("link", { name: /Hello, Blog/ })).toHaveAttribute(
-    "href",
-    "/blog/hello-world"
-  );
+  expect(
+    screen.getByRole("link", { name: /Blog Post Placeholder/ })
+  ).toHaveAttribute("href", "/blog/post-placeholder");
 });
 
 test("shows each entry's reading time", () => {
@@ -66,7 +67,7 @@ test("works for a second content type (ADR), proving the generalization", () => 
   expect(
     screen.getByRole("link", { name: /BrowserRouter Over HashRouter/ })
   ).toHaveAttribute("href", "/adr/browserrouter-over-hashrouter");
-  expect(screen.queryByText("Hello, Blog")).not.toBeInTheDocument();
+  expect(screen.queryByText("Blog Post Placeholder")).not.toBeInTheDocument();
 });
 
 test("announces the empty-state message to assistive tech via a live region", () => {

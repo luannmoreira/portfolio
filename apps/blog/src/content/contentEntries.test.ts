@@ -15,19 +15,19 @@ test("discovers content across all three directories", () => {
 });
 
 test("derives slug from filename", () => {
-  const helloWorld = readContentEntries().find(
-    (entry) => entry.title === "Hello, Blog"
+  const placeholder = readContentEntries().find(
+    (entry) => entry.title === "Blog Post Placeholder"
   );
 
-  expect(helloWorld?.slug).toBe("hello-world");
+  expect(placeholder?.slug).toBe("post-placeholder");
 });
 
 test("derives locale from the containing locale subdirectory", () => {
-  const helloWorld = readContentEntries().find(
-    (entry) => entry.title === "Hello, Blog"
+  const placeholder = readContentEntries().find(
+    (entry) => entry.title === "Blog Post Placeholder"
   );
 
-  expect(helloWorld?.locale).toBe("en");
+  expect(placeholder?.locale).toBe("en");
 });
 
 test("validates every entry's frontmatter against the schema", () => {

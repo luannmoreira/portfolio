@@ -4,7 +4,10 @@ test.describe("scroll restoration", () => {
   test("navigating to a new page resets scroll to the top", async ({
     page,
   }) => {
-    await page.goto("/blog/building-this-blogs-content-pipeline");
+    // The ADR write-up (real, substantial prose) rather than a blog post —
+    // the only blog post left is a short placeholder, too short to
+    // guarantee 2000px of scrollable overflow.
+    await page.goto("/adr/browserrouter-over-hashrouter");
     // Post now loads behind two nested lazy() boundaries (the route itself,
     // App.tsx, plus its MDX body, content/loader.ts) rather than one, so the
     // page can still be Suspense-fallback-short right after goto — wait for
@@ -13,7 +16,7 @@ test.describe("scroll restoration", () => {
     // become tall enough, just not instantly.
     await expect(
       page.getByRole("heading", {
-        name: /Building This Blog's Content Pipeline/i,
+        name: "BrowserRouter Over HashRouter",
         level: 1,
       })
     ).toBeVisible();
@@ -22,8 +25,8 @@ test.describe("scroll restoration", () => {
       .poll(() => page.evaluate(() => window.scrollY))
       .toBeGreaterThan(0);
 
-    await page.getByRole("link", { name: "Back to Blog" }).click();
-    await expect(page).toHaveURL(/\/blog$/);
+    await page.getByRole("link", { name: "Back to ADRs" }).click();
+    await expect(page).toHaveURL(/\/adr$/);
 
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   });
@@ -45,12 +48,8 @@ test.describe("scroll restoration", () => {
       .toBeGreaterThan(0);
     const scrolledPosition = await page.evaluate(() => window.scrollY);
 
-    await page
-      .getByRole("link", { name: /Building This Blog's Content Pipeline/ })
-      .click();
-    await expect(page).toHaveURL(
-      /\/blog\/building-this-blogs-content-pipeline$/
-    );
+    await page.getByRole("link", { name: /Blog Post Placeholder/ }).click();
+    await expect(page).toHaveURL(/\/blog\/post-placeholder$/);
 
     await page.goBack();
     await expect(page).toHaveURL(/\/blog$/);

@@ -7,10 +7,10 @@ import { loadContent, loadPostBody, getPostComponent } from "./loader";
 // locale-fallback test below is exercised by requesting "pt-BR" and
 // observing the en content come back with isFallback: true.
 
-const helloWorldLocation = {
+const placeholderLocation = {
   type: "post" as const,
   locale: "en" as const,
-  slug: "hello-world",
+  slug: "post-placeholder",
 };
 
 test("discovers content across all three directories", () => {
@@ -22,19 +22,19 @@ test("discovers content across all three directories", () => {
 });
 
 test("derives slug from filename", () => {
-  const helloWorld = loadContent().find(
-    (entry) => entry.title === "Hello, Blog"
+  const placeholder = loadContent().find(
+    (entry) => entry.title === "Blog Post Placeholder"
   );
 
-  expect(helloWorld?.slug).toBe("hello-world");
+  expect(placeholder?.slug).toBe("post-placeholder");
 });
 
 test("derives locale from the containing locale subdirectory", () => {
-  const helloWorld = loadContent().find(
-    (entry) => entry.title === "Hello, Blog"
+  const placeholder = loadContent().find(
+    (entry) => entry.title === "Blog Post Placeholder"
   );
 
-  expect(helloWorld?.locale).toBe("en");
+  expect(placeholder?.locale).toBe("en");
 });
 
 test("validates every entry's frontmatter against the schema", () => {
@@ -67,32 +67,32 @@ test("computes a reading time estimate for every entry", () => {
 });
 
 test("defaults to en and marks entries as not a fallback", () => {
-  const helloWorld = loadContent().find(
-    (entry) => entry.slug === "hello-world"
+  const placeholder = loadContent().find(
+    (entry) => entry.slug === "post-placeholder"
   );
 
-  expect(helloWorld?.isFallback).toBe(false);
+  expect(placeholder?.isFallback).toBe(false);
 });
 
 test("falls back to the en entry, flagged, when the requested locale has no translation", () => {
-  const helloWorld = loadContent("pt-BR").find(
-    (entry) => entry.slug === "hello-world"
+  const placeholder = loadContent("pt-BR").find(
+    (entry) => entry.slug === "post-placeholder"
   );
 
-  expect(helloWorld?.locale).toBe("en");
-  expect(helloWorld?.isFallback).toBe(true);
+  expect(placeholder?.locale).toBe("en");
+  expect(placeholder?.isFallback).toBe(true);
 });
 
 test("returns one entry per slug even across locale-fallback resolution", () => {
   const slugs = loadContent("pt-BR")
-    .filter((entry) => entry.slug === "hello-world")
+    .filter((entry) => entry.slug === "post-placeholder")
     .map((entry) => entry.slug);
 
   expect(slugs).toHaveLength(1);
 });
 
 test("loadPostBody returns a lazy loader resolving to the matching MDX component", async () => {
-  const loader = loadPostBody(helloWorldLocation);
+  const loader = loadPostBody(placeholderLocation);
   expect(loader).toBeTypeOf("function");
 
   const mod = await loader!();
@@ -101,26 +101,26 @@ test("loadPostBody returns a lazy loader resolving to the matching MDX component
 
 test("loadPostBody returns undefined for an unknown slug", () => {
   expect(
-    loadPostBody({ ...helloWorldLocation, slug: "does-not-exist" })
+    loadPostBody({ ...placeholderLocation, slug: "does-not-exist" })
   ).toBeUndefined();
 });
 
 test("loadPostBody returns undefined for a locale the post isn't translated into", () => {
   expect(
-    loadPostBody({ ...helloWorldLocation, locale: "pt-BR" })
+    loadPostBody({ ...placeholderLocation, locale: "pt-BR" })
   ).toBeUndefined();
 });
 
 test("getPostComponent returns the same component reference on repeated calls", () => {
   // Same reference matters: a React component created fresh each call would
   // reset its Suspense boundary's state every render.
-  expect(getPostComponent(helloWorldLocation)).toBe(
-    getPostComponent(helloWorldLocation)
+  expect(getPostComponent(placeholderLocation)).toBe(
+    getPostComponent(placeholderLocation)
   );
 });
 
 test("getPostComponent returns undefined for an unknown slug", () => {
   expect(
-    getPostComponent({ ...helloWorldLocation, slug: "does-not-exist" })
+    getPostComponent({ ...placeholderLocation, slug: "does-not-exist" })
   ).toBeUndefined();
 });

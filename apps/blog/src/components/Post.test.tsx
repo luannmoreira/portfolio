@@ -19,18 +19,21 @@ function renderAtSlug(slug: string, hash = "") {
 }
 
 test("renders the matching post's compiled MDX content", async () => {
-  renderAtSlug("hello-world");
+  renderAtSlug("post-placeholder");
 
   expect(
-    await screen.findByRole("heading", { name: "Hello, Blog", level: 1 })
+    await screen.findByRole("heading", {
+      name: "Blog Post Placeholder",
+      level: 1,
+    })
   ).toBeInTheDocument();
 });
 
 test("scrolls to the heading matching the URL's #hash once the lazy post body has loaded", async () => {
-  renderAtSlug("hello-world", "#hello-blog");
+  renderAtSlug("post-placeholder", "#blog-post-placeholder");
 
   const heading = await screen.findByRole("heading", {
-    name: "Hello, Blog",
+    name: "Blog Post Placeholder",
     level: 2,
   });
   expect(heading.scrollIntoView).toHaveBeenCalled();
@@ -38,9 +41,12 @@ test("scrolls to the heading matching the URL's #hash once the lazy post body ha
 
 test("shows a not-translated notice when the requested locale has no translation for this post", async () => {
   await i18n.changeLanguage("pt-BR");
-  renderAtSlug("hello-world");
+  renderAtSlug("post-placeholder");
 
-  await screen.findByRole("heading", { name: "Hello, Blog", level: 1 });
+  await screen.findByRole("heading", {
+    name: "Blog Post Placeholder",
+    level: 1,
+  });
   expect(
     screen.getByText(
       "Este post ainda não foi traduzido. Mostrando a versão em inglês."
@@ -49,9 +55,12 @@ test("shows a not-translated notice when the requested locale has no translation
 });
 
 test("does not show the not-translated notice when the post exists in the requested locale", async () => {
-  renderAtSlug("hello-world");
+  renderAtSlug("post-placeholder");
 
-  await screen.findByRole("heading", { name: "Hello, Blog", level: 1 });
+  await screen.findByRole("heading", {
+    name: "Blog Post Placeholder",
+    level: 1,
+  });
   expect(
     screen.queryByText(/hasn't been translated yet/i)
   ).not.toBeInTheDocument();
@@ -64,7 +73,7 @@ test("shows a not-found message for an unknown slug", () => {
 });
 
 test("shows the post's reading time", async () => {
-  renderAtSlug("hello-world");
+  renderAtSlug("post-placeholder");
 
   // Scoped to the article — the page-level "More Entries" section below it
   // also renders link text ending in "Read", ambiguous for an unscoped query.
@@ -73,8 +82,11 @@ test("shows the post's reading time", async () => {
 });
 
 test("renders a BlogPosting JSON-LD script tag with the post's real data", async () => {
-  const { container } = renderAtSlug("hello-world");
-  await screen.findByRole("heading", { name: "Hello, Blog", level: 1 });
+  const { container } = renderAtSlug("post-placeholder");
+  await screen.findByRole("heading", {
+    name: "Blog Post Placeholder",
+    level: 1,
+  });
 
   const script = container.querySelector('script[type="application/ld+json"]');
   expect(script).not.toBeNull();
@@ -83,8 +95,8 @@ test("renders a BlogPosting JSON-LD script tag with the post's real data", async
   expect(json).toMatchObject({
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    headline: "Hello, Blog",
-    url: "https://luanncurioso.dev/blog/hello-world",
+    headline: "Blog Post Placeholder",
+    url: "https://luanncurioso.dev/blog/post-placeholder",
     author: { "@type": "Person", name: "Luann Curioso" },
   });
 });
@@ -98,8 +110,11 @@ test("omits the JSON-LD script tags for an unknown slug", () => {
 });
 
 test("renders a BreadcrumbList JSON-LD script tag alongside BlogPosting", async () => {
-  const { container } = renderAtSlug("hello-world");
-  await screen.findByRole("heading", { name: "Hello, Blog", level: 1 });
+  const { container } = renderAtSlug("post-placeholder");
+  await screen.findByRole("heading", {
+    name: "Blog Post Placeholder",
+    level: 1,
+  });
 
   const scripts = container.querySelectorAll(
     'script[type="application/ld+json"]'
@@ -120,8 +135,8 @@ test("renders a BreadcrumbList JSON-LD script tag alongside BlogPosting", async 
       {
         "@type": "ListItem",
         position: 2,
-        name: "Hello, Blog",
-        item: "https://luanncurioso.dev/blog/hello-world",
+        name: "Blog Post Placeholder",
+        item: "https://luanncurioso.dev/blog/post-placeholder",
       },
     ],
   });

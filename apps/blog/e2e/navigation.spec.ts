@@ -4,10 +4,10 @@ test("blog index lists posts and links to the post page", async ({ page }) => {
   await page.goto("/blog");
   await expect(page.getByRole("heading", { name: "Writing" })).toBeVisible();
 
-  await page.getByRole("link", { name: /Hello, Blog/ }).click();
-  await expect(page).toHaveURL("/blog/hello-world");
+  await page.getByRole("link", { name: /Blog Post Placeholder/ }).click();
+  await expect(page).toHaveURL("/blog/post-placeholder");
   await expect(
-    page.getByRole("heading", { name: "Hello, Blog", level: 1 })
+    page.getByRole("heading", { name: "Blog Post Placeholder", level: 1 })
   ).toBeVisible();
 });
 
@@ -17,15 +17,18 @@ test("an unknown route shows the not-found page", async ({ page }) => {
 });
 
 test("a heading's self-link navigates to its own anchor", async ({ page }) => {
-  await page.goto("/blog/hello-world");
+  await page.goto("/blog/post-placeholder");
 
   // level: 2 — the MDX content's own heading (autolinked by
   // rehype-autolink-headings), distinct from Post.tsx's page-title <h1>,
   // which isn't part of the MDX content and has no self-link.
-  const heading = page.getByRole("heading", { name: "Hello, Blog", level: 2 });
+  const heading = page.getByRole("heading", {
+    name: "Blog Post Placeholder",
+    level: 2,
+  });
   await heading.getByRole("link").click();
 
-  await expect(page).toHaveURL("/blog/hello-world#hello-blog");
+  await expect(page).toHaveURL("/blog/post-placeholder#blog-post-placeholder");
 });
 
 test("ADR index lists ADRs and links to the ADR page", async ({ page }) => {
@@ -44,37 +47,4 @@ test("ADR index lists ADRs and links to the ADR page", async ({ page }) => {
       level: 1,
     })
   ).toBeVisible();
-});
-
-test("the real post exercises every MDX authoring component (9.8)", async ({
-  page,
-}) => {
-  await page.goto("/blog/building-this-blogs-content-pipeline");
-
-  // Callout wrappers (9.2), via MDXProvider (9.8)
-  await expect(
-    page.getByText("pnpm workspaces, not Turborepo or Nx")
-  ).toBeVisible();
-  await expect(
-    page.getByText("Code-splitting doesn't fully work yet")
-  ).toBeVisible();
-  await expect(
-    page.getByText("A dependency that crashes in the browser")
-  ).toBeVisible();
-  await expect(
-    page.getByText("Reuse proven AST-injection utilities")
-  ).toBeVisible();
-  await expect(page.getByText("type is derived, not authored")).toBeVisible();
-
-  // FileTree (9.5)
-  await expect(page.getByText("config-tailwind")).toBeVisible();
-
-  // Terminal (9.6), reusing Pre's copy button (9.4)
-  await expect(page.getByText("pnpm --filter blog dev")).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: /copy/i }).first()
-  ).toBeVisible();
-
-  // Mermaid diagram, build-time SVG (9.7)
-  await expect(page.locator("svg.flowchart")).toBeVisible();
 });
