@@ -53,7 +53,8 @@
     "copyLink": "Copiar Link",
     "moreEntries": "Mais Publicações",
     "viewArchive": "Ver Arquivo",
-    "read": "Ler"
+    "read": "Ler",
+    "notTranslatedNotice": "Este post ainda não foi traduzido. Mostrando a versão em inglês."
   },
   "notFound": {
     "metaTitle": "Não Encontrado — Blog",

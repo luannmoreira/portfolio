@@ -4,6 +4,7 @@ import type { ContentEntry } from "../content/schema";
 const post: ContentEntry = {
   slug: "hello-world",
   type: "post",
+  locale: "en",
   title: "Hello, Blog",
   date: "2026-07-20",
   tags: ["meta"],
@@ -15,6 +16,7 @@ const post: ContentEntry = {
 const adr: ContentEntry = {
   slug: "0001-record",
   type: "adr",
+  locale: "en",
   title: "First Decision",
   date: "2026-07-21",
   tags: [],
@@ -26,6 +28,7 @@ const adr: ContentEntry = {
 const project: ContentEntry = {
   slug: "some-project",
   type: "project",
+  locale: "en",
   title: "Some Project",
   date: "2026-07-22",
   tags: [],

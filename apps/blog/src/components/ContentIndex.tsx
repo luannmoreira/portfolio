@@ -148,7 +148,7 @@ function ContentIndex({ type, basePath }: ContentIndexProps) {
   const [locale] = useLocale();
   const heading = t(`contentIndex.heading.${type}`);
 
-  const entries = loadContent().filter(
+  const entries = loadContent(locale).filter(
     (entry) => entry.type === type && !entry.draft
   );
   const allTags = [...new Set(entries.flatMap((entry) => entry.tags))].sort();

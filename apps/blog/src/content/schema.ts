@@ -1,10 +1,13 @@
 import { z } from "zod";
+import type { Locale } from "@portfolio/i18n";
 
 // Validates only what authors actually write in an .mdx file's frontmatter
 // block. `type` is deliberately excluded here — it's derived from which
 // content directory a file lives in (content/blog/, content/projects/,
 // content/adr/), not hand-typed, so a file can never claim a type that
-// disagrees with its own location.
+// disagrees with its own location. `locale` is excluded for the same
+// reason — it's derived from the locale subdirectory a file lives in
+// (content/blog/en/, content/blog/pt-BR/), not hand-typed.
 const frontmatterSchema = z.object({
   title: z.string().min(1),
   date: z.string().date(),
@@ -24,6 +27,12 @@ export type ContentType = "post" | "project" | "adr";
 export interface ContentEntry extends Frontmatter {
   slug: string;
   type: ContentType;
+  /** The real language this specific file is written in — derived from its
+   * locale subdirectory, always accurate for the file it came from. Not to
+   * be confused with a requested-but-unavailable locale: loader.ts's
+   * loadContent() resolves those against this field and flags the result
+   * with isFallback instead of ever faking this value. */
+  locale: Locale;
   /** Minutes, not a pre-formatted string — "N min read" is locale-dependent
    * phrasing, rendered at display time via t("post.readingTime", { count }). */
   readingMinutes: number;

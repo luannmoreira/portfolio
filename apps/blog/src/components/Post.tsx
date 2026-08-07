@@ -211,9 +211,9 @@ function Post({ basePath }: PostProps) {
   const { t } = useTranslation();
   const [locale] = useLocale();
   const { slug } = useParams();
-  const allEntries = loadContent();
-  const PostBody = slug ? getPostComponent(slug) : undefined;
+  const allEntries = loadContent(locale);
   const entry = slug ? allEntries.find((e) => e.slug === slug) : undefined;
+  const PostBody = entry ? getPostComponent(entry) : undefined;
 
   useDocumentMeta(
     entry
@@ -290,6 +290,14 @@ function Post({ basePath }: PostProps) {
             </div>
           </div>
         </header>
+        {entry.isFallback && (
+          <p
+            role="status"
+            className="mb-stack-sm border border-outline-variant bg-surface-container-low px-gutter py-4 font-body-md text-body-md text-on-surface-variant"
+          >
+            {t("post.notTranslatedNotice")}
+          </p>
+        )}
         <section className="prose font-body-lg text-body-lg leading-relaxed text-on-surface-variant">
           {/* Colocated with its only real consumer rather than provided at
               the app root (App.tsx) — keeps the MDX authoring component

@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import matter from "gray-matter";
 import {
@@ -6,6 +6,7 @@ import {
   type ContentEntry,
   type ContentType,
 } from "./schema";
+import { CONTENT_DIRS, CONTENT_LOCALES } from "./contentDirs";
 import { estimateReadingMinutes } from "./readingTime";
 
 // Runs at Vite-config/build time (Node), not through Vite's module graph —
@@ -17,26 +18,27 @@ import { estimateReadingMinutes } from "./readingTime";
 // pnpm --filter blog), same assumption vite.config.js itself already makes.
 const CONTENT_ROOT = join(process.cwd(), "content");
 
-const CONTENT_DIRS: Record<ContentType, string> = {
-  post: "blog",
-  project: "projects",
-  adr: "adr",
-};
-
 export function readContentEntries(): ContentEntry[] {
-  return (Object.keys(CONTENT_DIRS) as ContentType[]).flatMap((type) => {
-    const dir = join(CONTENT_ROOT, CONTENT_DIRS[type]);
-    return readdirSync(dir)
-      .filter((file) => file.endsWith(".mdx"))
-      .map((file) => {
-        const raw = readFileSync(join(dir, file), "utf-8");
-        const { data, content } = matter(raw);
-        return {
-          ...parseFrontmatter(data),
-          slug: file.replace(/\.mdx$/, ""),
-          type,
-          readingMinutes: estimateReadingMinutes(content),
-        };
-      });
-  });
+  return (Object.keys(CONTENT_DIRS) as ContentType[]).flatMap((type) =>
+    CONTENT_LOCALES.flatMap((locale) => {
+      const dir = join(CONTENT_ROOT, CONTENT_DIRS[type], locale);
+      // A locale subdirectory only needs to exist once a post has actually
+      // been translated into it — not every type/locale pair is populated.
+      if (!existsSync(dir)) return [];
+
+      return readdirSync(dir)
+        .filter((file) => file.endsWith(".mdx"))
+        .map((file) => {
+          const raw = readFileSync(join(dir, file), "utf-8");
+          const { data, content } = matter(raw);
+          return {
+            ...parseFrontmatter(data),
+            slug: file.replace(/\.mdx$/, ""),
+            type,
+            locale,
+            readingMinutes: estimateReadingMinutes(content),
+          };
+        });
+    })
+  );
 }

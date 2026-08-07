@@ -1,9 +1,10 @@
 import { readContentEntries } from "./contentEntries";
 
-// Exercised against the real placeholder files in content/{blog,projects,adr}/
-// — same convention as content/loader.test.ts, since these read the same
-// directories (via Node fs here rather than import.meta.glob, since this
-// runs at Vite-config time, outside the browser module graph).
+// Exercised against the real placeholder files in
+// content/{blog,projects,adr}/en/ — same convention as
+// content/loader.test.ts, since these read the same directories (via Node
+// fs here rather than import.meta.glob, since this runs at Vite-config
+// time, outside the browser module graph).
 
 test("discovers content across all three directories", () => {
   const types = readContentEntries().map((entry) => entry.type);
@@ -19,6 +20,14 @@ test("derives slug from filename", () => {
   );
 
   expect(helloWorld?.slug).toBe("hello-world");
+});
+
+test("derives locale from the containing locale subdirectory", () => {
+  const helloWorld = readContentEntries().find(
+    (entry) => entry.title === "Hello, Blog"
+  );
+
+  expect(helloWorld?.locale).toBe("en");
 });
 
 test("validates every entry's frontmatter against the schema", () => {

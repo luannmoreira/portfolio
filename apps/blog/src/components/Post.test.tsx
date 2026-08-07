@@ -1,7 +1,12 @@
 import { screen, within } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router";
 import { renderWithI18n } from "../test-i18n";
+import { i18n } from "../i18n";
 import Post from "./Post";
+
+afterEach(async () => {
+  await i18n.changeLanguage("en");
+});
 
 function renderAtSlug(slug: string, hash = "") {
   return renderWithI18n(
@@ -29,6 +34,27 @@ test("scrolls to the heading matching the URL's #hash once the lazy post body ha
     level: 2,
   });
   expect(heading.scrollIntoView).toHaveBeenCalled();
+});
+
+test("shows a not-translated notice when the requested locale has no translation for this post", async () => {
+  await i18n.changeLanguage("pt-BR");
+  renderAtSlug("hello-world");
+
+  await screen.findByRole("heading", { name: "Hello, Blog", level: 1 });
+  expect(
+    screen.getByText(
+      "Este post ainda não foi traduzido. Mostrando a versão em inglês."
+    )
+  ).toBeInTheDocument();
+});
+
+test("does not show the not-translated notice when the post exists in the requested locale", async () => {
+  renderAtSlug("hello-world");
+
+  await screen.findByRole("heading", { name: "Hello, Blog", level: 1 });
+  expect(
+    screen.queryByText(/hasn't been translated yet/i)
+  ).not.toBeInTheDocument();
 });
 
 test("shows a not-found message for an unknown slug", () => {

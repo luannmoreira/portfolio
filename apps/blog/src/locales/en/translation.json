@@ -53,7 +53,8 @@
     "copyLink": "Copy Link",
     "moreEntries": "More Entries",
     "viewArchive": "View Archive",
-    "read": "Read"
+    "read": "Read",
+    "notTranslatedNotice": "This post hasn't been translated yet. Showing the English version."
   },
   "notFound": {
     "metaTitle": "Not Found — Blog",

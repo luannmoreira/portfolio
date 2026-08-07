@@ -2,6 +2,7 @@ import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Plugin, ResolvedConfig } from "vite";
 import { readContentEntries } from "../content/contentEntries";
+import { DEFAULT_CONTENT_LOCALE } from "../content/contentDirs";
 import { buildRss, buildSitemap } from "./generate";
 
 // The root build:site/deploy scripts set SITE_URL=https://luanncurioso.dev,
@@ -30,7 +31,13 @@ export function feedPlugin(): Plugin {
         );
       }
 
-      const entries = readContentEntries();
+      // A single English feed, no per-locale RSS (see generate.ts) — once
+      // translations exist, readContentEntries() carries one raw entry per
+      // locale for the same slug, so this filters back down to one entry
+      // per post before building the sitemap/feed, same as always.
+      const entries = readContentEntries().filter(
+        (entry) => entry.locale === DEFAULT_CONTENT_LOCALE
+      );
       const base = siteUrl ?? PLACEHOLDER_SITE_URL;
 
       writeFileSync(
