@@ -27,3 +27,15 @@ overrides:
   # threshold and would break if forced onto a 7.x override.
   "jsdom>undici": ^7.29.0
   "miniflare>undici": ^7.29.0
+  # GHSA-5p4m-2wfm-xmqj / CVE-2026-59870: js-yaml quadratic CPU consumption
+  # in !!omap resolution. Two live major lines here too, each with a
+  # same-major patch available (unlike .trivyignore's CVE-2026-44705, which
+  # has none): 3.x via @lhci/cli (through its own @lhci/utils dependency,
+  # the direct parent), depcheck and gray-matter (MDX frontmatter parsing,
+  # build-time only), 4.x via eslint's own @eslint/eslintrc. Scoped per
+  # direct parent, not blanket, for the same reason as brace-expansion
+  # above.
+  "@lhci/utils>js-yaml": ^3.15.1
+  "depcheck>js-yaml": ^3.15.1
+  "gray-matter>js-yaml": ^3.15.1
+  "@eslint/eslintrc>js-yaml": ^4.3.1
