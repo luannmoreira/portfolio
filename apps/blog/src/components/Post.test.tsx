@@ -3,9 +3,9 @@ import { MemoryRouter, Routes, Route } from "react-router";
 import { renderWithI18n } from "../test-i18n";
 import Post from "./Post";
 
-function renderAtSlug(slug: string) {
+function renderAtSlug(slug: string, hash = "") {
   return renderWithI18n(
-    <MemoryRouter initialEntries={[`/blog/${slug}`]}>
+    <MemoryRouter initialEntries={[`/blog/${slug}${hash}`]}>
       <Routes>
         <Route path="/blog/:slug" element={<Post basePath="/blog" />} />
       </Routes>
@@ -19,6 +19,16 @@ test("renders the matching post's compiled MDX content", async () => {
   expect(
     await screen.findByRole("heading", { name: "Hello, Blog", level: 1 })
   ).toBeInTheDocument();
+});
+
+test("scrolls to the heading matching the URL's #hash once the lazy post body has loaded", async () => {
+  renderAtSlug("hello-world", "#hello-blog");
+
+  const heading = await screen.findByRole("heading", {
+    name: "Hello, Blog",
+    level: 2,
+  });
+  expect(heading.scrollIntoView).toHaveBeenCalled();
 });
 
 test("shows a not-found message for an unknown slug", () => {

@@ -9,6 +9,7 @@ import {
   type ContentEntry,
 } from "../content/loader";
 import { useDocumentMeta } from "../hooks/useDocumentMeta";
+import { useScrollToHash } from "../hooks/useScrollToHash";
 import { mdxComponents } from "./mdx/mdxComponents";
 import NotFound from "./NotFound";
 import MaterialIcon from "./icons/MaterialIcon";
@@ -198,6 +199,14 @@ function RelatedEntries({
   );
 }
 
+// Mounted as a sibling to <PostBody/> inside the same <Suspense> — see
+// useScrollToHash for why the hash-scroll can't be triggered any higher in
+// the tree.
+function ScrollToHash() {
+  useScrollToHash();
+  return null;
+}
+
 function Post({ basePath }: PostProps) {
   const { t } = useTranslation();
   const [locale] = useLocale();
@@ -297,6 +306,7 @@ function Post({ basePath }: PostProps) {
                   no fixed set of components to hoist to module scope since slugs
                   come from a growing content collection, not known ahead of time. */}
               <PostBody />
+              <ScrollToHash />
             </Suspense>
           </MDXProvider>
         </section>
