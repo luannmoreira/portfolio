@@ -13,16 +13,16 @@
   "hero": {
     "eyebrow": "Engenheiro de Software",
     "heading": "Construindo sistemas que escalam.",
-    "body": "Sou Engenheiro de Software com experiência em produção em front-end e infraestrutura — de gerenciamento remoto de dispositivos na ShellHub a plataformas governamentais, e os servidores por trás delas antes disso. Me importo com arquitetura, testes e código que dura, não apenas com a aparência.",
+    "body": "Sou Engenheiro de Software com experiência em produção em front-end, backend e infraestrutura — de gerenciamento remoto de dispositivos na ShellHub a plataformas governamentais, e os servidores por trás delas antes disso. Me importo com arquitetura, testes e código que dura, não apenas com a aparência.",
     "viewProjects": "Ver Projetos",
     "contactMe": "Fale Comigo"
   },
   "about": {
     "metaTitle": "Sobre • Luann Curioso",
-    "metaDescription": "Background, habilidades, experiência e as ferramentas usadas no dia a dia — de infraestrutura e sistemas governamentais a engenharia front-end em produção na ShellHub e na OS Systems.",
+    "metaDescription": "Background, habilidades, experiência e as ferramentas usadas no dia a dia — de infraestrutura e sistemas governamentais a engenharia cross-stack em produção na ShellHub e na OS Systems.",
     "philosophyEyebrow": "Filosofia Profissional",
     "philosophyHeading": "Engenharia de software é mais do que apenas escrever código; é sobre resolver problemas e construir <highlight>sistemas sustentáveis</highlight>.",
-    "bioParagraph1": "Sou Engenheiro de Software com um background focado em front-end — mais de cinco anos construindo interfaces de produção em TypeScript, React e Vue. Meu caminho começou na infraestrutura: configurando servidores, virtualização e Active Directory antes mesmo de lançar uma interface web, e essa exposição inicial a sistemas ainda molda como penso sobre software hoje. Desde então, trabalhei em plataformas de produção, corporativas e governamentais — o produto de gerenciamento remoto de dispositivos da ShellHub, ferramentas de infraestrutura da OS Systems e uma aplicação do setor público para o Estado de Mato Grosso — com foco em arquitetura reutilizável, testes automatizados, acessibilidade e qualidade de código, não apenas UI.",
+    "bioParagraph1": "Sou Engenheiro de Software cujo caminho começou na infraestrutura, não no navegador — configurando servidores, virtualização e Active Directory antes mesmo de lançar uma interface web, e essa exposição inicial ainda molda como penso sobre software hoje. Desde então, passei mais de cinco anos em plataformas de produção, corporativas e governamentais, trabalhando toda a largura da stack: TypeScript, React e Vue no front-end, Go e APIs REST na fronteira com o backend, e uma migração de banco de dados de MongoDB para PostgreSQL entre os trabalhos mais profundos de sistemas. Isso passou pelo ShellHub e pelo UpdateHub, produtos de infraestrutura da OS Systems, e por uma aplicação do setor público para o Estado de Mato Grosso, com foco em arquitetura reutilizável, testes automatizados, acessibilidade e qualidade de código, não apenas UI.",
     "bioParagraph2": "Sou contribuidor open-source do ShellHub e do UpdateHub, AWS Certified Cloud Practitioner, e atualmente finalizando um Bacharelado em Sistemas de Informação. Meus interesses continuam se expandindo para além do navegador, rumo a backend e engenharia de plataforma, mas o fio condutor sempre foi me importar com como o software é realmente construído, não apenas com sua aparência. Fora isso, passo meu tempo livre cozinhando e com cachorros.",
     "profileAlt": "Luann Curioso",
     "ctaHeading": "Procurando um parceiro técnico?",
@@ -103,7 +103,7 @@
     "allProjectsHeading": "Todos os projetos",
     "items": {
       "shellhub": {
-        "description": "Uma plataforma de gerenciamento remoto de dispositivos de nível de produção, usada por clientes reais. Contribuí em todo o ciclo de engenharia — construindo funcionalidades em React e Vue 3 com TypeScript, padronizando testes unitários com Vitest, refatorando código legado em soluções sustentáveis e melhorando a consistência da arquitetura front-end. Além do trabalho em funcionalidades, isso significou reduzir dívida técnica, revisar pull requests e participar de discussões arquiteturais junto a engenheiros de backend — engenheirando um produto real, não apenas sua UI."
+        "description": "Uma plataforma de gerenciamento remoto de dispositivos de nível de produção, usada por clientes reais. Contribuí em todo o ciclo de engenharia — construindo funcionalidades em React e Vue 3 com TypeScript, padronizando testes unitários com Vitest, refatorando código legado em soluções sustentáveis e melhorando a consistência da arquitetura de UI. Além do trabalho em funcionalidades, isso significou integrar e testar gateways de pagamento, contribuir em uma migração de banco de dados de MongoDB para PostgreSQL, reduzir dívida técnica, revisar pull requests e participar de discussões arquiteturais junto a engenheiros de backend — engenheirando um produto real, não apenas sua UI."
       },
       "os-systems": {
         "description": "Software corporativo em múltiplos setores, abrangendo tanto desenvolvimento de aplicações quanto infraestrutura. Construí aplicações de produção com React, Vue, Angular e Electron, além de trabalhar diretamente com Docker, Windows Server, Hyper-V e Active Directory — experiência que moldou uma compreensão da entrega de software além da camada front-end."
@@ -115,22 +115,22 @@
   },
   "resume": {
     "metaTitle": "Currículo • Luann Curioso",
-    "metaDescription": "Currículo de Luann Curioso — experiência e habilidades, trabalho front-end em produção com base em infraestrutura.",
+    "metaDescription": "Currículo de Luann Curioso — experiência de engenharia cross-stack e habilidades, de aplicações em produção à infraestrutura por trás delas.",
     "print": "Imprimir / Salvar como PDF",
     "summaryHeading": "Resumo",
-    "summary": "Engenheiro de Software com mais de 5 anos de experiência construindo sistemas front-end em produção com TypeScript, React, Vue, Node.js, Deno e Golang, além de background prático em infraestrutura (administração de redes, virtualização, Active Directory) no início da carreira. Focado em arquitetura reutilizável, testes automatizados, acessibilidade e experiência do desenvolvedor em plataformas de produção, corporativas e governamentais. Contribuidor open-source do ShellHub e UpdateHub, AWS Certified Cloud Practitioner.",
+    "summary": "Engenheiro de Software com mais de 5 anos de experiência construindo sistemas em produção com TypeScript, React, Vue, Go, Node.js e Deno, incluindo integração de APIs REST na fronteira entre backend e frontend e uma migração de banco de dados de MongoDB para PostgreSQL, além de background prático em infraestrutura (administração de redes, virtualização, Active Directory) no início da carreira. Focado em arquitetura reutilizável, testes automatizados, acessibilidade e experiência do desenvolvedor em plataformas de produção, corporativas e governamentais. Contribuidor open-source do ShellHub e UpdateHub, AWS Certified Cloud Practitioner.",
     "skillsHeading": "Habilidades"
   },
   "experience": {
     "heading": "Experiência",
     "entries": {
       "os-systems": {
-        "name": "Engenheiro Front-end",
+        "name": "Engenheiro de Software",
         "issued": "OS Systems, Pelotas/RS (Remoto)",
-        "desc": "Comecei como Desenvolvedor Front-end e fui promovido a Engenheiro Front-end, dedicando a maior parte do tempo ao ShellHub, a plataforma de gerenciamento remoto de dispositivos da OS Systems, além de ferramentas de infraestrutura como o UpdateHub — usando Vue, Vuetify, TypeScript, Go e React. Fui responsável pela arquitetura de UI e por componentes reutilizáveis, impulsionei testes automatizados e melhorias de acessibilidade, e mentorei desenvolvedores juniores."
+        "desc": "Comecei como desenvolvedor e fui promovido a Engenheiro de Software, dedicando a maior parte do tempo ao ShellHub e ao UpdateHub, produtos de gerenciamento de dispositivos e infraestrutura da OS Systems, usando TypeScript, Go, React, Vue e Vuetify. Trabalhei na fronteira entre backend e frontend com integração de APIs REST, contribuí em uma migração de banco de dados de MongoDB para PostgreSQL e integrei gateways de pagamento. Fui responsável pela arquitetura de UI e por componentes reutilizáveis, padronizei os testes automatizados do time com Vitest, e revisei pull requests em decisões de arquitetura junto a engenheiros de backend e produto."
       },
       "sedec": {
-        "name": "Estagiário de Desenvolvimento Front-end",
+        "name": "Estagiário de Engenharia de Software",
         "issued": "Secretaria de Estado de Desenvolvimento Econômico de Mato Grosso, Cuiabá/MT",
         "desc": "Desenvolvi interfaces para aplicações governamentais em React, Electron, Vue.js e Nuxt, integrando APIs REST construídas com Express, Node.js e Spring Boot. Trabalhei diretamente com designers de UX em usabilidade e performance em um ambiente de produção do setor público."
       },
@@ -164,14 +164,14 @@
       },
       "sedec": {
         "title": "SEDEC",
-        "subtitle": "Estagiário de Desenvolvimento Front-end",
+        "subtitle": "Estagiário de Engenharia de Software",
         "summary": "Desenvolvi aplicações governamentais voltadas ao público, criando funcionalidades usadas por empresas e cidadãos em todo o Mato Grosso.",
         "details": "Desenvolvi aplicações governamentais voltadas ao público, incluindo o Invest-MT, criando funcionalidades usadas por empresas e cidadãos em todo o Mato Grosso."
       },
       "os-systems": {
         "title": "OS Systems",
-        "subtitle": "Engenheiro Front-end",
-        "summary": "Trabalhei em aplicações corporativas usando React e TypeScript, melhorando a arquitetura front-end e a experiência de desenvolvimento."
+        "subtitle": "Engenheiro de Software",
+        "summary": "Trabalhei em aplicações corporativas usando React, TypeScript e Go, melhorando a arquitetura de sistemas e a experiência de desenvolvimento."
       },
       "shellhub": {
         "title": "ShellHub",
@@ -184,7 +184,7 @@
       },
       "engineering-growth": {
         "title": "Crescimento em Engenharia",
-        "summary": "Foco em arquitetura de software, escalabilidade front-end, estratégias de teste, código limpo e boas práticas de engenharia."
+        "summary": "Foco em arquitetura de software, escalabilidade de sistemas, estratégias de teste, código limpo e boas práticas de engenharia."
       },
       "portfolio-rebranding": {
         "title": "Reformulação do Portfólio",

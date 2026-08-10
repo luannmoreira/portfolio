@@ -13,16 +13,16 @@
   "hero": {
     "eyebrow": "Software Engineer",
     "heading": "Building systems that scale.",
-    "body": "I'm a Software Engineer with production experience across front-end and infrastructure — from remote device management at ShellHub to government platforms, and the servers underneath them before that. I care about architecture, testing, and code that lasts, not just how it looks.",
+    "body": "I'm a Software Engineer with production experience across front-end, backend, and infrastructure — from remote device management at ShellHub to government platforms, and the servers underneath them before that. I care about architecture, testing, and code that lasts, not just how it looks.",
     "viewProjects": "View Projects",
     "contactMe": "Contact Me"
   },
   "about": {
     "metaTitle": "About • Luann Curioso",
-    "metaDescription": "Background, skills, experience, and the tools used day to day — from infrastructure and government systems to production front-end engineering at ShellHub and OS Systems.",
+    "metaDescription": "Background, skills, experience, and the tools used day to day — from infrastructure and government systems to production cross-stack engineering at ShellHub and OS Systems.",
     "philosophyEyebrow": "Professional Philosophy",
     "philosophyHeading": "Software engineering is more than just writing code; it's about solving problems and building <highlight>sustainable systems</highlight>.",
-    "bioParagraph1": "I'm a Software Engineer with a front-end-heavy background — five-plus years building production interfaces in TypeScript, React, and Vue. My path started in infrastructure: configuring servers, virtualization, and Active Directory before I ever shipped a web interface, and that early exposure to systems still shapes how I think about software today. Since then I've worked across production, enterprise, and government platforms — ShellHub's remote device management product, OS Systems' infrastructure tooling, and a public-sector application for the State of Mato Grosso — with a focus on reusable architecture, automated testing, accessibility, and code quality, not just UI.",
+    "bioParagraph1": "I'm a Software Engineer whose path started in infrastructure, not the browser — configuring servers, virtualization, and Active Directory before I ever shipped a web interface, and that early exposure still shapes how I think about software today. Since then I've spent five-plus years across production, enterprise, and government platforms, working the full width of the stack: TypeScript, React, and Vue on the front end, Go and REST APIs at the boundary with backend, and a MongoDB-to-PostgreSQL database migration among the deeper systems work. That's spanned ShellHub and UpdateHub, OS Systems' infrastructure products, and a public-sector application for the State of Mato Grosso, with a focus on reusable architecture, automated testing, accessibility, and code quality, not just UI.",
     "bioParagraph2": "I'm an open-source contributor to ShellHub and UpdateHub, AWS Certified Cloud Practitioner, and currently finishing a Bachelor's in Information Systems. My interests keep expanding past the browser, toward backend and platform engineering, but the throughline has always been caring about how software is actually built, not just how it looks. Outside of that, I spend my free time cooking and hanging out with dogs.",
     "profileAlt": "Luann Curioso",
     "ctaHeading": "Looking for a technical partner?",
@@ -103,7 +103,7 @@
     "allProjectsHeading": "All projects",
     "items": {
       "shellhub": {
-        "description": "A production-grade remote device management platform used by real customers. Contributed across the full engineering lifecycle — building features in React and Vue 3 with TypeScript, standardizing unit testing with Vitest, refactoring legacy code into maintainable solutions, and improving front-end architecture consistency. Beyond feature work, this meant reducing technical debt, reviewing pull requests, and participating in architectural discussions alongside backend engineers — engineering a real product, not just its UI."
+        "description": "A production-grade remote device management platform used by real customers. Contributed across the full engineering lifecycle — building features in React and Vue 3 with TypeScript, standardizing unit testing with Vitest, refactoring legacy code into maintainable solutions, and improving UI architecture consistency. Beyond feature work, this meant integrating and testing payment gateways, contributing to a MongoDB-to-PostgreSQL database migration, reducing technical debt, reviewing pull requests, and participating in architectural discussions alongside backend engineers — engineering a real product, not just its UI."
       },
       "os-systems": {
         "description": "Enterprise software across multiple industries, spanning both application development and infrastructure. Built production applications with React, Vue, Angular, and Electron, while also working hands-on with Docker, Windows Server, Hyper-V, and Active Directory — experience that shaped an understanding of software delivery beyond the front-end layer."
@@ -115,22 +115,22 @@
   },
   "resume": {
     "metaTitle": "Resume • Luann Curioso",
-    "metaDescription": "Luann Curioso's resume — experience and skills, production front-end work with an infrastructure background.",
+    "metaDescription": "Luann Curioso's resume — cross-stack engineering experience and skills, from production applications to the infrastructure underneath them.",
     "print": "Print / Save as PDF",
     "summaryHeading": "Summary",
-    "summary": "Software Engineer with 5+ years of experience building production front-end systems in TypeScript, React, Vue, Node.js, Deno, and Golang, plus hands-on infrastructure background (network administration, virtualization, Active Directory) from earlier in my career. Focused on reusable architecture, automated testing, accessibility, and developer experience across production, enterprise, and government platforms. Open-source contributor to ShellHub and UpdateHub, AWS Certified Cloud Practitioner.",
+    "summary": "Software Engineer with 5+ years of experience building production systems across TypeScript, React, Vue, Go, Node.js, and Deno, including REST API integration at the backend/frontend boundary and a MongoDB-to-PostgreSQL database migration, plus hands-on infrastructure background (network administration, virtualization, Active Directory) from earlier in my career. Focused on reusable architecture, automated testing, accessibility, and developer experience across production, enterprise, and government platforms. Open-source contributor to ShellHub and UpdateHub, AWS Certified Cloud Practitioner.",
     "skillsHeading": "Skills"
   },
   "experience": {
     "heading": "Experience",
     "entries": {
       "os-systems": {
-        "name": "Front-end Engineer",
+        "name": "Software Engineer",
         "issued": "OS Systems, Pelotas/RS (Remote)",
-        "desc": "Started as a Front-end Developer and was promoted to Front-end Engineer, spending most of this time on ShellHub, OS Systems' remote device management platform, plus infrastructure tooling like UpdateHub — across Vue, Vuetify, TypeScript, Go, and React. Owned UI architecture and reusable components, drove automated testing and accessibility improvements, and mentored junior developers."
+        "desc": "Started as a developer and was promoted to Software Engineer, spending most of this time on ShellHub and UpdateHub, OS Systems' device management and infrastructure products, across TypeScript, Go, React, Vue, and Vuetify. Worked the REST API boundary between backend and frontend, contributed to a MongoDB-to-PostgreSQL database migration, and integrated payment gateways. Owned UI architecture and reusable components, standardized automated testing with Vitest, and reviewed pull requests on architecture decisions with backend and product engineers."
       },
       "sedec": {
-        "name": "Front-end Developer Trainee",
+        "name": "Software Engineer Intern",
         "issued": "Department of Economic Development of the State of Mato Grosso, Cuiabá/MT",
         "desc": "Built interfaces for government applications in React, Electron, Vue.js, and Nuxt, integrating REST APIs built with Express, Node.js, and Spring Boot. Worked directly with UX designers on usability and performance in a public-sector production environment."
       },
@@ -164,14 +164,14 @@
       },
       "sedec": {
         "title": "SEDEC",
-        "subtitle": "Front-end Developer Trainee",
+        "subtitle": "Software Engineer Intern",
         "summary": "Developed public-facing government applications, creating features used by businesses and citizens across Mato Grosso.",
         "details": "Developed public-facing government applications including Invest-MT, creating features used by businesses and citizens across Mato Grosso."
       },
       "os-systems": {
         "title": "OS Systems",
-        "subtitle": "Front-end Engineer",
-        "summary": "Worked on enterprise applications using React and TypeScript while improving front-end architecture and developer experience."
+        "subtitle": "Software Engineer",
+        "summary": "Worked on enterprise applications across React, TypeScript, and Go, while improving system architecture and developer experience."
       },
       "shellhub": {
         "title": "ShellHub",
@@ -184,7 +184,7 @@
       },
       "engineering-growth": {
         "title": "Engineering Growth",
-        "summary": "Focused on software architecture, front-end scalability, testing strategies, clean code, and engineering best practices."
+        "summary": "Focused on software architecture, system scalability, testing strategies, clean code, and engineering best practices."
       },
       "portfolio-rebranding": {
         "title": "Portfolio Rebranding",

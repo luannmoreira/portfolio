@@ -9,7 +9,13 @@ test("Hero content renders fully below the fixed navbar", async ({ page }) => {
   await page.goto("/");
 
   const navBox = await page.getByRole("navigation").boundingBox();
-  const heroLabel = page.getByText("Software Engineer", { exact: true });
+  // Scoped to the Hero section specifically: the Engineering Timeline below
+  // it also renders an entry titled "Software Engineer", so an unscoped
+  // exact-text locator matches both.
+  const heroLabel = page
+    .locator("section")
+    .first()
+    .getByText("Software Engineer", { exact: true });
   await expect(heroLabel).toBeVisible();
   const heroBox = await heroLabel.boundingBox();
 
