@@ -1,0 +1,117 @@
+---
+title: "Shipped, Documented, Never Called"
+date: "2026-08-11"
+tags: ["security", "postmortem", "software-architecture"]
+excerpt: "A $116M Bitcoin hardware wallet hack traces back to one line of preprocessor logic, and to a lesson about verifying that the strong code path you built is the one that actually runs."
+draft: false
+---
+
+_What the Coldcard entropy failure teaches you about building on top of something sophisticated._
+
+---
+
+Coinkite built the right thing.
+
+Somewhere in the Coldcard firmware there is a hardware random number generator wrapper: a purpose-built routine that reads the STM32's true RNG peripheral, refuses output on timeout, and rejects repeated samples. It is careful code. It was written deliberately, because the team decided MicroPython's generic randomness path was not good enough for a Bitcoin hardware wallet. They turned MicroPython's version off and wrote their own.
+
+That routine was present in every affected binary. It was exposed to Python. It was reviewed. It was, in the loose sense that matters to a marketing page, _shipped_.
+
+It was never called when a wallet seed was created.
+
+Between July 30 and August 3, 2026, roughly 1,816 BTC (somewhere between $114 and $116 million depending on which price you use) was swept out of more than 5,200 addresses belonging to Coldcard owners. Nobody touched a device. Nobody phished anybody. The attacker simply recomputed keys that had never been random in the first place.
+
+The gap between "we built a strong solution" and "the strong solution is on the path that matters" is the entire story here. Crypto just supplies the receipt: this is a software engineering failure with a nine-figure price tag.
+
+---
+
+## What actually happened
+
+The failure traces to a single line of preprocessor logic, and it is worth stating precisely, because the precision is the lesson.
+
+Coldcard's board configuration sets `MICROPY_HW_ENABLE_RNG` to `0`. This is correct and intentional: it tells MicroPython not to compile its own hardware RNG path, because Coinkite supplies its own. Standard embedded practice. A comment in the source says as much: _we have our own version of this code_.
+
+The cryptographic support library, `libngu`, guards its entropy source with `#ifndef MICROPY_HW_ENABLE_RNG` and a build error underneath. `#ifndef` checks whether the macro _exists_, not whether it's _enabled_.
+
+Defined-as-zero exists. The guard passed. The build succeeded. And `libngu` linked to MicroPython's `rng_get()`, which, seeing a value of zero, had compiled in its software fallback: Yasmarang, a small PRNG intended for microcontrollers with no hardware RNG at all, initialized once from the chip's UID XORed with a SysTick counter plus two RTC registers, and never fed fresh entropy again.
+
+Before March 2021, seed generation called Coinkite's own routine directly and got real hardware randomness. On March 1, 2021, a commit changed seed generation to go through `libngu` instead. The change shipped in firmware v4.0.0 on March 17, 2021. From that moment, every new seed on an affected device came out of a deterministic generator whose inputs were device metadata and boot timing.
+
+Effective entropy against a 128-bit design target:
+
+| Device / firmware                     | Effective entropy           |
+| ------------------------------------- | --------------------------- |
+| Mk1, and Mk2/Mk3 through v3.2.2       | ~128 bits (unaffected path) |
+| Mk2/Mk3, v4.0.0–v4.1.9                | ~40 bits or lower           |
+| Mk4 / Mk5 / Q, before the July 31 fix | ~72 bits                    |
+
+Forty bits is a weekend on commodity hardware. That is the number the sweepers monetized.
+
+---
+
+## The pattern, four times over
+
+Here is what makes this case worth writing about rather than just reporting. The Coldcard firmware does not contain _one_ sophisticated mechanism that went unused. It contains at least four, layered on top of each other, each individually defensible, and collectively decorative.
+
+**1. The TRNG wrapper that nothing called.** Block's engineering analysis found the intended hardware RNG implementation present in the binary but simply not reached from the wallet-generation call site. Code review confirmed the implementation existed. Nobody traced the symbol resolution from the place that mattered back down to it. Presence was verified. Participation was assumed.
+
+**2. The secure element reseed that threw away 90% of its input.** In 2022, Mk4-generation devices added a boot-time reseed from the device's secure elements: 32 authenticated bytes from SE1, 8 more from SE2. Genuinely good sources. Those 40 bytes were hashed, and then four bytes were unpacked from the digest and used to overwrite a single 32-bit word of the Yasmarang state. Not to seed a DRBG. Not to reinitialize the generator. One word. This is the accident that raised Mk4/Mk5/Q to ~72 bits instead of ~40. It helped, but by luck, not by design. A sophisticated ingredient, used ceremonially.
+
+**3. Defense in depth that XORed a PRNG with a PRNG.** `libngu` maintains a second Yasmarang generator and XORs its output with the first. Its initial state is four hardcoded public constants sitting in open-source code. XOR does not create entropy. If both inputs are reproducible, the result is reproducible. The structure of the code says "we mixed two independent sources." The reality is one deterministic stream combined with a second deterministic stream that anyone can read off GitHub.
+
+**4. Health checks that measured the wrong property.** The hardware path had a check that rejects repeated adjacent samples, a sensible detector for a stuck hardware peripheral. A deterministic PRNG produces different adjacent values by construction, so it sails through. Wallet generation also asserts that the 32-byte seed contains more than four distinct byte values. Yasmarang passes that trivially. Both checks ran, both passed, and neither was capable of noticing what was wrong. The output looked random. It just wasn't unpredictable.
+
+And the one mechanism that actually worked as advertised (user-supplied dice rolls, a genuinely thoughtful feature) was optional, off the default path, and used by a minority of owners. Coinkite's guidance now says a seed created with at least 50 fair private dice rolls, or protected by a strong unique passphrase, retains protection against this specific failure. The strongest thing they built was the thing users had to opt into.
+
+---
+
+## Why this happens, generally
+
+Strip out the Bitcoin and you have a shape that recurs everywhere.
+
+**Sophistication is verified by inspection; correctness is verified by execution.** A code review answers "does this look right?" A call-graph trace answers "does this run?" The first is cheap, satisfying, and produces the feeling of having checked. The second is tedious and is the one that would have caught this. Five years of reviews confirmed a TRNG implementation existed. None confirmed the seed path reached it.
+
+**Fallbacks are designed to be silent, which is exactly the problem.** A fallback exists so the system keeps working when the preferred path is unavailable. That is a reasonable property for a logging backend and a catastrophic one for an entropy source. The user saw no warning. The device booted normally. There is no error state for "your randomness is weak": that is the defining property of the failure class. Anything that can degrade silently will eventually degrade silently in production and stay that way for years.
+
+**Configuration has a value, not just a presence.** `#ifndef` versus `#if` is the whole bug. This exact class (checking whether a flag is set rather than what it is set to) lives in every feature-flag system, every environment-variable check, every `if os.getenv("STRICT_MODE")` where the string `"false"` is truthy. The disabled configuration and the missing configuration look identical to the wrong test.
+
+**Layered sophistication hides the fact that one layer is load-bearing.** BIP39 checksums, SHA256d hashing, secure elements, air-gapping, an open-source codebase, independent audits: Coldcard had all of it. And all of it sat on one assumption, that the seed came from a large random space. Hashing a small input set produces a statistically uniform output over a small input set. Every layer above the entropy source was doing real work and none of it could compensate for the base being wrong. Depth doesn't help when the failure is at the bottom.
+
+**"We built X" quietly becomes "we use X."** The distance between those two sentences is where this incident lives. Coinkite's own founder described setting the flag to zero on the belief that it meant neither RNG version was needed, a completely human misreading, and the kind that no amount of institutional sophistication prevents on its own.
+
+---
+
+## What to do when you're basing a new solution on something sophisticated
+
+This applies beyond hardware wallets, to anyone who has just adopted a strong primitive and is about to assume it's working.
+
+**Prove the path, not the presence.** For any security-critical dependency, trace from the actual call site to the actual implementation, at least once, deliberately, and write down what you found. "The library supports it" is not the same as "our code reaches it." If you can, assert it at runtime: have the strong path set a flag the caller can check, and refuse to proceed if it isn't set.
+
+**Make the fallback loud, or delete it.** For anything security-critical, prefer fail-closed. A device that refuses to generate a seed because the TRNG is unavailable is annoying. A device that generates a weak one silently is a five-year liability. If you must keep a fallback, it should be impossible to be in it without someone knowing: a boot warning, a log line at ERROR, a status the UI surfaces.
+
+**Assert on provenance, not on output.** The Coldcard checks looked at the bytes. The bytes were fine. Checks on output can only catch degenerate failures; they cannot distinguish random from pseudorandom-but-deterministic, and in general they cannot verify the property you actually care about. Check where the value came from, not what it looks like.
+
+**Test the negative case.** Can you make the strong path fail on purpose and observe the system reacting correctly? If you have never seen your fallback trigger in a test, you do not know what your system does when it triggers. Untested error paths are the ones you're actually running.
+
+**Treat "sophisticated but optional" as "not shipped."** The dice-roll feature worked. It saved the people who used it. Most people didn't. If your best defense requires the user to find and enable it, your real security posture is the default, not the maximum. Ship the strong path as the default and let sophistication be the thing users can _turn down_, not the thing they have to turn on.
+
+**Re-audit at integration boundaries, not just at write time.** The vulnerable guard in `libngu` predates the incident's impact: it existed in January 2021 and only became harmful when seed generation migrated to that library on March 1. The code didn't change into a bug. The context around it did. Every time you route an existing call through a new dependency, you are making new assumptions about a component nobody re-reviewed.
+
+---
+
+## The uncomfortable part
+
+There is a version of this story where the lesson is "Coinkite was careless." That version is comforting and wrong. Coinkite disabled a generic RNG _because_ they cared enough to write a better one. They added secure-element reseeding _because_ they were thinking about entropy quality. They built dice-roll input _because_ they took the trust-the-manufacturer problem seriously. Every decision in the chain was made by people who were thinking harder about randomness than most engineers ever will.
+
+The failure was a wiring problem: real defenses that never connected to the thing they were supposed to protect, wrapped in checks that couldn't tell the difference, in a domain where being wrong produces no symptoms until someone drains your wallet.
+
+If you take one thing from this, ask a different question than "is it good?" Ask "how would I know if it stopped running?" If you can't answer that, you don't have a strong solution. You have a strong solution and a hope.
+
+---
+
+## Sources
+
+- Block Engineering, _Predictable RNG Fallback and 32-Bit Reseed in COLDCARD Firmware_: https://engineering.block.xyz/blog/predictable-rng-fallback-and-32-bit-reseed-in-coldcard-firmware
+- TRM Labs, _The Largest Hardware Wallet Exploit of 2026: Inside the USD 116 Million Coldcard Hack_: https://www.trmlabs.com/resources/blog/the-largest-hardware-wallet-exploit-of-2026-inside-the-usd-116-million-coldcard-hack
+- Bitso, _The Coldcard wallet theft: is self-custody really worth it?_: https://bitso.com/blog/coldcard-wallet-theft/
+- IstoÉ Dinheiro, _Coldcard: falha em hardware wallet gera risco e prejuízo de $38 milhões em Bitcoins_: https://istoedinheiro.com.br/coldcard-falha-em-hardware-wallet-gera-risco-e-prejuizo-de-38-milhoes-em-bitcoins
+- Coinkite advisory: https://blog.coinkite.com/coldcard-mk3-seed-generation-warning/

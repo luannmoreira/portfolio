@@ -1,0 +1,117 @@
+---
+title: "Lançado, Documentado, Nunca Chamado"
+date: "2026-08-11"
+tags: ["security", "postmortem", "software-architecture"]
+excerpt: "Um hack de $116 milhões em uma carteira de hardware Bitcoin remonta a uma linha de lógica de pré-processador, e a uma lição sobre verificar se o caminho de código forte que você construiu é o que realmente roda."
+draft: false
+---
+
+_O que a falha de entropia do Coldcard ensina sobre construir em cima de algo sofisticado._
+
+---
+
+A Coinkite construiu a coisa certa.
+
+Em algum lugar do firmware do Coldcard existe um wrapper de gerador de números aleatórios por hardware: uma rotina feita sob medida que lê o periférico de RNG verdadeiro do STM32, recusa saída em caso de timeout e rejeita amostras repetidas. É um código cuidadoso. Foi escrito de forma deliberada, porque o time decidiu que o caminho de aleatoriedade genérico do MicroPython não era bom o suficiente para uma carteira de hardware Bitcoin. Eles desligaram a versão do MicroPython e escreveram a própria.
+
+Essa rotina estava presente em todo binário afetado. Estava exposta ao Python. Foi revisada. Ela foi, no sentido frouxo que importa para uma página de marketing, _lançada_.
+
+Ela nunca foi chamada quando uma seed de carteira era criada.
+
+Entre 30 de julho e 3 de agosto de 2026, cerca de 1.816 BTC (algo entre $114 e $116 milhões, dependendo do preço usado) foi drenado de mais de 5.200 endereços pertencentes a donos de Coldcard. Ninguém tocou em um dispositivo. Ninguém aplicou phishing em ninguém. O atacante simplesmente recalculou chaves que nunca tinham sido aleatórias, desde o início.
+
+A distância entre "construímos uma solução forte" e "a solução forte está no caminho que importa" é a história inteira aqui. As criptomoedas só fornecem o recibo: essa é uma falha de engenharia de software com um preço de nove dígitos.
+
+---
+
+## O que realmente aconteceu
+
+A falha remonta a uma única linha de lógica de pré-processador, e vale a pena declará-la com precisão, porque a precisão é a lição.
+
+A configuração de placa do Coldcard define `MICROPY_HW_ENABLE_RNG` como `0`. Isso é correto e intencional: diz ao MicroPython para não compilar seu próprio caminho de RNG por hardware, porque a Coinkite fornece o dela. Prática padrão em sistemas embarcados. Um comentário no código-fonte confirma isso: _we have our own version of this code_.
+
+A biblioteca de suporte criptográfico, `libngu`, protege sua fonte de entropia com `#ifndef MICROPY_HW_ENABLE_RNG` e um erro de build logo abaixo. `#ifndef` verifica se a macro _existe_, não se ela está _habilitada_.
+
+Definido como zero existe. A guarda passou. O build teve sucesso. E a `libngu` se ligou ao `rng_get()` do MicroPython, que, ao ver um valor zero, tinha compilado seu fallback por software: Yasmarang, um PRNG pequeno feito para microcontroladores sem nenhum RNG por hardware, inicializado uma única vez a partir do UID do chip com XOR de um contador SysTick mais dois registradores de RTC, e nunca mais alimentado com entropia nova.
+
+Antes de março de 2021, a geração de seed chamava diretamente a rotina própria da Coinkite e obtinha aleatoriedade real de hardware. Em 1º de março de 2021, um commit mudou a geração de seed para passar pela `libngu`. A mudança foi lançada no firmware v4.0.0 em 17 de março de 2021. A partir desse momento, toda nova seed em um dispositivo afetado saía de um gerador determinístico cujas entradas eram metadados do dispositivo e o tempo de boot.
+
+Entropia efetiva em relação a um alvo de projeto de 128 bits:
+
+| Dispositivo / firmware                          | Entropia efetiva                |
+| ----------------------------------------------- | ------------------------------- |
+| Mk1, e Mk2/Mk3 até v3.2.2                       | ~128 bits (caminho não afetado) |
+| Mk2/Mk3, v4.0.0–v4.1.9                          | ~40 bits ou menos               |
+| Mk4 / Mk5 / Q, antes da correção de 31 de julho | ~72 bits                        |
+
+Quarenta bits é um fim de semana em hardware comum. Esse é o número que os drenadores monetizaram.
+
+---
+
+## O padrão, repetido quatro vezes
+
+Isto é o que torna esse caso digno de ser escrito, e não apenas relatado. O firmware do Coldcard não contém _um_ mecanismo sofisticado que ficou sem uso. Contém pelo menos quatro, empilhados uns sobre os outros, cada um defensável individualmente e, em conjunto, decorativo.
+
+**1. O wrapper de TRNG que nada chamava.** A análise de engenharia da Block encontrou a implementação de RNG por hardware pretendida presente no binário, mas simplesmente inalcançável a partir do ponto de chamada da geração de carteira. A revisão de código confirmou que a implementação existia. Ninguém rastreou a resolução de símbolos do lugar que importava até chegar nela. A presença foi verificada. A participação foi presumida.
+
+**2. O reseed do elemento seguro que descartava 90% da própria entrada.** Em 2022, os dispositivos da geração Mk4 ganharam um reseed no boot a partir dos elementos seguros do dispositivo: 32 bytes autenticados do SE1, mais 8 do SE2. Fontes genuinamente boas. Esses 40 bytes eram hasheados, e então quatro bytes eram extraídos do digest e usados para sobrescrever uma única palavra de 32 bits do estado do Yasmarang. Não para semear um DRBG. Não para reinicializar o gerador. Uma palavra. Esse é o acidente que elevou o Mk4/Mk5/Q a ~72 bits em vez de ~40. Ajudou, mas por sorte, não por projeto. Um ingrediente sofisticado, usado de forma cerimonial.
+
+**3. Defesa em profundidade que fez XOR de um PRNG com outro PRNG.** A `libngu` mantém um segundo gerador Yasmarang e faz XOR da saída dele com a do primeiro. Seu estado inicial são quatro constantes públicas fixas no código aberto. XOR não cria entropia. Se as duas entradas são reproduzíveis, o resultado é reproduzível. A estrutura do código diz "misturamos duas fontes independentes". A realidade é um fluxo determinístico combinado com um segundo fluxo determinístico que qualquer pessoa pode ler no GitHub.
+
+**4. Verificações de saúde que mediam a propriedade errada.** O caminho de hardware tinha uma verificação que rejeita amostras adjacentes repetidas, um detector sensato para um periférico de hardware travado. Um PRNG determinístico produz valores adjacentes diferentes por construção, então passa fácil. A geração de carteira também exige que a seed de 32 bytes contenha mais de quatro valores de byte distintos. O Yasmarang passa nisso trivialmente. As duas verificações rodaram, as duas passaram, e nenhuma delas era capaz de perceber o que estava errado. A saída parecia aleatória. Só não era imprevisível.
+
+E o único mecanismo que de fato funcionou como prometido (rolagens de dado fornecidas pelo usuário, um recurso genuinamente bem pensado) era opcional, fora do caminho padrão, e usado por uma minoria dos donos. A orientação atual da Coinkite diz que uma seed criada com pelo menos 50 rolagens de dado privadas e justas, ou protegida por uma passphrase forte e única, mantém proteção contra essa falha específica. A coisa mais forte que eles construíram foi a que os usuários precisavam ativar por conta própria.
+
+---
+
+## Por que isso acontece, de forma geral
+
+Tire o Bitcoin de cena e sobra um padrão que se repete em todo lugar.
+
+**Sofisticação se verifica por inspeção; correção se verifica por execução.** Uma revisão de código responde "isso parece certo?". Um rastreamento de grafo de chamadas responde "isso roda?". A primeira é barata, satisfatória, e dá a sensação de ter checado. A segunda é tediosa e é a que teria pego esse problema. Cinco anos de revisões confirmaram que uma implementação de TRNG existia. Nenhuma confirmou que o caminho da seed chegava até ela.
+
+**Fallbacks são projetados para serem silenciosos, e é exatamente esse o problema.** Um fallback existe para o sistema continuar funcionando quando o caminho preferido não está disponível. Isso é uma propriedade razoável para um backend de logging e catastrófica para uma fonte de entropia. O usuário não viu nenhum aviso. O dispositivo iniciou normalmente. Não existe um estado de erro para "sua aleatoriedade está fraca": essa é a propriedade que define essa classe de falha. Qualquer coisa que possa degradar silenciosamente vai, eventualmente, degradar silenciosamente em produção, e vai continuar assim por anos.
+
+**Configuração tem um valor, não só uma presença.** `#ifndef` versus `#if` é o bug inteiro. Essa mesma classe de erro (verificar se uma flag está definida em vez de para que valor ela está definida) aparece em todo sistema de feature-flag, toda checagem de variável de ambiente, todo `if os.getenv("STRICT_MODE")` em que a string `"false"` é truthy. A configuração desabilitada e a configuração ausente parecem idênticas para o teste errado.
+
+**Sofisticação em camadas esconde o fato de que uma delas é estrutural.** Checksums BIP39, hashing SHA256d, elementos seguros, air-gapping, um código aberto, auditorias independentes: o Coldcard tinha tudo isso. E tudo isso se apoiava em uma única suposição, a de que a seed vinha de um espaço aleatório grande. Fazer hash de um conjunto pequeno de entradas produz uma saída estatisticamente uniforme sobre um conjunto pequeno de entradas. Cada camada acima da fonte de entropia estava fazendo trabalho real, e nenhuma delas conseguia compensar a base estar errada. Profundidade não ajuda quando a falha está no fundo.
+
+**"Construímos X" silenciosamente vira "usamos X".** A distância entre essas duas frases é onde esse incidente mora. O próprio fundador da Coinkite descreveu ter definido a flag como zero acreditando que isso significava que nenhuma das duas versões de RNG era necessária, uma interpretação completamente humana, do tipo que nenhuma quantidade de sofisticação institucional evita sozinha.
+
+---
+
+## O que fazer ao basear uma nova solução em algo sofisticado
+
+Isso vale além das carteiras de hardware, para qualquer pessoa que acabou de adotar uma primitiva forte e está prestes a presumir que ela está funcionando.
+
+**Prove o caminho, não a presença.** Para qualquer dependência crítica de segurança, rastreie do ponto de chamada real até a implementação real, pelo menos uma vez, de forma deliberada, e anote o que encontrou. "A biblioteca oferece suporte a isso" não é o mesmo que "nosso código chega até isso". Se puder, valide isso em tempo de execução: faça o caminho forte definir uma flag que quem chama pode checar, e recuse-se a prosseguir se ela não estiver definida.
+
+**Faça o fallback fazer barulho, ou apague-o.** Para qualquer coisa crítica de segurança, prefira falhar fechado. Um dispositivo que se recusa a gerar uma seed porque o TRNG está indisponível é chato. Um dispositivo que gera uma seed fraca em silêncio é um passivo de cinco anos. Se você precisar manter um fallback, deve ser impossível estar nele sem alguém saber: um aviso no boot, uma linha de log em ERROR, um status que a interface expõe.
+
+**Valide a origem, não a saída.** As verificações do Coldcard olhavam para os bytes. Os bytes estavam bem. Verificações sobre a saída só conseguem pegar falhas degeneradas; elas não conseguem distinguir aleatório de pseudoaleatório-mas-determinístico, e, em geral, não conseguem verificar a propriedade que de fato importa. Verifique de onde o valor veio, não com o que ele se parece.
+
+**Teste o caso negativo.** Você consegue fazer o caminho forte falhar de propósito e observar o sistema reagindo corretamente? Se você nunca viu seu fallback disparar em um teste, você não sabe o que seu sistema faz quando ele dispara. Os caminhos de erro não testados são os que você está realmente rodando.
+
+**Trate "sofisticado mas opcional" como "não lançado".** O recurso de rolagem de dado funcionou. Salvou quem o usou. A maioria não usou. Se sua melhor defesa exige que o usuário a encontre e a ative, sua postura real de segurança é o padrão, não o máximo. Lance o caminho forte como padrão e deixe a sofisticação ser algo que o usuário pode _desativar_, não algo que ele precisa ativar.
+
+**Reaudite nas fronteiras de integração, não só no momento em que o código é escrito.** A guarda vulnerável na `libngu` é anterior ao impacto do incidente: ela existia desde janeiro de 2021 e só se tornou prejudicial quando a geração de seed migrou para essa biblioteca em 1º de março. O código não virou um bug. O contexto ao redor dele mudou. Toda vez que você redireciona uma chamada existente por uma nova dependência, você está fazendo novas suposições sobre um componente que ninguém revisou de novo.
+
+---
+
+## A parte desconfortável
+
+Existe uma versão dessa história em que a lição é "a Coinkite foi descuidada". Essa versão é reconfortante e errada. A Coinkite desativou um RNG genérico _porque_ se importou o suficiente para escrever um melhor. Adicionou reseed por elemento seguro _porque_ estava pensando na qualidade da entropia. Construiu a entrada por rolagem de dado _porque_ levou a sério o problema de confiar no fabricante. Cada decisão dessa cadeia foi tomada por pessoas pensando sobre aleatoriedade mais a fundo do que a maioria dos engenheiros jamais vai pensar.
+
+A falha foi um problema de conexão: defesas reais que nunca se ligaram àquilo que deveriam proteger, envoltas em verificações incapazes de notar a diferença, num domínio em que estar errado não produz nenhum sintoma até alguém esvaziar sua carteira.
+
+Se você levar uma coisa disso, faça uma pergunta diferente de "isso é bom?". Pergunte "como eu saberia se isso parasse de funcionar?". Se você não consegue responder isso, você não tem uma solução forte. Você tem uma solução forte e uma esperança.
+
+---
+
+## Fontes
+
+- Block Engineering, _Predictable RNG Fallback and 32-Bit Reseed in COLDCARD Firmware_: https://engineering.block.xyz/blog/predictable-rng-fallback-and-32-bit-reseed-in-coldcard-firmware
+- TRM Labs, _The Largest Hardware Wallet Exploit of 2026: Inside the USD 116 Million Coldcard Hack_: https://www.trmlabs.com/resources/blog/the-largest-hardware-wallet-exploit-of-2026-inside-the-usd-116-million-coldcard-hack
+- Bitso, _The Coldcard wallet theft: is self-custody really worth it?_: https://bitso.com/blog/coldcard-wallet-theft/
+- IstoÉ Dinheiro, _Coldcard: falha em hardware wallet gera risco e prejuízo de $38 milhões em Bitcoins_: https://istoedinheiro.com.br/coldcard-falha-em-hardware-wallet-gera-risco-e-prejuizo-de-38-milhoes-em-bitcoins
+- Aviso da Coinkite: https://blog.coinkite.com/coldcard-mk3-seed-generation-warning/

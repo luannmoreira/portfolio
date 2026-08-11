@@ -5,6 +5,7 @@ const routes = [
   "/",
   "/blog",
   "/blog/post-placeholder",
+  "/blog/shipped-documented-never-called",
   "/adr",
   "/adr/browserrouter-over-hashrouter",
   "/does-not-exist",
