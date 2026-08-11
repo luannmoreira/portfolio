@@ -17,8 +17,8 @@ subdirectory the client-side router would otherwise need to know about.
 <Decision title="BrowserRouter, not HashRouter">
   Both apps now deploy to Cloudflare Pages, which supports the same
   `_redirects`-based SPA-fallback pattern the blog already used
-  (`/* -> /index.html`). HashRouter's original rationale — no server
-  rewrites, unknown subdirectory — no longer applied, so the portfolio
+  (`/* -> /index.html`). HashRouter's original rationale (no server
+  rewrites, unknown subdirectory) no longer applied, so the portfolio
   switched to `BrowserRouter` to match the blog: real, indexable URLs
   instead of a fragment search engines discard entirely.
 </Decision>
@@ -26,22 +26,22 @@ subdirectory the client-side router would otherwise need to know about.
 ## Consequences
 
 Four of the portfolio's five routes went from unindexable to indexable
-overnight — `/#/about`, `/#/projects`, `/#/resume`, `/#/contact` became
+overnight: `/#/about`, `/#/projects`, `/#/resume`, `/#/contact` became
 `/about`, `/projects`, `/resume`, `/contact`. The switch also surfaced and
 fixed an unrelated layout bug: the navbar is `fixed` and out of document
 flow, so `<main>` had nothing reserving its height and Hero's first heading
-rendered directly underneath it — the top-padding offset was previously
-duplicated across four individual pages and missing from Home entirely,
-folded into `<main>` itself instead.
+rendered directly underneath it. The top-padding offset was previously
+duplicated across four individual pages and missing from Home entirely; it's
+now folded into `<main>` itself instead.
 
 <Warning title="Cross-app links silently broke">
-  The blog's navbar built links back to the portfolio as `${url}#${path}` — e.g.
-  `.../?theme=dark#/about?section=skills` — depending on the portfolio's
+  The blog's navbar built links back to the portfolio as `${url}#${path}` (e.g.
+  `.../?theme=dark#/about?section=skills`), depending on the portfolio's
   HashRouter to still be there on the receiving end. Once BrowserRouter shipped,
   everything after `#` in a URL is inert on the page that loads it, so all six
   blog-to-portfolio links silently dumped visitors on the portfolio homepage
   instead of the page they clicked. Caught by an adversarial review pass after
-  the router switch shipped, not as part of its original scope — a direct
+  the router switch shipped, not as part of its original scope. A direct
   regression from the decision, not a pre-existing bug. Fixed by resolving each
   path against the portfolio's real origin via the `URL` constructor instead of
   string concatenation, so `?section=` query params survive intact.
@@ -49,6 +49,6 @@ folded into `<main>` itself instead.
 
 <Tip title="e2e specs needed real paths">
   The existing Playwright specs asserted against `#/about`-style URLs and a
-  `/portfolio/` base path left over from the GitHub Pages deploy — both
+  `/portfolio/` base path left over from the GitHub Pages deploy. Both got
   rewritten to match real paths at the actual site root.
 </Tip>

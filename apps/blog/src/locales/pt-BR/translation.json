@@ -69,8 +69,8 @@
     },
     "metaTitle": "{{heading}} — Blog",
     "hero": {
-      "post": "Reflexões sobre arquitetura de software, sistemas em produção e algum bug real ocasional — registrados conforme acontecem.",
-      "adr": "Decisões de arquitetura tomadas neste projeto, e o raciocínio por trás delas — um registro contínuo, não uma retrospectiva."
+      "post": "Reflexões sobre arquitetura de software, sistemas em produção e algum bug real ocasional, registrados conforme acontecem.",
+      "adr": "Decisões de arquitetura tomadas neste projeto, e o raciocínio por trás delas: um registro contínuo, não uma retrospectiva."
     },
     "allTag": "Todos",
     "latestEntry": "Mais Recente",

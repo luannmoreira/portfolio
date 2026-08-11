@@ -13,16 +13,16 @@
   "hero": {
     "eyebrow": "Software Engineer",
     "heading": "Building systems that scale.",
-    "body": "I'm a Software Engineer with production experience across front-end, backend, and infrastructure — from remote device management at ShellHub to government platforms, and the servers underneath them before that. I care about architecture, testing, and code that lasts, not just how it looks.",
+    "body": "I'm a Software Engineer with production experience across front-end, backend, and infrastructure. Think remote device management at ShellHub, government platforms, and the servers underneath them before that. I care about architecture, testing, and code that lasts, not just how it looks.",
     "viewProjects": "View Projects",
     "contactMe": "Contact Me"
   },
   "about": {
     "metaTitle": "About • Luann Curioso",
-    "metaDescription": "Background, skills, experience, and the tools used day to day — from infrastructure and government systems to production cross-stack engineering at ShellHub and OS Systems.",
+    "metaDescription": "Background, skills, experience, and the tools used day to day, from infrastructure and government systems to production cross-stack engineering at ShellHub and OS Systems.",
     "philosophyEyebrow": "Professional Philosophy",
     "philosophyHeading": "Software engineering is more than just writing code; it's about solving problems and building <highlight>sustainable systems</highlight>.",
-    "bioParagraph1": "I'm a Software Engineer whose path started in infrastructure, not the browser — configuring servers, virtualization, and Active Directory before I ever shipped a web interface, and that early exposure still shapes how I think about software today. Since then I've spent five-plus years across production, enterprise, and government platforms, working the full width of the stack: TypeScript, React, and Vue on the front end, Go and REST APIs at the boundary with backend, and a MongoDB-to-PostgreSQL database migration among the deeper systems work. That's spanned ShellHub and UpdateHub, OS Systems' infrastructure products, and a public-sector application for the State of Mato Grosso, with a focus on reusable architecture, automated testing, accessibility, and code quality, not just UI.",
+    "bioParagraph1": "I'm a Software Engineer whose path started in infrastructure, not the browser. I configured servers, virtualization, and Active Directory long before I shipped a web interface, and that early exposure still shapes how I think about software today. Since then I've spent five-plus years across production, enterprise, and government platforms, working the full width of the stack: TypeScript, React, and Vue on the front end, Go and REST APIs at the boundary with backend, and a MongoDB-to-PostgreSQL database migration among the deeper systems work. That's spanned ShellHub and UpdateHub, OS Systems' infrastructure products, and a public-sector application for the State of Mato Grosso, with a focus on reusable architecture, automated testing, accessibility, and code quality, not just UI.",
     "bioParagraph2": "I'm an open-source contributor to ShellHub and UpdateHub, AWS Certified Cloud Practitioner, and currently finishing a Bachelor's in Information Systems. My interests keep expanding past the browser, toward backend and platform engineering, but the throughline has always been caring about how software is actually built, not just how it looks. Outside of that, I spend my free time cooking and hanging out with dogs.",
     "profileAlt": "Luann Curioso",
     "ctaHeading": "Looking for a technical partner?",
@@ -59,7 +59,7 @@
       "browser": {
         "category": "Browser",
         "name": "Whatever's around",
-        "note": "As a web developer, sticking to just one browser is a bad habit — I keep several around on purpose."
+        "note": "As a web developer, sticking to just one browser is a bad habit. I keep several around on purpose."
       },
       "notes": {
         "category": "Notes"
@@ -70,7 +70,7 @@
       "hardware": {
         "category": "Hardware",
         "name": "Two monitors",
-        "note": "Some purists call it a window-management crutch. I call it a necessity — my eyesight isn't what it used to be."
+        "note": "Some purists call it a window-management crutch. I call it a necessity. My eyesight isn't what it used to be."
       }
     }
   },
@@ -86,27 +86,27 @@
   },
   "home": {
     "metaTitle": "Luann Curioso",
-    "metaDescription": "Luann Curioso's portfolio — software engineer with production front-end experience and an infrastructure background, from ShellHub to government platforms.",
+    "metaDescription": "Luann Curioso's portfolio. Software engineer with production front-end experience and an infrastructure background, from ShellHub to government platforms.",
     "projectsEyebrow": "Portfolio",
     "projectsHeading": "Selected Engineering Work",
     "exploreAllProjects": "Explore All Projects",
     "ctaHeading": "Ready to scale your engineering?",
-    "ctaBody": "Always interested in hard technical problems — reach out if you'd like to talk architecture, collaboration, or opportunities.",
+    "ctaBody": "Always interested in hard technical problems. Reach out if you'd like to talk architecture, collaboration, or opportunities.",
     "sendEmail": "Send an Email",
     "moreWaysToReach": "More Ways to Reach Me"
   },
   "projects": {
     "eyebrow": "Portfolio",
     "heading": "Engineering Work",
-    "tagline": "Production engineering work — architecture, maintainability, and long-term thinking, not just UI.",
+    "tagline": "Production engineering work: architecture, maintainability, and long-term thinking, not just UI.",
     "metaTitle": "Projects • Luann Curioso",
     "allProjectsHeading": "All projects",
     "items": {
       "shellhub": {
-        "description": "A production-grade remote device management platform used by real customers. Contributed across the full engineering lifecycle — building features in React and Vue 3 with TypeScript, standardizing unit testing with Vitest, refactoring legacy code into maintainable solutions, and improving UI architecture consistency. Beyond feature work, this meant integrating and testing payment gateways, contributing to a MongoDB-to-PostgreSQL database migration, reducing technical debt, reviewing pull requests, and participating in architectural discussions alongside backend engineers — engineering a real product, not just its UI."
+        "description": "A production-grade remote device management platform used by real customers. Contributed across the full engineering lifecycle: building features in React and Vue 3 with TypeScript, standardizing unit testing with Vitest, refactoring legacy code into maintainable solutions, and improving UI architecture consistency. Beyond feature work, this meant integrating and testing payment gateways, contributing to a MongoDB-to-PostgreSQL database migration, reducing technical debt, reviewing pull requests, and participating in architectural discussions alongside backend engineers. Engineering a real product, not just its UI."
       },
       "os-systems": {
-        "description": "Enterprise software across multiple industries, spanning both application development and infrastructure. Built production applications with React, Vue, Angular, and Electron, while also working hands-on with Docker, Windows Server, Hyper-V, and Active Directory — experience that shaped an understanding of software delivery beyond the front-end layer."
+        "description": "Enterprise software across multiple industries, spanning both application development and infrastructure. Built production applications with React, Vue, Angular, and Electron, while also working hands-on with Docker, Windows Server, Hyper-V, and Active Directory. That experience shaped how I think about software delivery beyond the front-end layer."
       },
       "sedec-invest-mt": {
         "description": "The official investment platform for the Government of Mato Grosso, built with Vue 3, Vuex, and TypeScript. Delivered new features and ongoing maintenance for a production application serving a real government initiative."
@@ -115,7 +115,7 @@
   },
   "resume": {
     "metaTitle": "Resume • Luann Curioso",
-    "metaDescription": "Luann Curioso's resume — cross-stack engineering experience and skills, from production applications to the infrastructure underneath them.",
+    "metaDescription": "Luann Curioso's resume: cross-stack engineering experience and skills, from production applications to the infrastructure underneath them.",
     "print": "Print / Save as PDF",
     "summaryHeading": "Summary",
     "summary": "Software Engineer with 5+ years of experience building production systems across TypeScript, React, Vue, Go, Node.js, and Deno, including REST API integration at the backend/frontend boundary and a MongoDB-to-PostgreSQL database migration, plus hands-on infrastructure background (network administration, virtualization, Active Directory) from earlier in my career. Focused on reusable architecture, automated testing, accessibility, and developer experience across production, enterprise, and government platforms. Open-source contributor to ShellHub and UpdateHub, AWS Certified Cloud Practitioner.",
@@ -137,7 +137,7 @@
       "videplast": {
         "name": "Operations Trainee",
         "issued": "Videplast - Plastic Factory, Várzea Grande/MT",
-        "desc": "Assembled, configured, and maintained network and server infrastructure — virtualization (Hyper-V), Windows Server, and Active Directory — alongside front-end development in Angular 13. The first real exposure to how software and infrastructure intersect."
+        "desc": "Assembled, configured, and maintained network and server infrastructure: virtualization (Hyper-V), Windows Server, and Active Directory, alongside front-end development in Angular 13. The first real exposure to how software and infrastructure intersect."
       }
     }
   },
@@ -176,7 +176,7 @@
       "shellhub": {
         "title": "ShellHub",
         "subtitle": "Open Source Contributor",
-        "summary": "Contributed to ShellHub's front-end ecosystem by implementing new features, improving architecture, and helping standardize testing practices."
+        "summary": "Contributed to ShellHub's front-end codebase by implementing new features, improving architecture, and helping standardize testing practices."
       },
       "aws-cloud-practitioner": {
         "title": "AWS Cloud Practitioner",
@@ -238,7 +238,7 @@
   },
   "principles": {
     "heading": "Core Engineering Principles",
-    "intro": "The frameworks and mental models I use to navigate complex technical landscapes.",
+    "intro": "The frameworks and mental models I use to handle complex technical problems.",
     "items": {
       "reliability-first": {
         "title": "Reliability First",
@@ -269,7 +269,7 @@
     "groupLabel": "Language"
   },
   "notFound": {
-    "metaTitle": "Not Found — Luann Curioso",
+    "metaTitle": "Not Found • Luann Curioso",
     "heading": "Not Found",
     "body": "Page not found.",
     "backToHome": "Back to Home"

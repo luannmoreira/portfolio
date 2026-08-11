@@ -83,6 +83,6 @@ test("sets a real meta description, not just a title", () => {
 
   expect(document.querySelector('meta[name="description"]')).toHaveAttribute(
     "content",
-    "Thoughts on software architecture, production systems, and the occasional real bug — written down as they happen."
+    "Thoughts on software architecture, production systems, and the occasional real bug, written down as they happen."
   );
 });

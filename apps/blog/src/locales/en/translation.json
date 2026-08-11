@@ -69,8 +69,8 @@
     },
     "metaTitle": "{{heading}} — Blog",
     "hero": {
-      "post": "Thoughts on software architecture, production systems, and the occasional real bug — written down as they happen.",
-      "adr": "Architecture decisions made on this project, and the reasoning behind them — a running log, not a retrospective."
+      "post": "Thoughts on software architecture, production systems, and the occasional real bug, written down as they happen.",
+      "adr": "Architecture decisions made on this project, and the reasoning behind them: a running log, not a retrospective."
     },
     "allTag": "All",
     "latestEntry": "Latest Entry",

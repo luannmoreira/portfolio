@@ -13,16 +13,16 @@
   "hero": {
     "eyebrow": "Engenheiro de Software",
     "heading": "Construindo sistemas que escalam.",
-    "body": "Sou Engenheiro de Software com experiência em produção em front-end, backend e infraestrutura — de gerenciamento remoto de dispositivos na ShellHub a plataformas governamentais, e os servidores por trás delas antes disso. Me importo com arquitetura, testes e código que dura, não apenas com a aparência.",
+    "body": "Sou Engenheiro de Software com experiência em produção em front-end, backend e infraestrutura. Pense em gerenciamento remoto de dispositivos na ShellHub, plataformas governamentais, e os servidores por trás delas antes disso. Me importo com arquitetura, testes e código que dura, não apenas com a aparência.",
     "viewProjects": "Ver Projetos",
     "contactMe": "Fale Comigo"
   },
   "about": {
     "metaTitle": "Sobre • Luann Curioso",
-    "metaDescription": "Background, habilidades, experiência e as ferramentas usadas no dia a dia — de infraestrutura e sistemas governamentais a engenharia cross-stack em produção na ShellHub e na OS Systems.",
+    "metaDescription": "Background, habilidades, experiência e as ferramentas usadas no dia a dia, de infraestrutura e sistemas governamentais a engenharia cross-stack em produção na ShellHub e na OS Systems.",
     "philosophyEyebrow": "Filosofia Profissional",
     "philosophyHeading": "Engenharia de software é mais do que apenas escrever código; é sobre resolver problemas e construir <highlight>sistemas sustentáveis</highlight>.",
-    "bioParagraph1": "Sou Engenheiro de Software cujo caminho começou na infraestrutura, não no navegador — configurando servidores, virtualização e Active Directory antes mesmo de lançar uma interface web, e essa exposição inicial ainda molda como penso sobre software hoje. Desde então, passei mais de cinco anos em plataformas de produção, corporativas e governamentais, trabalhando toda a largura da stack: TypeScript, React e Vue no front-end, Go e APIs REST na fronteira com o backend, e uma migração de banco de dados de MongoDB para PostgreSQL entre os trabalhos mais profundos de sistemas. Isso passou pelo ShellHub e pelo UpdateHub, produtos de infraestrutura da OS Systems, e por uma aplicação do setor público para o Estado de Mato Grosso, com foco em arquitetura reutilizável, testes automatizados, acessibilidade e qualidade de código, não apenas UI.",
+    "bioParagraph1": "Sou Engenheiro de Software cujo caminho começou na infraestrutura, não no navegador. Configurei servidores, virtualização e Active Directory bem antes de lançar uma interface web, e essa exposição inicial ainda molda como penso sobre software hoje. Desde então, passei mais de cinco anos em plataformas de produção, corporativas e governamentais, trabalhando toda a largura da stack: TypeScript, React e Vue no front-end, Go e APIs REST na fronteira com o backend, e uma migração de banco de dados de MongoDB para PostgreSQL entre os trabalhos mais profundos de sistemas. Isso passou pelo ShellHub e pelo UpdateHub, produtos de infraestrutura da OS Systems, e por uma aplicação do setor público para o Estado de Mato Grosso, com foco em arquitetura reutilizável, testes automatizados, acessibilidade e qualidade de código, não apenas UI.",
     "bioParagraph2": "Sou contribuidor open-source do ShellHub e do UpdateHub, AWS Certified Cloud Practitioner, e atualmente finalizando um Bacharelado em Sistemas de Informação. Meus interesses continuam se expandindo para além do navegador, rumo a backend e engenharia de plataforma, mas o fio condutor sempre foi me importar com como o software é realmente construído, não apenas com sua aparência. Fora isso, passo meu tempo livre cozinhando e com cachorros.",
     "profileAlt": "Luann Curioso",
     "ctaHeading": "Procurando um parceiro técnico?",
@@ -59,7 +59,7 @@
       "browser": {
         "category": "Navegador",
         "name": "O que estiver disponível",
-        "note": "Como desenvolvedor web, se prender a um único navegador é um mau hábito — mantenho vários por perto de propósito."
+        "note": "Como desenvolvedor web, se prender a um único navegador é um mau hábito. Mantenho vários por perto de propósito."
       },
       "notes": {
         "category": "Notas"
@@ -70,7 +70,7 @@
       "hardware": {
         "category": "Hardware",
         "name": "Dois monitores",
-        "note": "Alguns puristas chamam isso de muleta para gerenciamento de janelas. Eu chamo de necessidade — minha visão não é mais o que era."
+        "note": "Alguns puristas chamam isso de muleta para gerenciamento de janelas. Eu chamo de necessidade. Minha visão não é mais o que era."
       }
     }
   },
@@ -86,27 +86,27 @@
   },
   "home": {
     "metaTitle": "Luann Curioso",
-    "metaDescription": "Portfólio de Luann Curioso — engenheiro de software com experiência em front-end de produção e background em infraestrutura, do ShellHub a plataformas governamentais.",
+    "metaDescription": "Portfólio de Luann Curioso. Engenheiro de software com experiência em front-end de produção e background em infraestrutura, do ShellHub a plataformas governamentais.",
     "projectsEyebrow": "Portfólio",
     "projectsHeading": "Trabalhos de Engenharia em Destaque",
     "exploreAllProjects": "Ver Todos os Projetos",
     "ctaHeading": "Pronto para escalar sua engenharia?",
-    "ctaBody": "Sempre interessado em problemas técnicos desafiadores — entre em contato se quiser falar sobre arquitetura, colaboração ou oportunidades.",
+    "ctaBody": "Sempre interessado em problemas técnicos desafiadores. Entre em contato se quiser falar sobre arquitetura, colaboração ou oportunidades.",
     "sendEmail": "Enviar um E-mail",
     "moreWaysToReach": "Mais Formas de Contato"
   },
   "projects": {
     "eyebrow": "Portfólio",
     "heading": "Trabalho de Engenharia",
-    "tagline": "Trabalho de engenharia em produção — arquitetura, manutenibilidade e visão de longo prazo, não apenas UI.",
+    "tagline": "Trabalho de engenharia em produção: arquitetura, manutenibilidade e visão de longo prazo, não apenas UI.",
     "metaTitle": "Projetos • Luann Curioso",
     "allProjectsHeading": "Todos os projetos",
     "items": {
       "shellhub": {
-        "description": "Uma plataforma de gerenciamento remoto de dispositivos de nível de produção, usada por clientes reais. Contribuí em todo o ciclo de engenharia — construindo funcionalidades em React e Vue 3 com TypeScript, padronizando testes unitários com Vitest, refatorando código legado em soluções sustentáveis e melhorando a consistência da arquitetura de UI. Além do trabalho em funcionalidades, isso significou integrar e testar gateways de pagamento, contribuir em uma migração de banco de dados de MongoDB para PostgreSQL, reduzir dívida técnica, revisar pull requests e participar de discussões arquiteturais junto a engenheiros de backend — engenheirando um produto real, não apenas sua UI."
+        "description": "Uma plataforma de gerenciamento remoto de dispositivos de nível de produção, usada por clientes reais. Contribuí em todo o ciclo de engenharia: construindo funcionalidades em React e Vue 3 com TypeScript, padronizando testes unitários com Vitest, refatorando código legado em soluções sustentáveis e melhorando a consistência da arquitetura de UI. Além do trabalho em funcionalidades, isso significou integrar e testar gateways de pagamento, contribuir em uma migração de banco de dados de MongoDB para PostgreSQL, reduzir dívida técnica, revisar pull requests e participar de discussões arquiteturais junto a engenheiros de backend. Engenheirando um produto real, não apenas sua UI."
       },
       "os-systems": {
-        "description": "Software corporativo em múltiplos setores, abrangendo tanto desenvolvimento de aplicações quanto infraestrutura. Construí aplicações de produção com React, Vue, Angular e Electron, além de trabalhar diretamente com Docker, Windows Server, Hyper-V e Active Directory — experiência que moldou uma compreensão da entrega de software além da camada front-end."
+        "description": "Software corporativo em múltiplos setores, abrangendo tanto desenvolvimento de aplicações quanto infraestrutura. Construí aplicações de produção com React, Vue, Angular e Electron, além de trabalhar diretamente com Docker, Windows Server, Hyper-V e Active Directory. Essa experiência moldou como penso sobre entrega de software além da camada front-end."
       },
       "sedec-invest-mt": {
         "description": "A plataforma oficial de investimentos do Governo de Mato Grosso, construída com Vue 3, Vuex e TypeScript. Entreguei novas funcionalidades e manutenção contínua para uma aplicação de produção que atende a uma iniciativa governamental real."
@@ -115,7 +115,7 @@
   },
   "resume": {
     "metaTitle": "Currículo • Luann Curioso",
-    "metaDescription": "Currículo de Luann Curioso — experiência de engenharia cross-stack e habilidades, de aplicações em produção à infraestrutura por trás delas.",
+    "metaDescription": "Currículo de Luann Curioso: experiência de engenharia cross-stack e habilidades, de aplicações em produção à infraestrutura por trás delas.",
     "print": "Imprimir / Salvar como PDF",
     "summaryHeading": "Resumo",
     "summary": "Engenheiro de Software com mais de 5 anos de experiência construindo sistemas em produção com TypeScript, React, Vue, Go, Node.js e Deno, incluindo integração de APIs REST na fronteira entre backend e frontend e uma migração de banco de dados de MongoDB para PostgreSQL, além de background prático em infraestrutura (administração de redes, virtualização, Active Directory) no início da carreira. Focado em arquitetura reutilizável, testes automatizados, acessibilidade e experiência do desenvolvedor em plataformas de produção, corporativas e governamentais. Contribuidor open-source do ShellHub e UpdateHub, AWS Certified Cloud Practitioner.",
@@ -137,7 +137,7 @@
       "videplast": {
         "name": "Estagiário de Operações",
         "issued": "Videplast - Fábrica de Plásticos, Várzea Grande/MT",
-        "desc": "Montei, configurei e mantive infraestrutura de rede e servidores — virtualização (Hyper-V), Windows Server e Active Directory — junto com desenvolvimento front-end em Angular 13. A primeira exposição real a como software e infraestrutura se cruzam."
+        "desc": "Montei, configurei e mantive infraestrutura de rede e servidores: virtualização (Hyper-V), Windows Server e Active Directory, junto com desenvolvimento front-end em Angular 13. A primeira exposição real a como software e infraestrutura se cruzam."
       }
     }
   },
@@ -176,7 +176,7 @@
       "shellhub": {
         "title": "ShellHub",
         "subtitle": "Contribuidor Open Source",
-        "summary": "Contribuí para o ecossistema front-end do ShellHub implementando novas funcionalidades, melhorando a arquitetura e ajudando a padronizar práticas de teste."
+        "summary": "Contribuí para a base de código front-end do ShellHub implementando novas funcionalidades, melhorando a arquitetura e ajudando a padronizar práticas de teste."
       },
       "aws-cloud-practitioner": {
         "title": "AWS Cloud Practitioner",
@@ -238,7 +238,7 @@
   },
   "principles": {
     "heading": "Princípios de Engenharia",
-    "intro": "Os frameworks e modelos mentais que uso para navegar por paisagens técnicas complexas.",
+    "intro": "Os frameworks e modelos mentais que uso para lidar com problemas técnicos complexos.",
     "items": {
       "reliability-first": {
         "title": "Confiabilidade em Primeiro Lugar",
@@ -269,7 +269,7 @@
     "groupLabel": "Idioma"
   },
   "notFound": {
-    "metaTitle": "Não Encontrado — Luann Curioso",
+    "metaTitle": "Não Encontrado • Luann Curioso",
     "heading": "Não Encontrado",
     "body": "Página não encontrada.",
     "backToHome": "Voltar ao Início"
