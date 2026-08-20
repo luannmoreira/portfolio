@@ -188,7 +188,12 @@
       },
       "portfolio-rebranding": {
         "title": "Reformulação do Portfólio",
-        "summary": "Reconstruindo meu portfólio para me representar melhor como engenheiro de software, e não apenas como desenvolvedor front-end."
+        "summary": "Reconstruí meu portfólio para me representar melhor como engenheiro de software, e não apenas como desenvolvedor front-end."
+      },
+      "alexandryn": {
+        "title": "Alexandryn",
+        "subtitle": "Desenvolvedor Solo — Arquitetura, Backend, Produto",
+        "summary": "Plataforma de leitura self-hosted para EPUB, PDF e quadrinhos — importe de qualquer lugar, orientada a especificação, testada, feita para rodar no seu próprio hardware."
       },
       "kubernetes-cka": {
         "title": "Kubernetes CKA",

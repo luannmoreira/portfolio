@@ -188,7 +188,12 @@
       },
       "portfolio-rebranding": {
         "title": "Portfolio Rebranding",
-        "summary": "Rebuilding my portfolio to better represent myself as a software engineer instead of simply a front-end developer."
+        "summary": "Rebuilt my portfolio to better represent myself as a software engineer instead of simply a front-end developer."
+      },
+      "alexandryn": {
+        "title": "Alexandryn",
+        "subtitle": "Solo Developer — Architecture, Backend, Product",
+        "summary": "Self-hosted reading platform for EPUB, PDF, and comics — import from anywhere, spec-driven, tested, built to run on your own hardware."
       },
       "kubernetes-cka": {
         "title": "Kubernetes CKA",

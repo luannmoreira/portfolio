@@ -60,7 +60,23 @@ export const timelineMilestones: TimelineMilestoneSource[] = [
   {
     id: "portfolio-rebranding",
     year: "Today",
+    status: "completed",
+  },
+  {
+    id: "alexandryn",
+    year: "Today",
     status: "in-progress",
+    technologies: [
+      "Go",
+      "PostgreSQL",
+      "React",
+      "TypeScript",
+      "Electron",
+      "Docker",
+    ],
+    links: [
+      { label: "GitHub", href: "https://github.com/Alexandryn/alexandryn" },
+    ],
   },
   {
     id: "kubernetes-cka",
