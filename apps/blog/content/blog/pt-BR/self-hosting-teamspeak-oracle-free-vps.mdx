@@ -66,14 +66,14 @@ Abra o menu hambúrguer no canto superior esquerdo e vá em **Compute → Instan
 
 **Placement:** deixe o domínio de disponibilidade pré-selecionado como está.
 
-**Image:** clique em *Change image*, escolha **Canonical Ubuntu 24.04**, e selecione. Oracle Linux é o padrão e funcionaria, mas todo guia de TeamSpeak que você vai encontrar por aí assume `apt`, então Ubuntu poupa trabalho de tradução.
+**Image:** clique em _Change image_, escolha **Canonical Ubuntu 24.04**, e selecione. Oracle Linux é o padrão e funcionaria, mas todo guia de TeamSpeak que você vai encontrar por aí assume `apt`, então Ubuntu poupa trabalho de tradução.
 
-**Shape:** clique em *Change shape*. Você tem duas opções Always Free:
+**Shape:** clique em _Change shape_. Você tem duas opções Always Free:
 
-| Shape | Especificações | Realidade |
-|---|---|---|
+| Shape                              | Especificações           | Realidade                                                                                                         |
+| ---------------------------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------- |
 | `VM.Standard.A1.Flex` (Ampere ARM) | Até 4 núcleos, 24 GB RAM | Extremamente superdimensionado para voz. Frequentemente "sem capacidade" em regiões populares, às vezes por dias. |
-| `VM.Standard.E2.1.Micro` (AMD) | 1 núcleo, 1 GB RAM | Quase sempre disponível. Totalmente suficiente. |
+| `VM.Standard.E2.1.Micro` (AMD)     | 1 núcleo, 1 GB RAM       | Quase sempre disponível. Totalmente suficiente.                                                                   |
 
 Fique com a micro. Um servidor TeamSpeak retransmite pacotes de voz, não mixa nem transcodifica áudio, e fica ocioso usando poucas dezenas de megabytes de RAM. Não gaste três dias brigando por capacidade ARM que você nunca vai usar. Você sempre pode criar uma segunda instância depois.
 
@@ -90,7 +90,7 @@ Você vai notar que a seção **Private IPv4 address assignment** está acinzent
 
 Logo abaixo está **Automatically assign public IPv4 address**. Ative se o botão estiver disponível. Se estiver travado, não brigue com ele, você pode anexar um IP depois que a instância existir, e é exatamente isso que faremos no próximo passo de qualquer forma.
 
-**SSH keys.** Mantenha *Generate a key pair for me* e clique em **Save private key**. Baixe a chave pública também.
+**SSH keys.** Mantenha _Generate a key pair for me_ e clique em **Save private key**. Baixe a chave pública também.
 
 > Esse download acontece exatamente uma vez. Se você pular essa etapa, a chave não pode ser recuperada e a única opção é apagar a instância e recomeçar. Guarde em um lugar permanente, não na pasta de Downloads.
 
@@ -188,16 +188,16 @@ Uma instância Oracle fica atrás de **dois firewalls independentes**, e os dois
 
 Navegue: **Networking → Virtual cloud networks → sua VCN → Subnets → sua subnet → Security Lists**, depois abra a lista mostrada ali.
 
-Chegue até ela pela *subnet*, não pela página geral de security list da VCN. Editar uma lista que não está anexada à sua subnet é um erro comum e completamente invisível.
+Chegue até ela pela _subnet_, não pela página geral de security list da VCN. Editar uma lista que não está anexada à sua subnet é um erro comum e completamente invisível.
 
 Na aba **Ingress Rules**, clique em **Add Ingress Rules** e adicione:
 
 | Stateless | Source Type | Source CIDR | IP Protocol | Destination Port |
-|---|---|---|---|---|
-| No | CIDR | 0.0.0.0/0 | **UDP** | 9987 |
-| No | CIDR | 0.0.0.0/0 | **TCP** | 30033 |
+| --------- | ----------- | ----------- | ----------- | ---------------- |
+| No        | CIDR        | 0.0.0.0/0   | **UDP**     | 9987             |
+| No        | CIDR        | 0.0.0.0/0   | **TCP**     | 30033            |
 
-Deixe Source Port Range em branco. Use o link *+ Another Ingress Rule* para adicionar as duas em um único diálogo.
+Deixe Source Port Range em branco. Use o link _+ Another Ingress Rule_ para adicionar as duas em um único diálogo.
 
 **Confira se o diálogo realmente fecha ao salvar.** Se ele continuar aberto com um campo em vermelho, a regra não foi salva, e a tabela vai mostrar silenciosamente só as três regras padrão. Recarregue a página e conte suas regras antes de seguir. Você deve ver cinco regras de ingress, incluindo a regra de SSH pré-existente na porta 22. Não apague essa.
 
@@ -222,7 +222,7 @@ Verifique a ordem:
 sudo iptables -L INPUT -n --line-numbers
 ```
 
-Suas duas regras ACCEPT precisam aparecer *acima* da linha `REJECT ... icmp-host-prohibited` no final.
+Suas duas regras ACCEPT precisam aparecer _acima_ da linha `REJECT ... icmp-host-prohibited` no final.
 
 ---
 
@@ -246,10 +246,10 @@ No PowerShell do Windows: `Test-NetConnection SEU_IP_PUBLICO -Port 30033`
 
 Como isso testa TCP, você recebe uma resposta limpa que o UDP não daria:
 
-| Resultado | Significado | Onde olhar |
-|---|---|---|
-| `succeeded!` | O tráfego chega até a instância | O container, ou a regra específica de UDP |
-| Trava, depois dá timeout | Nada chega até a instância | A Security List, camada 1 |
+| Resultado                | Significado                     | Onde olhar                                |
+| ------------------------ | ------------------------------- | ----------------------------------------- |
+| `succeeded!`             | O tráfego chega até a instância | O container, ou a regra específica de UDP |
+| Trava, depois dá timeout | Nada chega até a instância      | A Security List, camada 1                 |
 
 Não use `ping` como teste. A Oracle bloqueia ICMP por padrão, então 100% de perda de pacote é esperado e não diz nada por si só.
 
@@ -323,12 +323,12 @@ Mantenha seu servidor restrito a pessoas que você conhece. Leve denúncias a s�
 
 ## Resumo
 
-| | |
-|---|---|
-| **Custo** | Gratuito, permanentemente, dentro dos limites do Always Free |
-| **Tempo** | Cerca de uma hora |
-| **Capacidade** | Confortável para 10–30 usuários no menor shape |
-| **Parte mais difícil** | As duas camadas de firewall, lembre-se das duas |
-| **Decisões irreversíveis** | Home region; o download da chave SSH |
+|                            |                                                              |
+| -------------------------- | ------------------------------------------------------------ |
+| **Custo**                  | Gratuito, permanentemente, dentro dos limites do Always Free |
+| **Tempo**                  | Cerca de uma hora                                            |
+| **Capacidade**             | Confortável para 10–30 usuários no menor shape               |
+| **Parte mais difícil**     | As duas camadas de firewall, lembre-se das duas              |
+| **Decisões irreversíveis** | Home region; o download da chave SSH                         |
 
 A coisa que vale a pena internalizar, se você levar uma ideia deste artigo: **uma instância Oracle tem dois firewalls, e um servidor funcionando atrás de um firewall fechado parece exatamente igual a um servidor quebrado.** Sempre que a conexão não funcionar, teste TCP 30033 primeiro e deixe a resposta te dizer qual camada abrir.

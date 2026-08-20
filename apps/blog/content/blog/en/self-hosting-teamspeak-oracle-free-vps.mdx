@@ -66,14 +66,14 @@ Open the hamburger menu at the top left and go to **Compute → Instances → Cr
 
 **Placement:** leave the preselected availability domain alone.
 
-**Image:** click *Change image*, pick **Canonical Ubuntu 24.04**, and select it. Oracle Linux is the default and would work, but every TeamSpeak guide you will find online assumes `apt`, so Ubuntu saves you translation work.
+**Image:** click _Change image_, pick **Canonical Ubuntu 24.04**, and select it. Oracle Linux is the default and would work, but every TeamSpeak guide you will find online assumes `apt`, so Ubuntu saves you translation work.
 
-**Shape:** click *Change shape*. You have two Always Free options:
+**Shape:** click _Change shape_. You have two Always Free options:
 
-| Shape | Specs | Reality |
-|---|---|---|
+| Shape                              | Specs                    | Reality                                                                                            |
+| ---------------------------------- | ------------------------ | -------------------------------------------------------------------------------------------------- |
 | `VM.Standard.A1.Flex` (Ampere ARM) | Up to 4 cores, 24 GB RAM | Wildly overpowered for voice. Frequently "out of capacity" in popular regions, sometimes for days. |
-| `VM.Standard.E2.1.Micro` (AMD) | 1 core, 1 GB RAM | Almost always available. Completely sufficient. |
+| `VM.Standard.E2.1.Micro` (AMD)     | 1 core, 1 GB RAM         | Almost always available. Completely sufficient.                                                    |
 
 Take the micro. A TeamSpeak server relays voice packets, it does not mix or transcode audio, and idles at a few dozen megabytes of RAM. Do not spend three days fighting for ARM capacity you will never use. You can always create a second instance later.
 
@@ -90,7 +90,7 @@ You will notice the **Private IPv4 address assignment** section is greyed out. T
 
 Below that is **Automatically assign public IPv4 address**. Turn it on if the toggle is available. If it is locked, do not fight it, you can attach an IP after the instance exists, and we will do that in the next step regardless.
 
-**SSH keys.** Keep *Generate a key pair for me* and click **Save private key**. Download the public key too.
+**SSH keys.** Keep _Generate a key pair for me_ and click **Save private key**. Download the public key too.
 
 > This download happens exactly once. If you skip it, the key cannot be recovered and your only option is deleting the instance and starting over. Save it somewhere permanent, not your Downloads folder.
 
@@ -188,16 +188,16 @@ An Oracle instance sits behind **two independent firewalls**, and both must allo
 
 Navigate: **Networking → Virtual cloud networks → your VCN → Subnets → your subnet → Security Lists**, then open the list shown there.
 
-Go through the *subnet*, not the VCN's general security list page. Editing a list that is not attached to your subnet is a common and thoroughly invisible mistake.
+Go through the _subnet_, not the VCN's general security list page. Editing a list that is not attached to your subnet is a common and thoroughly invisible mistake.
 
 On the **Ingress Rules** tab, click **Add Ingress Rules** and add:
 
 | Stateless | Source Type | Source CIDR | IP Protocol | Destination Port |
-|---|---|---|---|---|
-| No | CIDR | 0.0.0.0/0 | **UDP** | 9987 |
-| No | CIDR | 0.0.0.0/0 | **TCP** | 30033 |
+| --------- | ----------- | ----------- | ----------- | ---------------- |
+| No        | CIDR        | 0.0.0.0/0   | **UDP**     | 9987             |
+| No        | CIDR        | 0.0.0.0/0   | **TCP**     | 30033            |
 
-Leave Source Port Range blank. Use the *+ Another Ingress Rule* link to add both in one dialog.
+Leave Source Port Range blank. Use the _+ Another Ingress Rule_ link to add both in one dialog.
 
 **Watch the dialog actually close when you save.** If it stays open with a red field, the rule did not save, and the table will quietly show only the three default rules. Reload the page and count your rules before moving on. You should see five ingress rules including the pre-existing SSH rule on port 22. Do not delete that one.
 
@@ -222,7 +222,7 @@ Verify the ordering:
 sudo iptables -L INPUT -n --line-numbers
 ```
 
-Your two ACCEPT rules must appear *above* the `REJECT ... icmp-host-prohibited` line at the bottom.
+Your two ACCEPT rules must appear _above_ the `REJECT ... icmp-host-prohibited` line at the bottom.
 
 ---
 
@@ -246,10 +246,10 @@ On Windows PowerShell: `Test-NetConnection YOUR_PUBLIC_IP -Port 30033`
 
 Because this tests TCP, it gives you a clean answer that UDP cannot:
 
-| Result | Meaning | Where to look |
-|---|---|---|
-| `succeeded!` | Traffic reaches the instance | The container, or the UDP-specific rule |
-| Hangs, then times out | Nothing reaches the instance | The Security List, layer 1 |
+| Result                | Meaning                      | Where to look                           |
+| --------------------- | ---------------------------- | --------------------------------------- |
+| `succeeded!`          | Traffic reaches the instance | The container, or the UDP-specific rule |
+| Hangs, then times out | Nothing reaches the instance | The Security List, layer 1              |
 
 Do not use `ping` as your test. Oracle blocks ICMP by default, so 100% packet loss is expected and tells you nothing on its own.
 
@@ -323,12 +323,12 @@ Keep your server to people you know. Take reports seriously. If something happen
 
 ## Summary
 
-| | |
-|---|---|
-| **Cost** | Free, permanently, within Always Free limits |
-| **Time** | About an hour |
-| **Capacity** | Comfortable for 10–30 users on the smallest shape |
-| **Hardest part** | The two firewall layers, remember both |
-| **Irreversible decisions** | Home region; the SSH key download |
+|                            |                                                   |
+| -------------------------- | ------------------------------------------------- |
+| **Cost**                   | Free, permanently, within Always Free limits      |
+| **Time**                   | About an hour                                     |
+| **Capacity**               | Comfortable for 10–30 users on the smallest shape |
+| **Hardest part**           | The two firewall layers, remember both            |
+| **Irreversible decisions** | Home region; the SSH key download                 |
 
 The thing worth internalising, if you take one idea away: **an Oracle instance has two firewalls, and a working server behind a closed one looks exactly like a broken server.** Whenever it will not connect, test TCP 30033 first and let the answer tell you which layer to open.
