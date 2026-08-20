@@ -18,3 +18,13 @@ GHSA-qwww-vcr4-c8h2
 # tooling), never shipped in either app's client bundle. Revisit when
 # @lhci/cli releases a version with an updated dependency tree.
 CVE-2026-44705
+
+# CVE-2026-56876: extract-zip arbitrary file write via symlink validation.
+# Pulled in by @lhci/cli's Lighthouse dependency, through
+# lighthouse>puppeteer-core>@puppeteer/browsers>extract-zip@2.0.1 — the
+# advisory lists no fixed version yet for extract-zip, so there's no
+# override target (same situation as CVE-2026-44705 above). Dev/lint-time
+# only (Lighthouse CI tooling downloading a Chromium build), never shipped
+# in either app's client bundle. Revisit when a fixed extract-zip release
+# exists to override to.
+CVE-2026-56876
