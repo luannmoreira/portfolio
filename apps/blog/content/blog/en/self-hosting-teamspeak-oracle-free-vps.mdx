@@ -1,0 +1,334 @@
+---
+title: "Self-Hosting a TeamSpeak 6 Server on a Free Oracle VPS"
+date: "2026-08-20"
+tags: ["self-hosting", "networking", "cloud", "privacy"]
+excerpt: "A tested walkthrough for running a free TeamSpeak 6 server on Oracle Cloud's Always Free tier, including the two firewall layers that trip up almost every first attempt."
+draft: false
+---
+
+_A complete, tested walkthrough. It covers the two firewall layers that break almost everyone's first attempt._
+
+---
+
+## Why this guide exists
+
+On 12 August 2026, Brazil's data protection authority (ANPD) ordered Discord to suspend its live streaming function nationwide. The platform stays online; the "live" feature does not.
+
+It is worth being precise about why, because the reason matters. The order followed the death of a 13-year-old girl in Naviraí, Mato Grosso do Sul, who investigators say was coerced by other users during a live transmission. The ANPD found "robust evidence" that Discord had not taken reasonable measures to prevent child endangerment, and noted a specific technical failing: because of how Discord's streaming architecture works, the company cannot inspect live video while it is being transmitted, making real-time detection of abuse impossible. SaferNet Brasil recorded 406 Discord-related reports between January and July 2026, up 54% year over year, a record for the period.
+
+This is not an article about getting around that order. The suspension applies to Discord's feature; using a different piece of software is not circumvention, and nothing here helps anyone evade anything. What the episode did do is remind a lot of people that a group's entire communication setup can vanish because of a decision made somewhere between a regulator and a company, with no input from the users.
+
+That is the actual lesson, and it is not specific to Brazil or to Discord. If your gaming group, study circle, or small team depends on one free platform, you are one policy change away from losing it. Running your own server is one answer to that. It is not the only one and it is not free of trade-offs. You become the administrator, and that is a real responsibility we will come back to at the end.
+
+What follows is a full walkthrough for a TeamSpeak 6 server on Oracle Cloud's Always Free tier: permanently free, comfortably sized for a group of ten to thirty people, and entirely under your control.
+
+---
+
+## What you get, and what it actually costs
+
+**You get:** a dedicated Linux virtual machine with root access, a fixed public IP, and a voice server nobody can take away from you. TeamSpeak 6 supports voice, text, file transfer, and, per TeamSpeak, screen sharing, which is what most people migrating are looking for.
+
+**It costs:** nothing in money, if you stay inside the Always Free limits. It costs roughly an hour the first time, and a small ongoing obligation to apply security updates.
+
+**The honest caveats before you start:**
+
+- **Oracle requires a credit card** for identity verification during signup. Always Free resources are not charged, but there is a small temporary authorisation (around US$1) that reverses on its own. If you are not willing to hand a card to Oracle, this guide is not for you, use an old PC or a Raspberry Pi at home instead, which works fine for ten people.
+- **Signup rejections happen** and Oracle rarely explains them. Use a card whose billing address matches what you enter, do not sign up over a VPN, and use a normal email domain.
+- **Your home region is permanent.** You choose it once, during signup, and cannot change it afterwards without creating a new account. Pick the datacentre closest to most of your group. For Brazilian users that is normally São Paulo (Brazil East) or Vinhedo (Brazil Southeast).
+- **Always Free instances can be reclaimed if they sit idle.** A server with real traffic is generally safe. There is a way to remove this risk entirely, covered at the end.
+
+---
+
+## What you need
+
+- A credit card for verification
+- A terminal with SSH (built into Linux, macOS, and Windows 10+)
+- About an hour
+- The TeamSpeak 6 client on the machines that will connect
+
+---
+
+## Step 1 — Create the Oracle Cloud account
+
+Go to `cloud.oracle.com` and sign up for the free tier.
+
+Take your time on the **home region** field. This is the one decision in this guide that cannot be undone later. Everything else on this page is recoverable.
+
+Verification usually completes in a few minutes but can take longer. Once you are in, you land on the OCI console, a large and genuinely confusing interface. You only need two corners of it.
+
+---
+
+## Step 2 — Create the instance
+
+Open the hamburger menu at the top left and go to **Compute → Instances → Create instance**.
+
+**Name:** anything. `teamspeak` is fine.
+
+**Placement:** leave the preselected availability domain alone.
+
+**Image:** click *Change image*, pick **Canonical Ubuntu 24.04**, and select it. Oracle Linux is the default and would work, but every TeamSpeak guide you will find online assumes `apt`, so Ubuntu saves you translation work.
+
+**Shape:** click *Change shape*. You have two Always Free options:
+
+| Shape | Specs | Reality |
+|---|---|---|
+| `VM.Standard.A1.Flex` (Ampere ARM) | Up to 4 cores, 24 GB RAM | Wildly overpowered for voice. Frequently "out of capacity" in popular regions, sometimes for days. |
+| `VM.Standard.E2.1.Micro` (AMD) | 1 core, 1 GB RAM | Almost always available. Completely sufficient. |
+
+Take the micro. A TeamSpeak server relays voice packets, it does not mix or transcode audio, and idles at a few dozen megabytes of RAM. Do not spend three days fighting for ARM capacity you will never use. You can always create a second instance later.
+
+Whichever you pick, confirm it shows the **Always Free eligible** tag before continuing.
+
+**Networking.** This is where the wizard trips people up. Select:
+
+- Primary network: **Create new virtual cloud network**
+- Subnet: **Create new public subnet**
+
+Public is the operative word. A private subnet cannot hold a public IP, and there is no converting it afterwards. Leave the generated names and the `10.0.0.0/24` CIDR alone.
+
+You will notice the **Private IPv4 address assignment** section is greyed out. This is normal and stays greyed out. Those controls let you hand-pick an address from an existing subnet, and yours does not exist yet, it is created when you finish the wizard. Ignore it entirely.
+
+Below that is **Automatically assign public IPv4 address**. Turn it on if the toggle is available. If it is locked, do not fight it, you can attach an IP after the instance exists, and we will do that in the next step regardless.
+
+**SSH keys.** Keep *Generate a key pair for me* and click **Save private key**. Download the public key too.
+
+> This download happens exactly once. If you skip it, the key cannot be recovered and your only option is deleting the instance and starting over. Save it somewhere permanent, not your Downloads folder.
+
+**Boot volume:** leave the default 50 GB. Always Free allows 200 GB total.
+
+Click **Create**. Provisioning takes a minute or two, and the icon turns from orange to green.
+
+---
+
+## Step 3 — Give it a permanent public IP
+
+On the instance page, scroll to **Resources → Attached VNICs**, click the VNIC, then find **IPv4 Addresses**.
+
+A VNIC is just the virtual network card attached to your VM. It holds the private IP (`10.0.0.x`, only reachable inside your cloud network) and optionally a public one.
+
+Click the **⋮** menu at the end of the row → **Edit** → set **Public IP Type** to **Reserved** → create a new reserved IP and name it → **Update**.
+
+Reserved rather than ephemeral matters: a reserved address survives a stop/start, and an ephemeral one does not. When ten people have the address saved in their client, you do not want it changing after a reboot. Always Free includes two reserved public IPs.
+
+Write the address down. Everything from here uses it.
+
+---
+
+## Step 4 — Connect over SSH
+
+Use the **private** key, the file with no extension or a `.key` suffix. The `.pub` file is the public key, which Oracle already placed on the server; you never send it anywhere.
+
+```bash
+chmod 600 ~/path/to/your-key.key
+ssh -i ~/path/to/your-key.key ubuntu@YOUR_PUBLIC_IP
+```
+
+The `chmod` is mandatory on Linux and macOS, SSH refuses keys with loose permissions. On Windows, if PowerShell complains, right-click the key → Properties → Security → Advanced → disable inheritance and remove every user except your own.
+
+The username is `ubuntu` for Canonical images (`opc` if you chose Oracle Linux). Accept the host fingerprint on first connection.
+
+Two failure modes worth recognising: `WARNING: UNPROTECTED PRIVATE KEY FILE` means you skipped the `chmod`. `Permission denied (publickey)` usually means you pointed at the `.pub` file by mistake, or used the wrong username.
+
+---
+
+## Step 5 — Install Docker and run the server
+
+```bash
+sudo apt update && sudo apt install -y docker.io
+sudo systemctl enable --now docker
+```
+
+Then start TeamSpeak 6:
+
+```bash
+sudo docker run -d \
+  --name teamspeak-server \
+  --restart unless-stopped \
+  -p 9987:9987/udp \
+  -p 30033:30033 \
+  -e TSSERVER_LICENSE_ACCEPTED=accept \
+  -v teamspeak-data:/var/tsserver/ \
+  teamspeaksystems/teamspeak6-server:latest
+```
+
+Breaking that down:
+
+- `--restart unless-stopped` brings the server back automatically after a reboot. Without it, an unexpected restart leaves you SSHing in at an inconvenient hour.
+- `9987/udp` is voice. `30033/tcp` is file transfer.
+- `TSSERVER_LICENSE_ACCEPTED=accept` is required, the container refuses to start without it.
+- `-v teamspeak-data:/var/tsserver/` puts all server data in a named Docker volume, so channels and permissions survive rebuilding the container.
+
+The image also exposes `10022/tcp` internally. That is the query/admin interface. **Do not publish it.** Reach it through an SSH tunnel if you ever need it.
+
+Confirm it started:
+
+```bash
+sudo docker ps
+```
+
+You want `Up X minutes`. If it says `Restarting`, the logs will explain why.
+
+Now get your admin credentials:
+
+```bash
+sudo docker logs teamspeak-server
+```
+
+Find the **ServerAdmin privilege key**, a long token. **Save it immediately.** It is printed once on first boot and it is what grants you admin rights on first connection.
+
+---
+
+## Step 6 — The two firewall layers (read this one carefully)
+
+This is where most attempts fail, and the failure is silent: the server runs perfectly, the client times out, and nothing anywhere tells you why.
+
+An Oracle instance sits behind **two independent firewalls**, and both must allow your traffic.
+
+### Layer 1 — the VCN Security List
+
+Navigate: **Networking → Virtual cloud networks → your VCN → Subnets → your subnet → Security Lists**, then open the list shown there.
+
+Go through the *subnet*, not the VCN's general security list page. Editing a list that is not attached to your subnet is a common and thoroughly invisible mistake.
+
+On the **Ingress Rules** tab, click **Add Ingress Rules** and add:
+
+| Stateless | Source Type | Source CIDR | IP Protocol | Destination Port |
+|---|---|---|---|---|
+| No | CIDR | 0.0.0.0/0 | **UDP** | 9987 |
+| No | CIDR | 0.0.0.0/0 | **TCP** | 30033 |
+
+Leave Source Port Range blank. Use the *+ Another Ingress Rule* link to add both in one dialog.
+
+**Watch the dialog actually close when you save.** If it stays open with a red field, the rule did not save, and the table will quietly show only the three default rules. Reload the page and count your rules before moving on. You should see five ingress rules including the pre-existing SSH rule on port 22. Do not delete that one.
+
+### Layer 2 — iptables on the instance
+
+Oracle's Ubuntu images ship with restrictive local firewall rules that block essentially everything except SSH.
+
+```bash
+sudo iptables -I INPUT 1 -p udp --dport 9987 -j ACCEPT
+sudo iptables -I INPUT 1 -p tcp --dport 30033 -j ACCEPT
+sudo apt install -y iptables-persistent
+sudo netfilter-persistent save
+```
+
+The `iptables-persistent` install shows two purple dialogs asking whether to save current IPv4 and IPv6 rules, answer **Yes** to both, otherwise your rules vanish on reboot.
+
+Note `-I INPUT 1`, not `-A`. `-I ... 1` inserts at the top of the chain; `-A` appends to the bottom, below Oracle's catch-all REJECT rule, where it does precisely nothing. This single character is responsible for an enormous number of forum posts.
+
+Verify the ordering:
+
+```bash
+sudo iptables -L INPUT -n --line-numbers
+```
+
+Your two ACCEPT rules must appear *above* the `REJECT ... icmp-host-prohibited` line at the bottom.
+
+---
+
+## Step 7 — Connect
+
+Open the TeamSpeak 6 client, connect to your public IP (port 9987 is the default, so you can omit it), and paste the ServerAdmin privilege key when prompted. If the prompt does not appear, it is under **Permissions → Use Privilege Key**.
+
+You are done.
+
+---
+
+## When it does not work
+
+The symptom is almost always the same: `failed connection initialization`, or a client that hangs and gives up. The useful move is a test that splits the problem in half. From your own machine:
+
+```bash
+nc -zv YOUR_PUBLIC_IP 30033
+```
+
+On Windows PowerShell: `Test-NetConnection YOUR_PUBLIC_IP -Port 30033`
+
+Because this tests TCP, it gives you a clean answer that UDP cannot:
+
+| Result | Meaning | Where to look |
+|---|---|---|
+| `succeeded!` | Traffic reaches the instance | The container, or the UDP-specific rule |
+| Hangs, then times out | Nothing reaches the instance | The Security List, layer 1 |
+
+Do not use `ping` as your test. Oracle blocks ICMP by default, so 100% packet loss is expected and tells you nothing on its own.
+
+Other checks, in order of how often they turn out to be the answer:
+
+**Security List rules never saved.** By far the most common. Reload the page and count the ingress rules. A rule you thought you added and a rule that exists are different things.
+
+**Rules added under Egress instead of Ingress.** The two sections look nearly identical and sit on the same page.
+
+**Protocol left as TCP on the 9987 rule.** Voice is UDP. TCP is the dialog's default.
+
+**Wrong security list.** Reach it via the subnet, as described above.
+
+**iptables rule below the REJECT.** Check with `--line-numbers`.
+
+**Container not actually listening:**
+
+```bash
+sudo docker ps
+sudo ss -ulnp | grep 9987
+```
+
+The second should show something bound to `0.0.0.0:9987`.
+
+One note on screen sharing specifically: this guide opens the ports TeamSpeak documents for voice and file transfer. If screen sharing does not work once voice does, check TeamSpeak's current documentation for whether it needs additional ports, and open them in both layers.
+
+---
+
+## After it works
+
+**Test persistence now, not later.** Run `sudo reboot`, wait a minute, and reconnect. This confirms both the container restart policy and your saved iptables rules survive a restart. Far better to discover a problem now than at 3am when Oracle reboots the host.
+
+**Know where your data lives.** Everything, channels, permissions, server settings, is in the `teamspeak-data` Docker volume. It survives `docker rm`. It does not survive `docker volume rm`. To back it up:
+
+```bash
+sudo docker run --rm -v teamspeak-data:/data -v $(pwd):/backup ubuntu \
+  tar czf /backup/ts-backup.tar.gz /data
+```
+
+Then copy the tarball off the server with `scp`.
+
+**Keep it updated.** `sudo apt update && sudo apt upgrade -y` periodically. You are running an internet-facing machine now.
+
+**Consider upgrading to Pay As You Go.** This sounds backwards, but it keeps all Always Free resources free while removing the idle-reclamation policy that can delete Always Free instances. Just be careful not to provision anything outside the free shapes.
+
+**Do not publish your server's IP address** in a blog post, a public Discord, or a forum thread. A publicly listed voice server address attracts scanning and abuse attempts within hours. Share it directly with the people you want on it.
+
+---
+
+## On capacity and licensing
+
+The hardware will not be your limit. A one-core, one-gigabyte micro instance handles far more concurrent voice users than most groups will ever have, and Always Free includes 10 TB of outbound traffic per month.
+
+Your limit is the free server licence. TeamSpeak 3 capped free servers at 32 slots, with a free non-profit licence available on request that raised it substantially. TeamSpeak 6's current terms should be confirmed against TeamSpeak's own site before you promise anyone fifty seats, but for a group of ten to thirty, you are well inside any plausible limit.
+
+---
+
+## The part nobody wants to read
+
+If you run this server, you are its administrator. Not in a hobbyist sense. There is no trust and safety team, no reporting button that reaches anyone but you, and no moderation you do not perform yourself.
+
+For a group of friends who already know each other, that is a small responsibility and mostly a theoretical one. It stops being theoretical the moment the server grows beyond people you know, and especially if minors are among them.
+
+This is worth stating plainly given the circumstances that brought many people to this article. The ANPD's finding against Discord was, at its core, that the platform could not see what was happening inside live transmissions and therefore could not intervene. A self-hosted server has the same blind spot, more completely: there is no automated detection at all, and no company behind it. That is the honest trade-off of self-hosting. You get autonomy, and you get everything that comes with being the only one responsible for what happens on your infrastructure.
+
+The experts quoted in the BBC Brasil coverage of the suspension made a related point about the decision itself: blocking a platform tends to push both users and the behaviour being targeted toward services with no legal representation in Brazil, further from any accountability, rather than eliminating it. Whatever you think of the order, that dynamic is worth being conscious of if you are the one now running the alternative.
+
+Keep your server to people you know. Take reports seriously. If something happens that is beyond you, involve people who can actually help. In Brazil, SaferNet (`new.safernet.org.br`) operates a national reporting channel and provides guidance for exactly these situations.
+
+---
+
+## Summary
+
+| | |
+|---|---|
+| **Cost** | Free, permanently, within Always Free limits |
+| **Time** | About an hour |
+| **Capacity** | Comfortable for 10–30 users on the smallest shape |
+| **Hardest part** | The two firewall layers, remember both |
+| **Irreversible decisions** | Home region; the SSH key download |
+
+The thing worth internalising, if you take one idea away: **an Oracle instance has two firewalls, and a working server behind a closed one looks exactly like a broken server.** Whenever it will not connect, test TCP 30033 first and let the answer tell you which layer to open.
