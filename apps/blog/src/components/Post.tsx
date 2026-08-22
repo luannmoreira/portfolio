@@ -249,7 +249,7 @@ function Post({ basePath }: PostProps) {
         title={entry.title}
         url={`${SITE_URL}${basePath}/${entry.slug}`}
       />
-      <article className="mx-auto max-w-[800px] px-margin-mobile pb-stack-md pt-32 md:px-gutter">
+      <article className="mx-auto w-full max-w-[800px] px-margin-mobile pb-stack-md pt-32 md:px-gutter">
         <nav className="mb-stack-sm" aria-label={t("post.breadcrumbLabel")}>
           <Link
             to={basePath}

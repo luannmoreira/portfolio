@@ -169,7 +169,7 @@ function ContentIndex({ type, basePath }: ContentIndexProps) {
   const hasHeroCopy = i18n.exists(heroCopyKey);
 
   return (
-    <div className="mx-auto max-w-container-max px-margin-mobile pt-32 md:px-gutter">
+    <div className="mx-auto w-full max-w-container-max px-margin-mobile pt-32 md:px-gutter">
       <header className="mb-stack-md max-w-3xl">
         <h1 className="mb-stack-sm font-display text-display text-on-background">
           {heading}

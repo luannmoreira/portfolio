@@ -16,7 +16,7 @@ function About() {
   useDocumentMeta(t("about.metaTitle"), t("about.metaDescription"));
 
   return (
-    <div className="mx-auto max-w-container-max px-margin-mobile md:px-gutter">
+    <div className="mx-auto w-full max-w-container-max px-margin-mobile md:px-gutter">
       <AboutSection />
       <Skills />
       <Principles />

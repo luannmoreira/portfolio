@@ -59,6 +59,16 @@ code {
    dependency in this repo), same convention as the Shiki/Mermaid rules
    below. Uses the shared theme's CSS custom properties directly so it
    flips with the rest of the site under :root.light. */
+/* A raw markdown URL (plain text or an autolinked <a>, not [text](url)
+   syntax) is one unbroken token with no spaces — without this, one long
+   enough reference link overflows .prose horizontally with nowhere for the
+   browser to break it, which (like the unwrapped table/pre case elsewhere
+   in this file) widens the whole mobile layout viewport past
+   width=device-width instead of just wrapping. overflow-wrap inherits, so
+   this covers every current and future descendant, not just <a>. */
+.prose {
+  overflow-wrap: break-word;
+}
 .prose h1,
 .prose h2,
 .prose h3 {
@@ -107,6 +117,34 @@ code {
 .prose img {
   max-width: 100%;
   border-radius: var(--radius-md);
+}
+/* display: block + overflow-x: auto, not just a max-width cap: a bare
+   <table> (GFM tables compile to plain table/th/td, no registered MDX
+   component) has no width limit and its cells' automatic minimum size is
+   content-based. Left as overflow: visible, that content-based minimum
+   propagates up through the flex-column page layout (main-content's flex
+   item min-width: auto), stretching the whole layout wider than the
+   viewport — on real mobile browsers this widens the layout viewport past
+   `width=device-width`, rendering the page zoomed out like a tablet.
+   overflow-x: auto on the table itself stops that propagation (a
+   non-visible overflow makes the item's automatic minimum size 0) and
+   keeps any unavoidable overflow scrollable inside the table instead. */
+.prose table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  margin-bottom: var(--spacing-stack-sm);
+  border-collapse: collapse;
+}
+.prose th,
+.prose td {
+  padding: 0.5em 0.75em;
+  border: 1px solid var(--color-outline-variant);
+  text-align: left;
+}
+.prose th {
+  font-weight: 600;
+  color: var(--color-on-background);
 }
 
 /* rehype-pretty-code's dual-theme config (vite.config.js) makes Shiki emit

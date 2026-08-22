@@ -20,7 +20,11 @@ function Pre(props: ComponentPropsWithoutRef<"pre">) {
 
   return (
     <div className="group relative">
-      <pre ref={preRef} {...props} />
+      <pre
+        ref={preRef}
+        {...props}
+        className={`overflow-x-auto ${props.className ?? ""}`}
+      />
       <button
         type="button"
         onClick={handleCopy}

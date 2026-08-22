@@ -79,7 +79,14 @@
   --spacing-stack-lg: 80px;
   --spacing-gutter: 32px;
   --spacing-margin-mobile: 20px;
-  --container-max: 1120px;
+  /* Tailwind v4 maps max-w-<name> utilities from --container-<name> theme
+     vars — the var itself must be named --container-container-max (not
+     --container-max) for the `max-w-container-max` class used in Footer.tsx,
+     ContentIndex.tsx and Post.tsx to actually generate any CSS. Named
+     --container-max, Tailwind instead emitted an unused max-w-max utility
+     (colliding in name only, not behavior, with Tailwind's own built-in
+     max-w-max), leaving every max-w-container-max usage a silent no-op. */
+  --container-container-max: 1120px;
 
   --font-display: "Hanken Grotesk", sans-serif;
   --font-headline: "Hanken Grotesk", sans-serif;
