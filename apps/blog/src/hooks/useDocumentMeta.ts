@@ -46,7 +46,11 @@ function setAlternate(hreflang: string, href: string) {
   link.href = href;
 }
 
-export function useDocumentMeta(title: string, description?: string) {
+export function useDocumentMeta(
+  title: string,
+  description?: string,
+  image?: string
+) {
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -85,12 +89,21 @@ export function useDocumentMeta(title: string, description?: string) {
     setCanonical(url);
     setMetaByAttr("property", "og:url", url);
     setMetaByAttr("property", "og:type", "website");
-    setMetaByAttr("property", "og:image", DEFAULT_OG_IMAGE);
-    // "summary", not "summary_large_image" — matches portfolio's card type;
-    // DEFAULT_OG_IMAGE is a 180x180 icon, below the large-image minimum.
-    setMetaByAttr("name", "twitter:card", "summary");
-    setMetaByAttr("name", "twitter:image", DEFAULT_OG_IMAGE);
-  }, [pathname]);
+
+    // A post's own coverImage (already SITE_URL-relative, see schema.ts)
+    // beats the site-wide default icon — "summary_large_image" only once
+    // there's a real image big enough to warrant it; DEFAULT_OG_IMAGE is a
+    // 180x180 icon, below the large-image minimum, so every other route
+    // keeps "summary".
+    const resolvedImage = image ? `${SITE_URL}${image}` : DEFAULT_OG_IMAGE;
+    setMetaByAttr("property", "og:image", resolvedImage);
+    setMetaByAttr(
+      "name",
+      "twitter:card",
+      image ? "summary_large_image" : "summary"
+    );
+    setMetaByAttr("name", "twitter:image", resolvedImage);
+  }, [pathname, image]);
 
   useEffect(() => {
     // Both locales render from the same path (resolveInitialLocale reads

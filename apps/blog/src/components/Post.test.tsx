@@ -127,6 +127,34 @@ test("renders a BlogPosting JSON-LD script tag with the post's real data", async
   });
 });
 
+test("includes an absolute image URL in the JSON-LD when the post has a coverImage", async () => {
+  const { container } = renderAtSlug("post-placeholder");
+  await screen.findByRole("heading", {
+    name: "Blog Post Placeholder",
+    level: 1,
+  });
+
+  const script = container.querySelector('script[type="application/ld+json"]');
+  const json = JSON.parse(script!.textContent!);
+
+  expect(json.image).toBe(
+    "https://luanncurioso.dev/content/blog/en/post-placeholder/cover.png"
+  );
+});
+
+test("omits the JSON-LD image field when the post has no coverImage", async () => {
+  const { container } = renderAtSlug("shipped-documented-never-called");
+  await screen.findByRole("heading", {
+    name: "Shipped, Documented, Never Called",
+    level: 1,
+  });
+
+  const script = container.querySelector('script[type="application/ld+json"]');
+  const json = JSON.parse(script!.textContent!);
+
+  expect(json.image).toBeUndefined();
+});
+
 test("omits the JSON-LD script tags for an unknown slug", () => {
   const { container } = renderAtSlug("does-not-exist");
 

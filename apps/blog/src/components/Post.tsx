@@ -37,6 +37,7 @@ function BlogPostingJsonLd({
     datePublished: entry.date,
     description: entry.excerpt,
     url,
+    ...(entry.coverImage && { image: `${SITE_URL}${entry.coverImage}` }),
     author: {
       "@type": "Person",
       name: "Luann Curioso",
@@ -219,7 +220,8 @@ function Post({ basePath }: PostProps) {
     entry
       ? t("post.metaTitle", { title: entry.title })
       : t("notFound.metaTitle"),
-    entry?.excerpt
+    entry?.excerpt,
+    entry?.coverImage
   );
 
   if (!PostBody || !entry) {

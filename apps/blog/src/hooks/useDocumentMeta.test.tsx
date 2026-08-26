@@ -103,6 +103,39 @@ test("sets Open Graph and Twitter Card tags from title and description", () => {
   );
 });
 
+test("uses the default icon and a summary card when no image is given", () => {
+  renderHook(() => useDocumentMeta("Blog"), { wrapper: wrapper() });
+
+  expect(document.querySelector('meta[property="og:image"]')).toHaveAttribute(
+    "content",
+    "https://luanncurioso.dev/apple-touch-icon.png"
+  );
+  expect(document.querySelector('meta[name="twitter:card"]')).toHaveAttribute(
+    "content",
+    "summary"
+  );
+});
+
+test("resolves a given image to an absolute URL for og:image/twitter:image, and uses a large-image card", () => {
+  renderHook(
+    () => useDocumentMeta("Blog", undefined, "/content/blog/en/slug/cover.png"),
+    { wrapper: wrapper() }
+  );
+
+  expect(document.querySelector('meta[property="og:image"]')).toHaveAttribute(
+    "content",
+    "https://luanncurioso.dev/content/blog/en/slug/cover.png"
+  );
+  expect(document.querySelector('meta[name="twitter:image"]')).toHaveAttribute(
+    "content",
+    "https://luanncurioso.dev/content/blog/en/slug/cover.png"
+  );
+  expect(document.querySelector('meta[name="twitter:card"]')).toHaveAttribute(
+    "content",
+    "summary_large_image"
+  );
+});
+
 test("sets a canonical link and og:url from the current route", () => {
   renderHook(() => useDocumentMeta("Hello World — Blog"), {
     wrapper: wrapper("/blog/hello-world"),
