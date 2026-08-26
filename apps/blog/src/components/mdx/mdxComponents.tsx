@@ -1,4 +1,5 @@
 import Pre from "./Pre";
+import Image from "./Image";
 import Decision from "./Decision";
 import Tradeoff from "./Tradeoff";
 import Warning from "./Warning";
@@ -14,6 +15,7 @@ import Terminal from "./Terminal";
 // for a set that doesn't change would be speculative complexity.
 export const mdxComponents = {
   pre: Pre,
+  img: Image,
   Decision,
   Tradeoff,
   Warning,
