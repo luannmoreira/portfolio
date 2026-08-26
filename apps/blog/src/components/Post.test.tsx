@@ -4,6 +4,15 @@ import { renderWithI18n } from "../test-i18n";
 import { i18n } from "../i18n";
 import Post from "./Post";
 
+// A distinctive stand-in for the real prefixing, rather than the actual
+// implementation (which defaults to import.meta.env.BASE_URL — "/" in this
+// test environment, identical to no prefixing at all). Without this mock,
+// dropping the resolveAssetUrl call from Post.tsx entirely would still
+// leave these tests green.
+vi.mock("../content/resolveAssetUrl", () => ({
+  resolveAssetUrl: vi.fn((path: string) => `/BASE${path}`),
+}));
+
 afterEach(async () => {
   await i18n.changeLanguage("en");
 });
@@ -82,7 +91,7 @@ test("renders the post's cover image as a hero when present", async () => {
   const hero = screen.getByRole("img", { name: "Blog Post Placeholder" });
   expect(hero).toHaveAttribute(
     "src",
-    "/content/blog/en/post-placeholder/cover.png"
+    "/BASE/content/blog/en/post-placeholder/cover.png"
   );
 });
 
@@ -138,7 +147,7 @@ test("includes an absolute image URL in the JSON-LD when the post has a coverIma
   const json = JSON.parse(script!.textContent!);
 
   expect(json.image).toBe(
-    "https://luanncurioso.dev/content/blog/en/post-placeholder/cover.png"
+    "https://luanncurioso.dev/BASE/content/blog/en/post-placeholder/cover.png"
   );
 });
 

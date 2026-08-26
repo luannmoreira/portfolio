@@ -10,6 +10,7 @@ import {
 } from "../content/loader";
 import { useDocumentMeta } from "../hooks/useDocumentMeta";
 import { useScrollToHash } from "../hooks/useScrollToHash";
+import { resolveAssetUrl } from "../content/resolveAssetUrl";
 import { mdxComponents } from "./mdx/mdxComponents";
 import NotFound from "./NotFound";
 import MaterialIcon from "./icons/MaterialIcon";
@@ -37,7 +38,9 @@ function BlogPostingJsonLd({
     datePublished: entry.date,
     description: entry.excerpt,
     url,
-    ...(entry.coverImage && { image: `${SITE_URL}${entry.coverImage}` }),
+    ...(entry.coverImage && {
+      image: `${SITE_URL}${resolveAssetUrl(entry.coverImage)}`,
+    }),
     author: {
       "@type": "Person",
       name: "Luann Curioso",
@@ -265,7 +268,7 @@ function Post({ basePath }: PostProps) {
         </nav>
         {entry.coverImage && (
           <img
-            src={entry.coverImage}
+            src={resolveAssetUrl(entry.coverImage)}
             alt={entry.title}
             className="mb-stack-md aspect-video w-full rounded object-cover"
           />

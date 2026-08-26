@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router";
+import { resolveAssetUrl } from "../content/resolveAssetUrl";
 
 // This app's own production URL — the custom domain both apps share
 // (portfolio at "/", blog under "/blog"). Routes here are already absolute
@@ -90,12 +91,15 @@ export function useDocumentMeta(
     setMetaByAttr("property", "og:url", url);
     setMetaByAttr("property", "og:type", "website");
 
-    // A post's own coverImage (already SITE_URL-relative, see schema.ts)
-    // beats the site-wide default icon — "summary_large_image" only once
-    // there's a real image big enough to warrant it; DEFAULT_OG_IMAGE is a
-    // 180x180 icon, below the large-image minimum, so every other route
-    // keeps "summary".
-    const resolvedImage = image ? `${SITE_URL}${image}` : DEFAULT_OG_IMAGE;
+    // A post's own coverImage (an app-root-relative path per schema.ts,
+    // resolved through the app's own base path via resolveAssetUrl) beats
+    // the site-wide default icon — "summary_large_image" only once there's
+    // a real image big enough to warrant it; DEFAULT_OG_IMAGE is a 180x180
+    // icon, below the large-image minimum, so every other route keeps
+    // "summary".
+    const resolvedImage = image
+      ? `${SITE_URL}${resolveAssetUrl(image)}`
+      : DEFAULT_OG_IMAGE;
     setMetaByAttr("property", "og:image", resolvedImage);
     setMetaByAttr(
       "name",

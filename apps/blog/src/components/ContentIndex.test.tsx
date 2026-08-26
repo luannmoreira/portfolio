@@ -12,6 +12,15 @@ vi.mock("../content/loader", async (importOriginal) => {
   return { ...actual, loadContent: vi.fn(actual.loadContent) };
 });
 
+// A distinctive stand-in for the real prefixing, rather than the actual
+// implementation (which defaults to import.meta.env.BASE_URL — "/" in this
+// test environment, identical to no prefixing at all). Without this mock,
+// dropping the resolveAssetUrl call from the card thumbnails would still
+// leave the thumbnail test below green.
+vi.mock("../content/resolveAssetUrl", () => ({
+  resolveAssetUrl: vi.fn((path: string) => `/BASE${path}`),
+}));
+
 function renderBlogIndex() {
   return renderWithI18n(
     <MemoryRouter>
@@ -83,7 +92,7 @@ test("renders a thumbnail for a card whose entry has a coverImage", () => {
 
   expect(
     screen.getByRole("img", { name: "Blog Post Placeholder" })
-  ).toHaveAttribute("src", "/content/blog/en/post-placeholder/cover.png");
+  ).toHaveAttribute("src", "/BASE/content/blog/en/post-placeholder/cover.png");
 });
 
 test("renders no thumbnail for a card whose entry has no coverImage", () => {

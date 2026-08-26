@@ -8,6 +8,7 @@ import {
   type ContentType,
 } from "../content/loader";
 import { useDocumentMeta } from "../hooks/useDocumentMeta";
+import { resolveAssetUrl } from "../content/resolveAssetUrl";
 import MaterialIcon from "./icons/MaterialIcon";
 
 interface ContentIndexProps {
@@ -65,7 +66,7 @@ function FeaturedCard({
     >
       {entry.coverImage && (
         <img
-          src={entry.coverImage}
+          src={resolveAssetUrl(entry.coverImage)}
           alt={entry.title}
           className="mb-4 aspect-video w-full rounded object-cover"
         />
@@ -129,7 +130,7 @@ function SideCard({
     >
       {entry.coverImage && (
         <img
-          src={entry.coverImage}
+          src={resolveAssetUrl(entry.coverImage)}
           alt={entry.title}
           className="mb-2 aspect-video w-full rounded object-cover"
         />
