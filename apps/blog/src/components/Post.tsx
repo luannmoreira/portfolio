@@ -261,6 +261,13 @@ function Post({ basePath }: PostProps) {
             </span>
           </Link>
         </nav>
+        {entry.coverImage && (
+          <img
+            src={entry.coverImage}
+            alt={entry.title}
+            className="mb-stack-md aspect-video w-full rounded object-cover"
+          />
+        )}
         <header className="mb-stack-md border-l-4 border-primary pl-gutter">
           {entry.tags.length > 0 && (
             <div className="mb-4 flex flex-wrap items-center gap-4">

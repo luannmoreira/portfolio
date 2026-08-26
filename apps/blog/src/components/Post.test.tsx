@@ -72,6 +72,32 @@ test("shows a not-found message for an unknown slug", () => {
   expect(screen.getByText(/page not found/i)).toBeInTheDocument();
 });
 
+test("renders the post's cover image as a hero when present", async () => {
+  renderAtSlug("post-placeholder");
+  await screen.findByRole("heading", {
+    name: "Blog Post Placeholder",
+    level: 1,
+  });
+
+  const hero = screen.getByRole("img", { name: "Blog Post Placeholder" });
+  expect(hero).toHaveAttribute(
+    "src",
+    "/content/blog/en/post-placeholder/cover.png"
+  );
+});
+
+test("omits the hero image when the post has no coverImage", async () => {
+  renderAtSlug("shipped-documented-never-called");
+  await screen.findByRole("heading", {
+    name: "Shipped, Documented, Never Called",
+    level: 1,
+  });
+
+  expect(
+    screen.queryByRole("img", { name: "Shipped, Documented, Never Called" })
+  ).not.toBeInTheDocument();
+});
+
 test("shows the post's reading time", async () => {
   renderAtSlug("post-placeholder");
 

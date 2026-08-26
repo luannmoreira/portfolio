@@ -63,6 +63,13 @@ function FeaturedCard({
       to={`${basePath}/${entry.slug}`}
       className="group relative flex flex-col justify-between border border-outline-variant bg-surface-container-lowest p-stack-sm transition-all duration-300 hover:border-primary md:col-span-8"
     >
+      {entry.coverImage && (
+        <img
+          src={entry.coverImage}
+          alt={entry.title}
+          className="mb-4 aspect-video w-full rounded object-cover"
+        />
+      )}
       <div className="mb-4 flex items-start justify-between">
         <span className="font-label-mono text-label-mono uppercase tracking-widest text-on-surface-variant">
           {latestEntryLabel}
@@ -120,6 +127,13 @@ function SideCard({
       to={`${basePath}/${entry.slug}`}
       className="flex flex-col border border-outline-variant bg-surface-container-lowest p-stack-sm transition-all duration-300 hover:border-primary md:col-span-4"
     >
+      {entry.coverImage && (
+        <img
+          src={entry.coverImage}
+          alt={entry.title}
+          className="mb-2 aspect-video w-full rounded object-cover"
+        />
+      )}
       <span className="mb-2 font-label-mono text-label-mono text-on-surface-variant">
         {date}
       </span>

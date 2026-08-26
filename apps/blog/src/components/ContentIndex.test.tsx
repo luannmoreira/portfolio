@@ -78,6 +78,22 @@ test("announces the empty-state message to assistive tech via a live region", ()
   expect(screen.getByRole("status")).toHaveTextContent(/nothing here yet/i);
 });
 
+test("renders a thumbnail for a card whose entry has a coverImage", () => {
+  renderBlogIndex();
+
+  expect(
+    screen.getByRole("img", { name: "Blog Post Placeholder" })
+  ).toHaveAttribute("src", "/content/blog/en/post-placeholder/cover.png");
+});
+
+test("renders no thumbnail for a card whose entry has no coverImage", () => {
+  renderBlogIndex();
+
+  expect(
+    screen.queryByRole("img", { name: "Shipped, Documented, Never Called" })
+  ).not.toBeInTheDocument();
+});
+
 test("sets a real meta description, not just a title", () => {
   renderBlogIndex();
 
