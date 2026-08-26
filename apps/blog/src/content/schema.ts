@@ -14,6 +14,10 @@ const frontmatterSchema = z.object({
   tags: z.array(z.string()),
   excerpt: z.string().min(1),
   draft: z.boolean().default(false),
+  /** Absolute path into apps/blog/public/content/<type>/<locale>/<slug>/,
+   * e.g. "/content/blog/en/my-post/cover.png" — a plain static asset, not
+   * a build-time-processed import. Optional: most posts have none. */
+  coverImage: z.string().optional(),
 });
 
 export type Frontmatter = z.infer<typeof frontmatterSchema>;

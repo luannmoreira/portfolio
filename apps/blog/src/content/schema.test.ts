@@ -25,6 +25,21 @@ test("respects an explicit draft: true", () => {
   expect(result.draft).toBe(true);
 });
 
+test("coverImage is absent by default", () => {
+  const result = parseFrontmatter(validFrontmatter);
+
+  expect(result.coverImage).toBeUndefined();
+});
+
+test("passes through an explicit coverImage", () => {
+  const result = parseFrontmatter({
+    ...validFrontmatter,
+    coverImage: "/content/blog/en/my-post/cover.png",
+  });
+
+  expect(result.coverImage).toBe("/content/blog/en/my-post/cover.png");
+});
+
 test("throws when a required field is missing", () => {
   const withoutTitle = {
     date: validFrontmatter.date,
