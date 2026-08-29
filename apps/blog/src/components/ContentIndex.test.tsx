@@ -88,18 +88,49 @@ test("announces the empty-state message to assistive tech via a live region", ()
 });
 
 test("renders a thumbnail for a card whose entry has a coverImage", () => {
+  vi.mocked(loader.loadContent).mockReturnValueOnce([
+    {
+      slug: "with-cover",
+      type: "post",
+      locale: "en",
+      title: "With Cover Image",
+      date: "2026-08-29",
+      tags: ["test"],
+      excerpt: "Excerpt",
+      draft: false,
+      readingMinutes: 3,
+      coverImage: "/content/blog/en/post-placeholder/cover.png",
+      isFallback: false,
+    },
+  ]);
+
   renderBlogIndex();
 
   expect(
-    screen.getByRole("img", { name: "Blog Post Placeholder" })
+    screen.getByRole("img", { name: "With Cover Image" })
   ).toHaveAttribute("src", "/BASE/content/blog/en/post-placeholder/cover.png");
 });
 
 test("renders no thumbnail for a card whose entry has no coverImage", () => {
+  vi.mocked(loader.loadContent).mockReturnValueOnce([
+    {
+      slug: "without-cover",
+      type: "post",
+      locale: "en",
+      title: "Without Cover Image",
+      date: "2026-08-29",
+      tags: ["test"],
+      excerpt: "Excerpt",
+      draft: false,
+      readingMinutes: 3,
+      isFallback: false,
+    },
+  ]);
+
   renderBlogIndex();
 
   expect(
-    screen.queryByRole("img", { name: "Shipped, Documented, Never Called" })
+    screen.queryByRole("img", { name: "Without Cover Image" })
   ).not.toBeInTheDocument();
 });
 
