@@ -1,0 +1,156 @@
+---
+title: "Além do WCAG: Acessibilidade em Engenharia Frontend"
+date: "2026-08-29"
+tags: ["accessibility", "frontend", "software-engineering", "a11y"]
+excerpt: "O que trabalhar com um CEO que dependia de macros me ensinou a enxergar além das listas de conformidade e a tratar acessibilidade como parte central da engenharia frontend."
+draft: false
+---
+
+_O que trabalhar com um CEO que dependia de macros me ensinou a enxergar além das listas de conformidade e a tratar acessibilidade como parte central da engenharia frontend._
+
+---
+
+Durante muito tempo, pensei em acessibilidade principalmente em termos de padrões de conformidade.
+
+HTML semântico, navegação por teclado, taxas de contraste, atributos ARIA, suporte a leitores de tela, checklists de WCAG. São os tópicos que aparecem quando um desenvolvedor frontend começa a levar acessibilidade a sério.
+
+Essas práticas importam. Muito.
+
+Mesmo assim, o tempo que passei trabalhando no ShellHub mudou a forma como eu vejo o assunto.
+
+Enquanto estava lá, nosso CEO era cadeirante com dificuldades motoras. Usar o mouse não era uma opção prática para ele. No lugar disso, ele dependia de macros de teclado automatizadas para navegar e acionar ações em toda a plataforma.
+
+Era uma configuração específica para o jeito dele. Mas ela expôs uma realidade que auditorias de conformidade costumam obscurecer:
+
+**Acessibilidade vai além de satisfazer um padrão. A pergunta real é se alguém consegue usar, de fato, o que você construiu.**
+
+---
+
+## WCAG importa
+
+Nada disso é um argumento contra o WCAG.
+
+O WCAG entrega às equipes uma linha de base rigorosa e compartilhada. Critérios concretos ajudam designers, desenvolvedores e auditores a medir os requisitos de uma interface de forma objetiva, impedindo que acessibilidade se dissolva em opinião subjetiva.
+
+Se você desenvolve para a web e ainda não conhece o WCAG, comece por aí.
+
+Dito isso, memorizar diretrizes é diferente de entender como pessoas realmente interagem com software.
+
+Um site pode passar por uma auditoria automatizada sem nenhum erro e continuar difícil de navegar. Você pode verificar cada taxa de contraste, atribuir papéis ARIA corretos, escrever labels conformes, e ainda construir um fluxo que frustra usuários reais.
+
+Acessibilidade vive na experiência. Uma pontuação de auditoria não garante usabilidade.
+
+---
+
+## Quando "clicável" não é suficiente
+
+Observar alguém navegando via macros transformou a forma como eu enxergo interações de interface.
+
+Tendemos a simplificar uma interação em uma única premissa:
+
+> O usuário clica no botão e algo acontece.
+
+Quando clicar com o ponteiro está fora de cogitação, esse modelo mental desmorona imediatamente.
+
+Clicabilidade deixa de ser o critério. O que importa é se a ação **pode ser acionada de forma confiável pelo método de entrada que aquela pessoa realmente usa**.
+
+Essa perspectiva reencadra detalhes cotidianos de implementação:
+
+- Esse elemento é um `<button>` de verdade?
+- Ele expõe um nome distinto e significativo para a árvore de acessibilidade?
+- Dá para navegar até ele e acioná-lo sem usar o mouse?
+- O foco permanece previsível quando um modal ou drawer abre?
+- Abrir um menu desloca elementos visuais próximos de forma inesperada?
+- Esse controle exige precisão milimétrica de ponteiro?
+- Automação assistiva ou scripts personalizados conseguem identificar o alvo de forma determinística?
+- Uma refatoração futura vai quebrar a memória muscular ou os scripts de macro que alguém construiu para usar o seu produto?
+
+Nenhum desses requisitos é exótico. São os fundamentos de uma engenharia frontend sólida.
+
+Quanto mais fundo você olha para acessibilidade no mundo real, mais ela se alinha com disciplina básica de engenharia.
+
+---
+
+## Acessibilidade costuma ser boa engenharia
+
+HTML semântico fornece acessibilidade, mas também representa eficiência de engenharia pura.
+
+Usar um `<button>` nativo no lugar de um handler de clique em uma `<div>` te dá foco por teclado, ativação por Enter e Espaço, e integração com a árvore de acessibilidade de graça. Você obtém o comportamento padrão do navegador sem escrever polyfills de evento personalizados.
+
+O padrão se repete em cada camada:
+
+- Gerenciar o foco do teclado de forma limpa mantém as transições de estado previsíveis.
+- Mensagens de erro claras ajudam tanto leitores de tela quanto usuários apressados a se recuperar rapidamente.
+- Transições de estado robustas previnem race conditions e flashes inesperados no DOM.
+- Layouts responsivos e fluidos acomodam ampliadores de tela tão bem quanto viewports móveis.
+- Carregamentos rápidos e bundles de JavaScript enxutos mantêm interfaces responsivas em hardware de entrada.
+
+Nada disso é um recurso de nicho para adicionar pouco antes de um lançamento.
+
+**Acessibilidade não é uma camada auxiliar adicionada por cima da engenharia frontend. Uma engenharia frontend bem feita a produz como consequência natural.**
+
+---
+
+## O problema com o checklist
+
+Fluxos de engenharia dependem de gates automatizados.
+
+Rodamos linters, typecheckers, testes unitários, auditorias do Lighthouse e pipelines de CI. Essas ferramentas fornecem sinais indispensáveis, mas um build limpo nunca garante um produto satisfatório.
+
+Ferramentas de acessibilidade funcionam da mesma forma.
+
+Verificações automatizadas (como Axe ou Lighthouse) capturam labels ausentes, falhas de contraste e hierarquias de DOM quebradas antes do código ser mergeado. Elas evitam regressões óbvias.
+
+Ainda assim, ferramentas automatizadas têm limites claros:
+
+- Um engine verifica se um elemento tem um nome acessível. Ele não consegue julgar se o label faz sentido no contexto.
+- Um script confirma que um botão pode receber foco pelo teclado. Ele não consegue avaliar se percorrer quarenta controles redundantes cria um fluxo de trabalho exaustivo.
+- Uma auditoria confirma que sua marcação satisfaz uma regra formal. Ela não te diz se a página resultante parece lógica para quem depende dela todos os dias.
+
+Passes automatizados são checkpoints valiosos. O objetivo continua sendo construir software que pessoas reais consigam navegar sem esforço, usando ferramentas para apoiar esse objetivo, e não para substituir verificação humana.
+
+---
+
+## Não existe um "usuário acessível" genérico
+
+Necessidades de acessibilidade variam muito entre pessoas e contextos:
+
+- Um engenheiro cego navegando por leitor de tela.
+- Um usuário avançado se movendo só com atalhos de teclado.
+- Alguém dependendo de controles de voz por reconhecimento de fala.
+- Um executivo com dificuldades motoras executando macros programadas.
+- Um pai segurando um filho no colo enquanto navega por um app com uma mão só.
+- Alguém se recuperando de cirurgia no pulso com o braço imobilizado.
+- Um usuário com um smartphone de entrada em conexão ruim.
+
+Esses cenários diferem técnica e fisicamente. Agrupá-los em um perfil genérico único perde a nuance de cada caso de uso.
+
+Mesmo assim, todos eles desafiam a mesma suposição padrão: que todo mundo interage com uma tela usando um mouse de alta precisão, duas mãos estáveis e visão perfeita.
+
+Quando construímos interfaces frontend, fazemos suposições implícitas sobre como as pessoas vão usá-las. Acessibilidade garante que deixamos espaço para formas diferentes de interagir com o que construímos.
+
+---
+
+## Construa para pessoas, não para especificações
+
+Ainda sigo o WCAG de perto.
+
+HTML semântico, anéis de foco, taxas de contraste e testes automatizados de CI pertencem a cada ciclo de desenvolvimento padrão. Não são coisas para enfiar em um sprint antes do lançamento.
+
+Mas deixei de tratar conformidade como a linha de chegada. As diretrizes fornecem a fundação base; a usabilidade real continua sendo o verdadeiro teste.
+
+Trabalhar lado a lado com nosso CEO no ShellHub me enraizou nisso. Acessibilidade parou de ser uma especificação abstrata em uma aba de documentação e se tornou a realidade cotidiana de como um colega operava nosso sistema.
+
+Boa acessibilidade raramente se anuncia com recursos chamativos.
+
+É um botão nativo gerenciando foco corretamente.
+
+É uma mensagem de erro explicando claramente como corrigir um input inválido.
+
+É um layout que permanece estável quando conteúdo dinâmico carrega.
+
+É uma interface que se adapta à pessoa, em vez de forçar a pessoa a se adaptar à interface.
+
+**Trate o WCAG como o piso base, e construa para cima a partir daí.**
+
+Engenharia frontend está no seu melhor quando busca algo além do mínimo necessário.
