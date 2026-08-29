@@ -28,3 +28,11 @@ CVE-2026-44705
 # in either app's client bundle. Revisit when a fixed extract-zip release
 # exists to override to.
 CVE-2026-56876
+
+# CVE-2026-14456: OpenSSL DoS via unbounded memory growth in QUIC server
+# (libcrypto3/libssl3 3.5.7-r0 on Alpine 3.24.1). Docker is dev-only
+# (Standing Decision 3); neither app runs as a container server in
+# production (both deploy as static builds to Cloudflare Pages). Revisit
+# when node:24-alpine upstream publishes a base image with 3.5.8-r0.
+CVE-2026-14456
+
