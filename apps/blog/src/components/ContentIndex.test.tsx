@@ -106,9 +106,10 @@ test("renders a thumbnail for a card whose entry has a coverImage", () => {
 
   renderBlogIndex();
 
-  expect(
-    screen.getByRole("img", { name: "With Cover Image" })
-  ).toHaveAttribute("src", "/BASE/content/blog/en/post-placeholder/cover.png");
+  expect(screen.getByRole("img", { name: "With Cover Image" })).toHaveAttribute(
+    "src",
+    "/BASE/content/blog/en/post-placeholder/cover.png"
+  );
 });
 
 test("renders no thumbnail for a card whose entry has no coverImage", () => {
