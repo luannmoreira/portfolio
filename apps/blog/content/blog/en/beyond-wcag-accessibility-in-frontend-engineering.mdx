@@ -1,0 +1,156 @@
+---
+title: "Beyond WCAG: Accessibility in Frontend Engineering"
+date: "2026-08-29"
+tags: ["accessibility", "frontend", "software-engineering", "a11y"]
+excerpt: "What working with a CEO who relied on macros taught me about looking past compliance checklists and treating accessibility as core frontend engineering."
+draft: false
+---
+
+_What working with a CEO who relied on macros taught me about looking past compliance checklists and treating accessibility as core frontend engineering._
+
+---
+
+I used to think about accessibility primarily in terms of compliance standards.
+
+Semantic HTML, keyboard navigation, contrast ratios, ARIA attributes, screen reader support, and WCAG checklists. These are the usual topics developers encounter when they begin taking accessibility seriously.
+
+Those practices matter. A lot.
+
+However, my time working on ShellHub shifted my perspective.
+
+While I was there, our CEO was a wheelchair user with motor difficulties. Using a mouse was not practical for him. Instead, he relied heavily on automated keyboard macros to navigate and trigger actions across the platform.
+
+That setup was specific to his workflow, but it highlighted a reality that compliance audits often obscure:
+
+**Accessibility is more than satisfying a standard. It comes down to whether someone can actually use what you built.**
+
+---
+
+## WCAG is important
+
+None of this is an argument against WCAG.
+
+WCAG gives teams a shared, rigorous baseline. Having concrete criteria helps designers, developers, and auditors measure interface requirements objectively, preventing accessibility from dissolving into subjective opinion.
+
+If you build for the web and do not know WCAG yet, start there.
+
+Still, memorizing guidelines is different from understanding how people actually interact with software.
+
+A site can clear an automated accessibility audit with zero errors and remain painfully difficult to navigate. You can check every contrast ratio, assign valid ARIA roles, write compliant labels, and still build a workflow that frustrates real users.
+
+Accessibility lives in the experience. An audit score cannot guarantee usability.
+
+---
+
+## When "clickable" isn't enough
+
+Watching someone navigate via macros shifted how I look at UI interactions.
+
+We often simplify an interaction down to one premise:
+
+> The user clicks the button, and something happens.
+
+When clicking with a pointer is off the table, that mental model breaks down immediately.
+
+Clickability stops being the benchmark. What matters is whether the action **can be triggered reliably through whatever input method that person actually uses**.
+
+That perspective reframes everyday implementation details:
+
+- Is this element a real `<button>`?
+- Does it expose a distinct, meaningful name to the accessibility tree?
+- Can it be navigated to and triggered without touching a mouse?
+- Does focus stay predictable when a modal or drawer opens?
+- Does opening a menu shift nearby layout elements unexpectedly?
+- Does this control require pixel-precise pointer accuracy?
+- Can assistive automation or custom scripts identify the target deterministically?
+- Will an upcoming UI refactor break the muscle memory or macro scripts someone built to use your product?
+
+None of these requirements are exotic. They are the fundamentals of solid frontend engineering.
+
+The deeper you look at real-world accessibility, the more it aligns with basic engineering discipline.
+
+---
+
+## Accessibility is often good engineering
+
+Semantic HTML provides accessibility, but it is also straightforward engineering efficiency.
+
+Using a native `<button>` instead of a click handler on a `<div>` gives you keyboard focus, Enter/Space activation, and accessibility tree wiring for free. You get standard browser behavior without writing custom event polyfills.
+
+The pattern repeats across every layer:
+
+- Managing keyboard focus cleanly keeps state changes predictable.
+- Clear error messages help both screen readers and hurried users recover quickly.
+- Rock-solid state transitions prevent race conditions and unexpected DOM flashes.
+- Responsive, fluid layouts accommodate screen magnifiers just as well as mobile viewports.
+- Fast load times and lean JavaScript bundles keep interfaces responsive on budget hardware.
+
+None of these are boutique features to bolt on right before a launch.
+
+**Accessibility is not an auxiliary layer added on top of frontend engineering. Well-crafted frontend engineering inherently produces it.**
+
+---
+
+## The problem with the checklist
+
+Engineering workflows rely on automated gates.
+
+We run linters, typecheckers, unit tests, Lighthouse audits, and CI pipelines. These tools provide indispensable signals, but a clean build run never guarantees a satisfying product.
+
+Accessibility tooling works the same way.
+
+Automated checks (like Axe or Lighthouse) catch missing labels, contrast failures, and broken DOM hierarchies before code merges. They prevent obvious regressions.
+
+Even so, automated tools have strict limits:
+
+- An engine checks that an element has an accessible name. It cannot judge whether the label makes sense in context.
+- A script verifies that a button is keyboard-focusable. It cannot evaluate whether tabbing through forty redundant controls creates an exhausting workflow.
+- An audit confirms that your markup satisfies a formal rule. It cannot tell you if the resulting page feels logical to someone relying on it every day.
+
+Automated passes are valuable checkpoints. The objective remains building software that real people can navigate effortlessly, using tools to support that goal rather than replace human verification.
+
+---
+
+## There isn't one "accessible user"
+
+Accessibility needs vary widely across different people and contexts:
+
+- A blind engineer navigating via a screen reader.
+- A power user moving purely with keyboard shortcuts.
+- Someone relying on speech-to-text voice controls.
+- An executive with motor difficulties executing scripted macros.
+- A parent holding a toddler while navigating an app one-handed.
+- Someone recovering from wrist surgery with an arm in a splint.
+- A user on an entry-level smartphone under poor network connectivity.
+
+These scenarios differ technically and physically. Lumping them into a single generic profile misses the nuance of each use case.
+
+Yet they all challenge the same default assumption: that everyone interacts with a screen using a high-precision mouse, two steady hands, and 20/20 vision.
+
+When we build frontend interfaces, we make implicit assumptions about how people will use them. Accessibility ensures we leave room for different ways of interacting with our work.
+
+---
+
+## Build for people, not just specifications
+
+I still follow WCAG closely.
+
+Semantic HTML, focus rings, contrast ratios, and automated CI tests belong in every standard development cycle, not crammed into a pre-release sprint.
+
+However, I no longer treat compliance as the finish line. Guidelines provide the baseline foundation; actual usability remains the true test.
+
+Working alongside our CEO at ShellHub grounded this for me. Accessibility stopped being an abstract specification in a documentation tab and became an everyday reality of how a teammate operated our system.
+
+Good accessibility rarely announces itself with flashy features.
+
+It is a native button handling focus properly.
+
+It is an error message clearly explaining how to fix invalid input.
+
+It is a layout remaining stable when dynamic content loads.
+
+It is an interface that adapts to the person, rather than forcing the person to adapt to the interface.
+
+**Treat WCAG as the baseline floor, then build upward from there.**
+
+Frontend engineering is at its best when it strives for something better than the bare minimum.
