@@ -1,0 +1,375 @@
+---
+title: "Criando um App de Rede Local em Go: Arquitetura Zero-Trust, TLS In-Process e Pareamento Criptográfico de Dispositivos"
+date: "2026-09-05"
+tags: ["go", "networking", "security", "zero-trust", "self-hosted"]
+excerpt: "Como projetei o stack de rede local do Alexandryn em Go: padrões zero-trust, certificados Let's Encrypt in-process, encerramento concorrente de listeners e pareamento de dispositivos por QR code sem fricção."
+draft: false
+---
+
+_Como projetei o stack de rede local do Alexandryn em Go: padrões zero-trust, certificados Let's Encrypt automáticos, encerramento concorrente e pareamento de dispositivos por QR code sem fricção._
+
+---
+
+Construir uma aplicação self-hosted para rodar em rede local (LAN) parece simples à primeira vista. Você faz bind em `0.0.0.0:8080`, exibe o IP local no terminal e deixa os aparelhos da sua rede Wi-Fi se conectarem.
+
+Na prática, no instante em que um app self-hosted abre portas para a rede local, suas premissas de segurança caem por terra. Em uma rede doméstica ou de escritório comum:
+
+- Qualquer dispositivo invasor, gadget IoT barato ou usuário na rede de convidados pode escanear suas portas abertas.
+- Navegadores em outros computadores podem sofrer ataques de requisições cross-origin mirando IPs internos (DNS rebinding e CSRF local).
+- Pessoas usando celulares, e-readers ou smart TVs odeiam digitar senhas longas em teclados virtuais.
+- A clássica opção de "desativar autenticação na rede local" transforma o servidor em um risco imediato de vazamento de dados ou execução remota de código.
+
+Quando comecei a desenvolver o **Alexandryn** (uma biblioteca digital self-hosted com backend em Go, frontend em React e banco de dados PostgreSQL), eu queria que minha família pudesse ler livros pelo celular ou tablet sem comprometer a máquina host. Isso exigia desenhar uma arquitetura de rede local zero-trust e pareamento seguro desde o primeiro dia.
+
+Aqui está como implementei essa arquitetura em Go.
+
+---
+
+## 1. Princípios Arquiteturais: Fail-Closed e Zero-Trust
+
+Antes de abrir qualquer listener de rede, defini cinco regras invioláveis:
+
+1. **Loopback por Padrão**: Por padrão, o servidor faz bind estritamente em `127.0.0.1`. Abrir o servidor para a rede local ou para a internet exige uma ação administrativa explícita.
+2. **Autenticação Sempre Ativa**: Não existe botão para "desativar autenticação na LAN". Toda rota é protegida por autenticação JWT Bearer ou controle de acesso baseado em funções (RBAC).
+3. **Sem Servidores Centrais de Relay**: O app funciona com zero dependências de nuvem externa, zero telemetria e sem proxies reversos hospedados por terceiros. Toda a comunicação ocorre ponto a ponto na rede local.
+4. **Transparência de Transporte e Alcance**: Tráfego HTTP em texto puro na LAN emite avisos explícitos no log de inicialização e exibe um alerta claro na interface web. Já em conexões públicas, TLS é obrigatório.
+5. **Separação de Privilégios**: Dispositivos na LAN podem navegar pela biblioteca e sincronizar o progresso de leitura, mas não têm permissão para alterar fontes de armazenamento, tarefas de importação em disco ou configurações do servidor.
+
+---
+
+## 2. Classificação de Endereço de Bind e Arquitetura de Listeners
+
+Em Go, receber tráfego de rede costuma começar com `net.Listen("tcp", addr)`. Mas como evitar que alguém exponha sem querer um servidor sem criptografia para a internet pública?
+
+O Alexandryn implementa um classificador explícito de endereços de bind em `internal/config/bindaddress.go`.
+
+### Classificação de Hosts
+
+Os endereços são analisados sem fazer consultas DNS externas, evitando travamentos na inicialização ou ataques de envenenamento de DNS:
+
+```go
+type Reachability string
+
+const (
+    ReachabilityLoopback Reachability = "loopback"
+    ReachabilityPrivate  Reachability = "private"  // RFC 1918 / RFC 4193
+    ReachabilityPublic   Reachability = "public"   // IP público roteável ou domínio
+)
+```
+
+- **Loopback**: `127.0.0.1`, `::1` ou `localhost`.
+- **Privado (LAN)**: Intervalos IPv4 da RFC 1918 (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) ou endereços IPv6 ULA da RFC 4193.
+- **Público**: Qualquer IP público roteável ou nome de domínio personalizado.
+
+### Regras de Validação Fail-Closed
+
+O servidor aplica verificações rígidas logo na inicialização:
+
+- Um bind **Público** é **rejeitado na inicialização**, a menos que haja TLS configurado (seja por certificados estáticos ou provisionamento automático via ACME).
+- Um bind **Privado** permite HTTP em texto puro, mas gera um aviso explícito de inicialização (`serving plaintext HTTP on a private/LAN bind address`) e destaca esse aviso na interface.
+
+### Listeners Duplos: Drenagem Concorrente e Graceful Shutdown
+
+Ao operar em modo público com TLS, o servidor mantém **dois listeners**:
+
+1. Porta `443` (ou porta TLS configurada): O servidor HTTPS seguro que atende a API e a Single-Page App.
+2. Porta `80`: Um listener HTTP usado exclusivamente para responder aos desafios de domínio ACME HTTP-01 e redirecionar tráfego para HTTPS via código 301.
+
+Um erro comum em arquiteturas com dois listeners em Go é fazer o encerramento sequencial:
+
+```go
+// PERIGOSO: O desligamento sequencial pode esgotar o tempo de drenagem do servidor principal
+if redirectSrv != nil {
+    redirectSrv.Shutdown(shutdownCtx)
+}
+srv.Shutdown(shutdownCtx)
+```
+
+Se um cliente lento mantiver conexões abertas na porta 80, o tempo de tolerância pode acabar antes mesmo que o servidor principal comece a drenar as requisições ativas da API.
+
+O Alexandryn resolve isso drenando ambos os listeners **ao mesmo tempo**, usando `sync.WaitGroup`:
+
+```go
+// SEGURO: Drenagem concorrente controlada por um context compartilhado
+var shutdownWG sync.WaitGroup
+
+if redirectSrv != nil {
+    shutdownWG.Add(1)
+    go func() {
+        defer shutdownWG.Done()
+        if err := redirectSrv.Shutdown(shutdownCtx); err != nil {
+            logger.Warn("redirect listener drain timeout", "error", err)
+            _ = redirectSrv.Close()
+        }
+    }()
+}
+
+shutdownWG.Add(1)
+go func() {
+    defer shutdownWG.Done()
+    if err := srv.Shutdown(shutdownCtx); err != nil {
+        if errors.Is(err, context.DeadlineExceeded) {
+            _ = srv.Close() // Força o fechamento das conexões restantes
+        }
+    }
+}()
+
+shutdownWG.Wait()
+```
+
+Como os dois listeners compartilham o mesmo context com timeout, nenhum servidor impede o encerramento correto do outro.
+
+---
+
+## 3. TLS In-Process Automatizado com Let's Encrypt (ACME)
+
+Para quem expõe a biblioteca na internet usando um domínio próprio (via DNS dinâmico), configurar Nginx, Caddy ou Certbot pode ser trabalhoso.
+
+O Alexandryn inclui provisionamento automatizado de certificados diretamente no binário em Go usando a biblioteca `golang.org/x/crypto/acme/autocert`:
+
+```go
+manager := &autocert.Manager{
+    Prompt:     autocert.AcceptTOS,
+    HostPolicy: autocert.HostWhitelist(cfg.ACMEDomain()),
+    Cache:      autocert.DirCache(cfg.ACMECacheDir()),
+    Email:      cfg.ACMEEmail(),
+}
+
+tlsConfig := &tls.Config{
+    GetCertificate: manager.GetCertificate,
+    NextProtos:     []string{"h2", "http/1.1", acme.ALPNProto},
+    MinVersion:     tls.VersionTLS12,
+    CipherSuites:   secureCipherSuites(),
+}
+```
+
+O redirecionador na porta 80 utiliza `manager.HTTPHandler(redirectHandler)` para interceptar requisições de validação ACME de forma transparente, enquanto redireciona todo o tráfego web normal para HTTPS.
+
+---
+
+## 4. Pareamento Criptográfico de Dispositivos: O Handshake Zero-Trust sem Fricção
+
+Conectar um celular, leitor digital ou navegador de smart TV a um servidor local costuma ser uma experiência desconfortável. Digitar uma senha mestra de 24 caracteres em um controle remoto ou teclado virtual leva as pessoas a escolherem senhas fracas ou a desativarem a autenticação.
+
+O Alexandryn adota uma **cerimônia de pareamento criptográfico temporário**, inspirada no pareamento de videogames e dispositivos inteligentes.
+
+```text
++---------------+                                    +---------------+
+| Dispositivo   |                                    | Dispositivo   |
+| Host (Admin)  |                                    | Cliente (TV)  |
++---------------+                                    +---------------+
+        |                                                    |
+        | 1. POST /api/v1/network/pair/initiate (Admin JWT)  |
+        |--------------------------------------------------->|
+        |    Gera código Crockford de 8 chars (7K3M-9P4W)    |
+        |    Salva blind index HMAC-SHA256(código) no banco  |
+        |                                                    |
+        | 2. Exibe QR Code e cronômetro de 5 minutos         |
+        |    Payload: https://lan-ip:8443/connect?c=7K3M9P4W |
+        |                                                    |
+        |                                3. Lê QR / Acessa URL
+        |                                   Lê o código e limpa ?c=
+        |                                                    |
+        |                                4. POST /pair/verify
+        |                                   (Código + Nome Aparelho)
+        |                                   Lock de linha: FOR UPDATE
+        |                                   Tentativas <= 5
+        |<---------------------------------------------------|
+        |                                                    |
+        | 5. Emite Enrolment Grant JWT de uso único (exp 5m) |
+        |--------------------------------------------------->|
+        |                                                    |
+        |                                6. POST /auth/login
+        |                                   (Usuário + Senha
+        |                                    + Enrolment Grant)
+        |                                   Valida o JTI do grant
+        |                                   Registra em paired_devices
+        |<---------------------------------------------------|
+        |                                                    |
+        | 7. Emite tokens normais Access e Refresh           |
+        |--------------------------------------------------->|
+        |                                                    |
+        | Pronto para ler!                                   |
+```
+
+### A. Geração de Códigos em Base32 de Crockford
+
+Os códigos são compostos por 8 caracteres selecionados do alfabeto Crockford Base32, excluindo caracteres fáceis de confundir (`I`, `L`, `O`, `U`):
+
+```go
+const crockfordAlphabet = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
+```
+
+- **Espaço de busca**: `32^8` (aproximadamente `1.099 × 10^12` combinações, entregando mais de 40 bits de entropia).
+- Exibido com hífen central (`7K3M-9P4W`) para facilitar a leitura.
+- Encapsulado em uma struct não comparável em Go, impedindo que o código interno faça comparações diretas com `==` ou vaze o valor em logs com `%v`:
+
+```go
+type PairingCode struct {
+    raw []byte // slice não exportado impede comparação direta da struct
+}
+
+func (c PairingCode) Equal(other PairingCode) bool {
+    return subtle.ConstantTimeCompare(c.raw, other.raw) == 1
+}
+
+func (c PairingCode) String() string {
+    return "[REDACTED]"
+}
+```
+
+### B. Blind Indexing (Nunca Guarde Códigos Puros)
+
+Se alguém conseguir um dump do banco ou ler cópias de segurança, não deve encontrar códigos de pareamento válidos.
+
+O banco armazena apenas um **blind index**:
+
+```text
+blind_index = HMAC-SHA256(K_pairing_blind, codigo_normalizado)
+```
+
+A chave `K_pairing_blind` é derivada na inicialização a partir do segredo mestre do servidor usando HKDF.
+
+```sql
+CREATE TABLE pairing_sessions (
+    id UUID PRIMARY KEY,
+    code_blind_index VARCHAR(64) NOT NULL UNIQUE,
+    status VARCHAR(20) NOT NULL, -- pending, verified, consumed, revoked, expired
+    failed_attempts INT NOT NULL DEFAULT 0,
+    expires_at TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL
+);
+CREATE INDEX idx_pairing_blind ON pairing_sessions (code_blind_index);
+```
+
+### C. Controle de Concorrência e Proteção contra Força Bruta
+
+Um invasor na rede local conseguiria quebrar o código de 8 caracteres por força bruta?
+
+O Alexandryn aplica três barreiras consecutivas:
+
+1. **Rate Limiter por IP**: No máximo 5 tentativas por minuto para cada endereço IP.
+2. **Contador por Código**: No máximo 5 erros no mesmo código antes de a sessão ser cancelada e marcada como `revoked`.
+3. **Lock de Linha no Banco (`SELECT ... FOR UPDATE`)**:
+
+```sql
+-- Verificação atômica em uma única transação
+SELECT id, status, failed_attempts, expires_at
+FROM pairing_sessions
+WHERE code_blind_index = $1
+FOR UPDATE;
+```
+
+Ao travar a linha com `FOR UPDATE`, requisições concorrentes não conseguem disputar palpites de códigos ou tentar usar o mesmo grant emitido duas vezes.
+
+### D. Enrolment Grant de Uso Único
+
+Quando a validação tem sucesso, o servidor emite um **Enrolment Grant**:
+
+- Token JWT dedicado, assinado com uma subchave HKDF distinta (`enrolment-grant-signing-key-v1`).
+- O tipo do token é estritamente `typ: enrol` (sendo rejeitado pela API se alguém tentar usá-lo como token de acesso comum).
+- Contém um `jti` (JWT ID) único, registrado na tabela `enrolment_grant_jtis` do PostgreSQL.
+- Validade estrita de 5 minutos.
+- Uso único: consumido no login final para associar a identidade do dispositivo à conta.
+
+---
+
+## 5. Defesa em Profundidade no Transporte HTTP
+
+Expor um serviço na LAN exige barreiras firmes na camada de transporte. O Alexandryn estrutura seus middlewares em camadas:
+
+```text
+[Requisição de Entrada]
+       │
+       ▼
+1. Recovery Middleware (captura panics)
+       │
+       ▼
+2. Limitador de Tamanho de Body (Max 1MB para API, 64KB para pareamento)
+       │
+       ▼
+3. Logs Estruturados (IDs de correlação, campos sensíveis higienizados)
+       │
+       ▼
+4. Headers de Segurança (CSP restrito, X-Frame-Options: DENY, nosniff, Referrer-Policy)
+       │
+       ▼
+5. Strict-Transport-Security (HSTS ativo somente em binds TLS)
+       │
+       ▼
+6. Rate Limiter Global (token bucket baseado em net.SplitHostPort(RemoteAddr))
+       │
+       ▼
+7. CORS Middleware (lista de permissões restrita; correspondência exata)
+       │
+       ▼
+8. Validação de Origem (verifica Origin/Referer em endpoints sem autenticação)
+       │
+       ▼
+9. Autenticação (validação de JWT e contexto de biblioteca ativa)
+       │
+       ▼
+10. Autorização RBAC (RequireRole: Admin vs Leitor)
+       │
+       ▼
+[Handler da Rota]
+```
+
+### Validação de Origem contra Phishing Cross-Origin
+
+Como endpoints de pareamento como `POST /api/v1/network/pair/verify` são abertos, um navegador acessando um site externo malicioso (`https://attacker.com`) poderia disparar requisições em segundo plano para `http://192.168.1.50:8080/api/v1/network/pair/verify`.
+
+O Alexandryn bloqueia esse cenário com `OriginValidation`:
+
+- Se os cabeçalhos `Origin` ou `Referer` estiverem presentes, eles precisam coincidir com o hostname ou IP local configurado no servidor.
+- Origens nulas e domínios externos são rejeitados imediatamente com status HTTP 403 Forbidden.
+
+### Por que não usamos Tokens CSRF?
+
+O Alexandryn utiliza cabeçalhos `Authorization: Bearer <token>` guardados no armazenamento do cliente para todas as rotas autenticadas. Como os navegadores **nunca anexam cabeçalhos Bearer de forma automática em requisições entre origens** (ao contrário de cookies), a aplicação elimina a superfície de ataque para CSRF nas rotas autenticadas. Isso permitiu dispensar toda a complexidade de cookies de sessão e tokens de sincronização CSRF.
+
+---
+
+## 6. Experiência de Pareamento no Frontend
+
+Mecanismos de segurança falham quando a experiência do usuário é confusa. O cliente web implementa padrões cuidadosos:
+
+1. **Renderização de QR Code no Navegador**:
+   O backend envia apenas a string de conexão (`https://192.168.1.100:8443/connect?c=7K3M9P4W`). O navegador desenha o QR code SVG usando a biblioteca `qrcode`. Nenhum arquivo de imagem temporário é gerado no disco do servidor.
+
+2. **Limpeza Imediata da URL**:
+   Assim que o aparelho abre `/connect?c=7K3M-9P4W`, o roteador do React lê o código e executa na mesma hora:
+
+   ```ts
+   window.history.replaceState({}, document.title, window.location.pathname);
+   ```
+
+   Isso remove o código de pareamento da barra de endereços no mesmo instante, impedindo que seja visto por cima do ombro, salvo em prints ou armazenado no histórico de navegação.
+
+3. **Repasse de Estado via Memória do Roteador**:
+   Após a confirmação, o grant de matrícula é passado para a tela de `/login` pelo estado interno de memória do React Router:
+
+   ```ts
+   navigate("/login", { state: { enrolmentGrant, hostName } });
+   ```
+
+   O token nunca é adicionado a parâmetros de URL nem salvo em storage não protegido.
+
+4. **Contagem Regressiva Acessível**:
+   Leitores de tela recebem avisos periódicos de tempo (60s, 30s, 10s, expirado) usando `aria-live="polite"`. Já quem utiliza `prefers-reduced-motion` vê um cronômetro estático, sem animações pulsantes no CSS.
+
+---
+
+## 7. Principais Lições ao Criar Apps de Rede Local em Go
+
+1. **Classifique o endereço de bind**: Nunca assuma que `0.0.0.0` é seguro. Separe com clareza loopback, redes privadas da RFC 1918 e internet pública.
+2. **Nunca desative a autenticação**: Facilite o pareamento em vez de remover a segurança para usuários na LAN.
+3. **Guarde blind indexes, não segredos**: Use HMAC-SHA256 com subchave HKDF para códigos curtos, garantindo que dumps do banco não revelem nada.
+4. **Evite condições de corrida com lock de linha**: No PostgreSQL, utilize `SELECT ... FOR UPDATE` para tornar transições de estado atômicas e imunes a disputas.
+5. **Drene múltiplos listeners concorrentemente**: Sempre encerre listeners HTTP e servidores HTTPS em paralelo usando `sync.WaitGroup`.
+6. **Isole rate limiters por `RemoteAddr`**: Nunca confie cegamente no cabeçalho `X-Forwarded-For` vindo de clientes locais sem validação.
+7. **Limpe a URL na chegada**: Remova tokens sensíveis da barra de endereços do navegador no mesmo instante em que a página carregar.
+
+---
+
+_A arquitetura detalhada aqui é código aberto e faz parte do [repositório do Alexandryn](https://github.com/Alexandryn/alexandryn)._
