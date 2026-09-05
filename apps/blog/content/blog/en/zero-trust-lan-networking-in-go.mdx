@@ -1,0 +1,375 @@
+---
+title: "Creating a LAN Network App in Go: Zero-Trust Architecture, In-Process TLS, and Cryptographic Device Pairing"
+date: "2026-09-05"
+tags: ["go", "networking", "security", "zero-trust", "self-hosted"]
+excerpt: "How I engineered production-grade LAN networking for Alexandryn, a self-hosted digital library: fail-closed bind classification, concurrent listener draining, in-process ACME TLS, and single-use cryptographic device pairing."
+draft: false
+---
+
+_How I designed Alexandryn's local networking stack in Go: zero-trust defaults, automated Let's Encrypt certificates, concurrent shutdown, and frictionless QR device pairing._
+
+---
+
+Building a self-hosted application that runs on a local area network sounds simple at first glance. You bind to `0.0.0.0:8080`, print the local IP to the terminal, and let devices on your Wi-Fi connect.
+
+In practice, the moment a self-hosted app opens its network port to the local network, your security assumptions collapse. On a typical home or office LAN:
+
+- Any rogue device, cheap IoT gadget, or guest Wi-Fi user can probe your open ports.
+- Browsers running on other computers can be tricked into cross-origin requests targeting internal IP addresses (DNS rebinding and local CSRF attacks).
+- Users on phones, e-readers, or smart TVs hate typing long passwords with software keyboards.
+- Traditional "turn off authentication on LAN" toggles turn the server into an instant remote code execution or data leakage hazard.
+
+When I built **Alexandryn** (a self-hosted digital library with a Go backend, React frontend, and PostgreSQL storage), I wanted family members to browse books from their phones without compromising the host machine. That meant designing a production-grade, zero-trust LAN networking and device pairing architecture from day one.
+
+Here is how I implemented that stack in Go.
+
+---
+
+## 1. Core Architectural Principles: Fail-Closed and Zero-Trust
+
+Before writing a single network listener, I established five non-negotiable architectural invariants:
+
+1. **Loopback by Default**: Out of the box, the server binds strictly to `127.0.0.1`. Opening the server to the LAN or the Internet requires explicit administrative configuration.
+2. **Authentication is Never Off**: There is no "disable auth on local network" switch. Every route is protected by JWT Bearer authentication or explicit role-based access control (RBAC).
+3. **No Central Relays**: The app operates with zero external cloud dependencies, zero telemetry, and zero hosted reverse-proxy infrastructure. Everything runs peer-to-peer on the local network.
+4. **Honest Reachability and Transport Disclosure**: Plaintext HTTP on a LAN triggers explicit startup warnings in logs and an honest banner in the web UI. TLS is strictly enforced on public binds.
+5. **Separation of Privileges**: LAN readers can browse books and sync their reading progress, but cannot touch storage sources, disk import jobs, or server settings.
+
+---
+
+## 2. Bind Address Classification and Listener Architecture
+
+In Go, accepting network traffic usually starts with `net.Listen("tcp", addr)`. But how do you prevent users from accidentally exposing an unencrypted server to the public Internet?
+
+Alexandryn implements an explicit bind-address classifier in `internal/config/bindaddress.go`.
+
+### Host Classification
+
+Addresses are parsed without external DNS resolution to prevent startup blocking or DNS poisoning attacks:
+
+```go
+type Reachability string
+
+const (
+    ReachabilityLoopback Reachability = "loopback"
+    ReachabilityPrivate  Reachability = "private"  // RFC 1918 / RFC 4193
+    ReachabilityPublic   Reachability = "public"   // Routable Internet IP or hostname
+)
+```
+
+- **Loopback**: `127.0.0.1`, `::1`, or `localhost`.
+- **Private (LAN)**: RFC 1918 IPv4 ranges (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) or RFC 4193 IPv6 ULA.
+- **Public**: Any public routable IP or custom DNS domain name.
+
+### Fail-Closed Validation Rules
+
+The server enforces strict startup guarantees:
+
+- A **Public** bind is **rejected at startup** unless valid TLS is configured (either a static certificate pair or automated ACME).
+- A **Private** bind allows plaintext HTTP, but emits an explicit startup warning (`serving plaintext HTTP on a private/LAN bind address`) and displays a clear notice in the UI.
+
+### Dual Listeners: Concurrent Drain and Graceful Shutdown
+
+When running in public/TLS mode, the server operates **two listeners**:
+
+1. Port `443` (or configured TLS port): The secure HTTPS server running the API and Single-Page App.
+2. Port `80`: An HTTP listener used exclusively to answer ACME HTTP-01 domain challenges and issue HTTP 301 redirects to HTTPS.
+
+A common bug in Go dual-listener architectures is sequential shutdown:
+
+```go
+// DANGEROUS: Sequential shutdown can starve the main server of drain time
+if redirectSrv != nil {
+    redirectSrv.Shutdown(shutdownCtx)
+}
+srv.Shutdown(shutdownCtx)
+```
+
+If a slow client holds open connections to port 80, the grace period expires before the main server even begins draining active API requests.
+
+Alexandryn solves this by draining both listeners **concurrently** using `sync.WaitGroup`:
+
+```go
+// SAFE: Concurrent drain bounded by shared shutdown context
+var shutdownWG sync.WaitGroup
+
+if redirectSrv != nil {
+    shutdownWG.Add(1)
+    go func() {
+        defer shutdownWG.Done()
+        if err := redirectSrv.Shutdown(shutdownCtx); err != nil {
+            logger.Warn("redirect listener drain timeout", "error", err)
+            _ = redirectSrv.Close()
+        }
+    }()
+}
+
+shutdownWG.Add(1)
+go func() {
+    defer shutdownWG.Done()
+    if err := srv.Shutdown(shutdownCtx); err != nil {
+        if errors.Is(err, context.DeadlineExceeded) {
+            _ = srv.Close() // Force-close remaining connections
+        }
+    }
+}()
+
+shutdownWG.Wait()
+```
+
+Both listeners share the same bounded shutdown context, ensuring neither server starves the other during process termination.
+
+---
+
+## 3. Automated In-Process TLS with Let's Encrypt (ACME)
+
+For users exposing their home library over the Internet using a custom domain (dynamic DNS), configuring Nginx, Caddy, or Certbot can be daunting.
+
+Alexandryn includes automated certificate provisioning inside the Go binary using `golang.org/x/crypto/acme/autocert`:
+
+```go
+manager := &autocert.Manager{
+    Prompt:     autocert.AcceptTOS,
+    HostPolicy: autocert.HostWhitelist(cfg.ACMEDomain()),
+    Cache:      autocert.DirCache(cfg.ACMECacheDir()),
+    Email:      cfg.ACMEEmail(),
+}
+
+tlsConfig := &tls.Config{
+    GetCertificate: manager.GetCertificate,
+    NextProtos:     []string{"h2", "http/1.1", acme.ALPNProto},
+    MinVersion:     tls.VersionTLS12,
+    CipherSuites:   secureCipherSuites(),
+}
+```
+
+The port 80 redirector uses `manager.HTTPHandler(redirectHandler)` to intercept ACME challenge requests transparently while redirecting all standard web traffic to HTTPS.
+
+---
+
+## 4. Cryptographic Device Pairing: The Frictionless Zero-Trust Handshake
+
+Connecting a phone, e-reader, or TV browser to a LAN server is usually clunky. Typing a 24-character master password on a TV remote or phone keyboard invites users to choose weak passwords or disable auth altogether.
+
+Alexandryn implements a **temporary cryptographic pairing ceremony** inspired by gaming consoles and smart home devices.
+
+```text
++---------------+                                    +---------------+
+|  Host Device  |                                    | Client Device |
+| (Admin Panel) |                                    | (Phone / TV)  |
++---------------+                                    +---------------+
+        |                                                    |
+        | 1. POST /api/v1/network/pair/initiate (Admin JWT)  |
+        |--------------------------------------------------->|
+        |    Generates Crockford 8-char code (e.g. 7K3M-9P4W)|
+        |    Stores blind index HMAC-SHA256(code) in DB      |
+        |                                                    |
+        | 2. Displays QR Code & 5-min live timer             |
+        |    Payload: https://lan-ip:8443/connect?c=7K3M9P4W |
+        |                                                    |
+        |                                3. Scan QR / Navigate
+        |                                   Reads code, strips ?c=
+        |                                                    |
+        |                                4. POST /pair/verify
+        |                                   (Code + Device Name)
+        |                                   Row-lock: SELECT FOR UPDATE
+        |                                   Attempts <= 5
+        |<---------------------------------------------------|
+        |                                                    |
+        | 5. Issues Single-Use Enrolment Grant JWT (5m exp)  |
+        |--------------------------------------------------->|
+        |                                                    |
+        |                                6. POST /auth/login
+        |                                   (Username + Password
+        |                                    + Enrolment Grant)
+        |                                   Validates grant JTI
+        |                                   Creates paired_devices row
+        |<---------------------------------------------------|
+        |                                                    |
+        | 7. Issues standard Access + Refresh Tokens         |
+        |--------------------------------------------------->|
+        |                                                    |
+        | Ready to read!                                     |
+```
+
+### A. Crockford Base32 Code Generation
+
+Codes are generated with 8 characters chosen from the Crockford Base32 alphabet, excluding easily confused characters (`I`, `L`, `O`, `U`):
+
+```go
+const crockfordAlphabet = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
+```
+
+- **Search space**: `32^8` (approximately `1.099 × 10^12` combinations, giving over 40 bits of entropy).
+- Displayed with a central hyphen (`7K3M-9P4W`) for readability.
+- Wrapped in a non-comparable Go struct so internal code cannot accidentally compare it with `==` or leak it via `%v`:
+
+```go
+type PairingCode struct {
+    raw []byte // unexported slice makes struct non-comparable
+}
+
+func (c PairingCode) Equal(other PairingCode) bool {
+    return subtle.ConstantTimeCompare(c.raw, other.raw) == 1
+}
+
+func (c PairingCode) String() string {
+    return "[REDACTED]"
+}
+```
+
+### B. Blind Indexing (Never Store Raw Codes)
+
+If an attacker dumps the database or reads backups, they must not see active pairing codes.
+
+The database stores only a **blind index**:
+
+```text
+blind_index = HMAC-SHA256(K_pairing_blind, normalized_code)
+```
+
+The key `K_pairing_blind` is derived at startup using HKDF from the master server secret.
+
+```sql
+CREATE TABLE pairing_sessions (
+    id UUID PRIMARY KEY,
+    code_blind_index VARCHAR(64) NOT NULL UNIQUE,
+    status VARCHAR(20) NOT NULL, -- pending, verified, consumed, revoked, expired
+    failed_attempts INT NOT NULL DEFAULT 0,
+    expires_at TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL
+);
+CREATE INDEX idx_pairing_blind ON pairing_sessions (code_blind_index);
+```
+
+### C. Concurrency Control and Brute-Force Immunity
+
+Can a LAN attacker brute-force the 8-character code?
+
+Alexandryn layers three barriers:
+
+1. **IP Rate Limiter**: Maximum 5 attempts per minute per IP address.
+2. **Per-Code Attempt Counter**: Maximum 5 failed attempts per pairing code before the session is automatically marked `revoked`.
+3. **Database Row Lock (`SELECT ... FOR UPDATE`)**:
+
+```sql
+-- Atomic verification in a single transaction
+SELECT id, status, failed_attempts, expires_at
+FROM pairing_sessions
+WHERE code_blind_index = $1
+FOR UPDATE;
+```
+
+By locking the row with `FOR UPDATE`, concurrent verification attempts cannot race to guess codes or double-consume an issued grant.
+
+### D. Single-Use Enrolment Grant
+
+When verification succeeds, the server issues an **Enrolment Grant**:
+
+- Dedicated JWT signed with a distinct HKDF subkey (`enrolment-grant-signing-key-v1`).
+- Token type is explicitly `typ: enrol` (rejected by the API if used as a normal bearer access token).
+- Contains a unique `jti` (JWT ID) recorded in `enrolment_grant_jtis` in PostgreSQL.
+- Expiration: strictly 5 minutes.
+- Single-use: consumed during the final login handshake to establish the device identity.
+
+---
+
+## 5. Defense-in-Depth on the HTTP Transport
+
+Exposing a server to the LAN requires tight transport-layer guardrails. Alexandryn mounts an onion-layered middleware chain:
+
+```text
+[Incoming Request]
+       │
+       ▼
+1. Recovery Middleware (catches panics)
+       │
+       ▼
+2. Body Size Limiter (Max 1MB for API, 64KB for pairing)
+       │
+       ▼
+3. Structured Logging (Context Correlation IDs, Sanitized fields)
+       │
+       ▼
+4. Security Headers (App-origin CSP, X-Frame-Options: DENY, nosniff, Referrer-Policy)
+       │
+       ▼
+5. Strict-Transport-Security (HSTS, present on TLS binds only)
+       │
+       ▼
+6. Global Rate Limiter (token bucket keyed on net.SplitHostPort(RemoteAddr))
+       │
+       ▼
+7. CORS Middleware (deny-by-default allowlist; exact match)
+       │
+       ▼
+8. Origin Validation (checks Origin/Referer on unauthenticated endpoints)
+       │
+       ▼
+9. Authentication (JWT verification & active library context)
+       │
+       ▼
+10. RBAC Authorization (RequireRole: Admin vs Reader)
+       │
+       ▼
+[Route Handler]
+```
+
+### Origin Validation Against Cross-Origin Phishing
+
+Because pairing endpoints like `POST /api/v1/network/pair/verify` are unauthenticated, a browser visiting an external malicious website (`https://attacker.com`) could trigger background fetch requests to `http://192.168.1.50:8080/api/v1/network/pair/verify`.
+
+Alexandryn protects against this with `OriginValidation`:
+
+- If `Origin` or `Referer` is present, it must match the server's configured hostname or LAN IP.
+- Null origins and external domain origins are rejected with HTTP 403 Forbidden.
+
+### Why No CSRF Tokens?
+
+Alexandryn uses standard `Authorization: Bearer <token>` headers stored in browser client storage for all authenticated requests. Because browsers **never automatically attach Bearer headers cross-site** (unlike ambient cookies), the app has zero CSRF attack surface on authenticated routes. Traditional CSRF synchronizer tokens and session cookie machinery were eliminated entirely.
+
+---
+
+## 6. Frontend Device Pairing UX
+
+Security mechanisms fail when the user experience is clumsy. The web client implements several clean UX patterns:
+
+1. **Client-Side QR Code Rendering**:
+   The backend sends a QR payload string (`https://192.168.1.100:8443/connect?c=7K3M9P4W`). The browser renders the SVG QR code client-side using the `qrcode` library. No temporary image files are written to disk.
+
+2. **Immediate URL Cleansing**:
+   When the client device opens `/connect?c=7K3M-9P4W`, React router reads the code and immediately invokes:
+
+   ```ts
+   window.history.replaceState({}, document.title, window.location.pathname);
+   ```
+
+   This strips the pairing code from the browser address bar immediately so it cannot be shoulder-surfed, copied into screenshots, or retained in browsing history.
+
+3. **Router State Handoff**:
+   Once verified, the enrolment grant is passed to `/login` via React Router internal memory state:
+
+   ```ts
+   navigate("/login", { state: { enrolmentGrant, hostName } });
+   ```
+
+   The grant is never appended to query parameters or saved to unencrypted storage.
+
+4. **Accessible Live Countdown**:
+   Screen readers receive polite timer announcements at intervals (60s, 30s, 10s, expired) via `aria-live="polite"`, while users with `prefers-reduced-motion` see a static timer without pulsing CSS animations.
+
+---
+
+## 7. Key Takeaways for Building LAN Apps in Go
+
+1. **Classify your bind address**: Never assume `0.0.0.0` is safe. Explicitly distinguish loopback, private RFC 1918, and public Internet binds.
+2. **Never turn off authentication**: Make device pairing frictionless rather than disabling security for LAN users.
+3. **Store blind indexes, not secrets**: Use HMAC-SHA256 with an HKDF subkey for short-lived codes so database dumps leak nothing.
+4. **Prevent races with row locks**: In PostgreSQL, use `SELECT ... FOR UPDATE` to make state machine transitions atomic and race-proof.
+5. **Drain multiple listeners concurrently**: Always drain HTTP redirectors and HTTPS servers in parallel with `sync.WaitGroup`.
+6. **Key rate limiters on `RemoteAddr`**: Never trust `X-Forwarded-For` from an unverified LAN client.
+7. **Clean the URL immediately**: Strip sensitive tokens from the browser URL immediately upon landing.
+
+---
+
+_The architecture described here is open source and implemented in the [Alexandryn repository](https://github.com/Alexandryn/alexandryn)._
