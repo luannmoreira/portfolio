@@ -36,3 +36,12 @@ CVE-2026-56876
 # when node:24-alpine upstream publishes a base image with 3.5.8-r0.
 CVE-2026-14456
 
+# CVE-2026-63376, CVE-2026-77465: Prototype pollution and DoS in toml@3.0.0.
+# Pulled in by remark-mdx-frontmatter@5.2.0 (latest release) as a transitive
+# build dependency. Dev/compile-time only (MDX compilation in Vite), never
+# shipped in either client bundle, and all repo content uses YAML (---) rather
+# than TOML. Docker is dev-only (Standing Decision 3); neither app runs as a
+# container server in production. Revisit when remark-mdx-frontmatter upgrades.
+CVE-2026-63376
+CVE-2026-77465
+
