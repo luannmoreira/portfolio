@@ -1,0 +1,114 @@
+---
+title: "When NOT to Use Goroutines: Why Heap Profilers Lie"
+date: "2026-09-09"
+tags: ["go", "concurrency", "backend", "software-engineering", "performance"]
+excerpt: "Heap profilers often lie about memory in Go. Why Go 1.27 introduced goroutine leak profiling, and the four scenarios where sequential or bounded execution beats concurrency."
+draft: false
+---
+
+_Heap profilers often lie about memory problems in Go. Why Go 1.27 introduced native goroutine leak profiling, and the four production patterns where sequential or bounded execution beats concurrency._
+
+---
+
+Heap profilers often lie about memory problems in Go.
+
+You inspect the allocation graphs. Everything looks stable. The garbage collector runs on schedule.
+Yet the container creeps toward its 2 GB ceiling until the Linux kernel triggers an OOM kill at 3 AM.
+
+The problem was never on the heap.
+The runtime was juggling 160,000 paused goroutines, each holding its own stack while waiting on channels that will never receive another byte.
+
+This is why Go 1.27 introduced native goroutine leak profiling.
+
+In languages like Java or C++, spawning a thread introduces friction. You think about OS threads, stack sizes, and thread pools. The friction forces architectural review before the code hits staging.
+
+Go removed that friction entirely. You get a 2 KB stack created in nanoseconds. But removing the barrier to entry also removed the built-in pause where engineers ask: "What guarantees this work actually terminates?"
+
+Goroutines are powerful, but treating them as a default solution creates production debt. Here are four scenarios where you should keep your execution sequential or bounded.
+
+---
+
+## 1. When the Work is Smaller Than the Coordination Tax
+
+Splitting an in-memory slice of 5,000 items across multiple goroutines almost always makes your code slower.
+
+The Go runtime scheduler (the GMP model) is well-engineered, but it still has physics to respect. Creating channels, synchronizing wait groups, and switching context across OS threads consumes real CPU cycles.
+
+A modern CPU executing a tight sequential loop benefits from branch prediction and L1/L2 cache locality. It can chew through thousands of operations in 4 microseconds.
+
+When you spin up goroutines for micro-tasks, you spend more CPU time coordinating the workers than actually crunching data. If the work finishes in microseconds, keep it in a single thread.
+
+---
+
+## 2. Unbounded Concurrency in Event Loops
+
+One of the quickest ways to bring down downstream dependencies:
+
+```go
+for _, record := range incomingBatch {
+    go processRecord(record) // Silent landmine at 50,000 records
+}
+```
+
+This passes unit tests with 10 mock records. In production, a backlog pushes 50,000 records into the loop.
+
+You do not get 50,000x throughput. You get 50,000 goroutines fighting for the same database connection pool, saturating file descriptors, and triggering GC pauses.
+
+Replace naive loops with explicit boundaries:
+
+- Run a fixed-size worker pool with a buffered job queue.
+- Apply a weighted semaphore (`golang.org/x/sync/semaphore`) to cap active tasks at a safe ceiling (e.g. 30 concurrent workers).
+- Let consumers pull work at their own pace instead of producers flooding the runtime.
+
+---
+
+## 3. Detached Tasks Without a Cancellation Path
+
+Spawning asynchronous background tasks without inheriting the caller's cancellation context creates permanent memory leaks:
+
+```go
+func handleWebhook(w http.ResponseWriter, r *http.Request) {
+    // Dangerous: context.Background() drops the request deadline.
+    // If the external log collector hangs, this goroutine stays alive forever.
+    go sendAuditLog(context.Background(), r.Payload)
+    w.WriteHeader(http.StatusOK)
+}
+```
+
+If `sendAuditLog` blocks on a slow network socket or writes to an unbuffered channel that loses its reader, that goroutine never dies. Multiply that by 1,000 webhooks an hour, and you have an inevitable incident.
+
+Every goroutine requires an explicit lifecycle owner:
+
+- Pass down a `context.Context` configured with a strict timeout.
+- Track background groups with `errgroup.Group` to capture errors and manage exits.
+- Wire background workers to the application's graceful shutdown signal.
+
+Rule of thumb: If you cannot point to the exact condition that exits the goroutine, do not launch it.
+
+---
+
+## 4. High Lock Contention on Shared State
+
+Spawning 100 goroutines to update a single in-memory struct protected by a `sync.Mutex` does not give you parallel performance.
+
+It gives you serialized execution with extra scheduling noise.
+
+The goroutines spend most of their time parked in the runtime wait queue waiting for the lock to release. You pay the memory and scheduler cost of 100 concurrent units while throughput drops below a single sequential loop.
+
+When multiple execution paths must update shared memory:
+
+- Partition your data into independent shards to reduce collision.
+- Assign state ownership to one dedicated goroutine and communicate via channels.
+- Or keep the execution sequential and remove the synchronization locks entirely.
+
+---
+
+## The Three Questions Before Typing `go`
+
+Before attaching `go` to any function call, answer these three constraints:
+
+1. **What triggers this routine to exit?** (Lifecycle and Cancellation)
+2. **What happens if the downstream receiver stalls?** (Backpressure)
+3. **What is the hard ceiling on concurrent instances under peak traffic?** (Capacity boundaries)
+
+Go 1.27's leak profiling gives us better post-mortem telemetry. But architectural discipline ensures you never have to read those reports during an outage.

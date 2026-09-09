@@ -1,0 +1,114 @@
+---
+title: "Quando NÃO Usar Goroutines: Por Que o Heap Profiler Mente"
+date: "2026-09-09"
+tags: ["go", "concorrencia", "backend", "engenharia-de-software", "performance"]
+excerpt: "Profilers de heap costumam mentir sobre memória em Go. Entenda por que o Go 1.27 introduziu profiling de vazamento e os quatro cenários onde a execução sequencial ou limitada supera a concorrência."
+draft: false
+---
+
+_Profilers de heap costumam mentir sobre problemas de memória em Go. Entenda por que o Go 1.27 introduziu a análise nativa de vazamento de goroutines e conheça quatro cenários de produção onde a execução sequencial ou limitada supera a concorrência._
+
+---
+
+Profilers de heap costumam mentir sobre problemas de memória em Go.
+
+Você inspeciona os gráficos de alocação. Tudo parece estável. O garbage collector executa no tempo certo.
+Mesmo assim, o container escala até estourar o teto de 2 GB e o kernel do Linux mata o processo com OOM kill às 3 da manhã.
+
+O problema nunca esteve no heap.
+O runtime estava sustentando 160.000 goroutines pausadas, cada uma mantendo sua própria stack enquanto aguardava canais que nunca mais receberiam um byte sequer.
+
+É por isso que o Go 1.27 introduziu a análise nativa de vazamento de goroutines (leak profiling).
+
+Em linguagens como Java ou C++, criar uma thread gera atrito natural. Você é forçado a pensar em threads do sistema operacional, tamanho de stack e pools de execução. Esse atrito impõe uma revisão arquitetural antes do código chegar em staging.
+
+Go eliminou esse atrito. Você ganha uma stack de 2 KB alocada em nanossegundos. Só que remover a barreira de entrada também eliminou a pausa reflexiva onde o desenvolvedor pergunta: "Quem garante que esse trabalho realmente vai terminar?"
+
+Goroutines são poderosas, mas tratá-las como resposta padrão gera dívida técnica silenciosa. Aqui estão quatro cenários onde você deve manter a execução sequencial ou estritamente limitada.
+
+---
+
+## 1. Quando o Trabalho é Menor que o Custo de Coordenação
+
+Dividir um slice em memória de 5.000 itens entre várias goroutines quase sempre deixa seu código mais lento.
+
+O scheduler do Go (modelo GMP) é excelente, mas ainda precisa respeitar as leis da física. Criar canais, sincronizar wait groups e alternar contexto entre threads do sistema consome ciclos reais de processamento.
+
+Uma CPU moderna executando um loop sequencial simples aproveita predição de desvio e localidade de cache L1 e L2 com máxima eficiência. Ela consegue processar milhares de registros em 4 microssegundos.
+
+Quando você sobe goroutines para microtarefas, gasta mais CPU gerenciando os trabalhadores do que processando os dados em si. Se a tarefa é resolvida em microssegundos, mantenha tudo em uma única thread.
+
+---
+
+## 2. Concorrência Sem Limite em Loops de Eventos
+
+Uma das formas mais rápidas de derrubar suas dependências:
+
+```go
+for _, registro := range loteEntrada {
+    go processarRegistro(registro) // Mina terrestre silenciosa com 50.000 registros
+}
+```
+
+Esse código passa limpo em testes locais com 10 registros mockados. Em produção, um reprocessamento joga 50.000 itens no loop.
+
+Você não ganha 50.000x mais vazão. Você ganha 50.000 goroutines brigando pelo mesmo pool de conexões com o banco, esgotando file descriptors e provocando pausas longas no garbage collector.
+
+Substitua loops ingênuos por fronteiras claras:
+
+- Adote um worker pool de tamanho fixo com fila bufferizada.
+- Use um semáforo ponderado (`golang.org/x/sync/semaphore`) para limitar o teto de concorrência (ex: 30 workers simultâneos).
+- Deixe o consumidor puxar trabalho no próprio ritmo em vez de deixar o produtor inundar o runtime.
+
+---
+
+## 3. Tarefas em Background Sem Sinal de Cancelamento
+
+Disparar tarefas assíncronas ignorando o contexto de cancelamento do chamador é a receita para vazamentos permanentes de memória:
+
+```go
+func handleWebhook(w http.ResponseWriter, r *http.Request) {
+    // Perigoso: context.Background() descarta o timeout da requisição.
+    // Se a gravação de auditoria travar na rede, essa goroutine fica viva para sempre.
+    go registrarAuditoria(context.Background(), r.Payload)
+    w.WriteHeader(http.StatusOK)
+}
+```
+
+Se `registrarAuditoria` travar em uma chamada de rede lenta ou tentar escrever em um canal sem buffer que perdeu o leitor, essa goroutine nunca é liberada. Multiplique isso por 1.000 webhooks por hora e o incidente em produção se torna inevitável.
+
+Toda goroutine precisa de um responsável explícito pelo seu encerramento:
+
+- Propague um `context.Context` configurado com timeout rígido.
+- Monitore grupos de execução com `errgroup.Group` para capturar falhas e coordenar saídas.
+- Conecte tarefas em background ao sinal de encerramento gracioso da aplicação.
+
+Regra prática: Se você não consegue apontar a condição exata que encerra a goroutine, não a inicialize.
+
+---
+
+## 4. Contenção Severa em Cima do Mesmo Mutex
+
+Subir 100 goroutines para atualizar a mesma struct em memória protegida por `sync.Mutex` não produz execução paralela.
+
+Gera execução serializada com sobrecarga de agendamento.
+
+As goroutines passam a maior parte do tempo estacionadas na fila de espera do runtime, aguardando a liberação da trava. Você assume o custo de memória e agendamento de 100 unidades concorrentes enquanto a vazão real cai abaixo da performance de um loop sequencial simples.
+
+Quando múltiplos fluxos precisam alterar o mesmo estado:
+
+- Segregue seus dados em partições independentes (sharding) para reduzir colisões.
+- Delegue a propriedade do estado a uma única goroutine coordenadora e use canais para envio de comandos.
+- Ou mantenha a execução puramente sequencial e dispense as travas de sincronização.
+
+---
+
+## Três Perguntas Antes de Digitar `go`
+
+Antes de colocar `go` na frente de qualquer chamada de função, responda a três restrições:
+
+1. **O que força essa rotina a encerrar?** (Ciclo de vida e Cancelamento)
+2. **O que acontece se a ponta receptora travar?** (Contrapressão / Backpressure)
+3. **Qual é o teto máximo de execuções simultâneas no pico de carga?** (Limites de capacidade)
+
+O profiling de vazamento do Go 1.27 nos dá excelente telemetria pós-morte. Mas a disciplina arquitetural garante que você nunca precise ler esses relatórios durante um incidente.
