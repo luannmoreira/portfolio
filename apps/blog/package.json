@@ -1,6 +1,6 @@
 {
   "name": "blog",
-  "version": "0.2.18",
+  "version": "0.2.19",
   "private": true,
   "dependencies": {
     "@fontsource/hanken-grotesk": "^5.3.0",
