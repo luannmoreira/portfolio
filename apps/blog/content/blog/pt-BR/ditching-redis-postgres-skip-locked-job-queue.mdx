@@ -1,75 +1,99 @@
 ---
-title: "Abandonando o Redis: Fila de Jobs Atômica com PostgreSQL SKIP LOCKED"
+title: "Abandonando o Redis: Fila Atômica com PostgreSQL SKIP LOCKED"
 date: "2026-09-22"
 tags: ["go", "postgresql", "concorrencia", "backend", "sistemas"]
-excerpt: "Por que rejeitamos Redis e RabbitMQ no Alexandryn e como desenvolvemos uma fila atômica no PostgreSQL com SKIP LOCKED, heartbeat leases e fencing tokens contra workers zumbis."
+excerpt: "Tirar trabalho da requisição HTTP costuma disparar um reflexo: subir o Redis. No Alexandryn, uma tabela no PostgreSQL e o FOR UPDATE SKIP LOCKED garantiram jobs atômicos, zero escritas duplas e fencing por heartbeat sem nenhum daemon extra."
 draft: false
 coverImage: "/content/blog/pt-BR/ditching-redis-postgres-skip-locked-job-queue/cover.jpg"
 ---
 
-_Por que rejeitamos Redis e RabbitMQ no Alexandryn e como desenvolvemos uma fila atômica no PostgreSQL com SKIP LOCKED, heartbeat leases e fencing tokens contra workers zumbis._
+_Tirar trabalho da requisição HTTP costuma disparar um reflexo: subir o Redis. No Alexandryn, uma tabela no PostgreSQL e o FOR UPDATE SKIP LOCKED garantiram jobs atômicos, zero escritas duplas e fencing por heartbeat sem nenhum daemon extra._
 
 ---
 
-Ao projetar processamento em segundo plano, o reflexo padrão da indústria é imediato: subir Redis com Sidekiq, Celery ou RabbitMQ.
+O PostgreSQL consegue operar uma fila de jobs em segundo plano extremamente confiável. O segredo é uma única cláusula: `FOR UPDATE SKIP LOCKED`.
 
-Esse reflexo faz sentido em escala corporativa com equipes dedicadas de infraestrutura. Em uma aplicação desktop e homelab auto-hospedada, isso seria suicídio operacional.
+Uma tabela, um punhado de consultas curtas e zero message brokers para instalar, monitorar ou gerenciar daemons.
 
-O Alexandryn roda no hardware do próprio usuário. Ele é distribuído como um pacote desktop Electron para macOS, Windows e Linux, além de um container Docker headless para servidores unRAID, TrueNAS e Raspberry Pi.
+Tirar trabalho pesado do caminho da requisição HTTP geralmente começa com uma dúvida batida: você precisa de Redis com Celery, Sidekiq, BullMQ ou RabbitMQ?
 
-Quando um usuário importa 400 arquivos EPUB de uma vez, o sistema tem trabalho pesado pela frente. Ele precisa extrair capas embutidas, processar árvores de metadados OPF, calcular hashes SHA-256 e consultar a API do Open Library. Executar tudo isso dentro do ciclo da requisição HTTP trava a interface e derruba conexões TCP.
+Se a sua aplicação já usa PostgreSQL, a resposta quase sempre é não.
 
-O processamento assíncrono era obrigatório. Adicionar outro daemon não era.
+Para o processamento assíncrono que a maioria das aplicações de fato precisa.. gerar relatórios, processar arquivos enviados, disparar webhooks, extrair metadados, enviar e-mails.. uma tabela de jobs no PostgreSQL é mais do que suficiente.
 
-Cada serviço adicional em segundo plano em um app auto-hospedado multiplica chamados de suporte. No desktop, supervisionar um processo do Redis exige gerenciamento multiplataforma de daemons, colisões de porta e 60 MB de RAM ociosa desperdiçada. No Docker, cada container extra em um Compose é outra peça móvel para falhar após um reinício de rede.
+A parte que a maioria dos desenvolvedores não percebe: a reivindicação concorrente e segura já vem embutida no próprio banco.
 
-Já tínhamos o PostgreSQL rodando sob nosso supervisor em Go (ADR 0002). Não precisávamos de outro banco de dados. Precisávamos entender as primitivas de concorrência que já existiam no motor que tínhamos em mãos.
+No Alexandryn, uma biblioteca digital pessoal e auto-hospedada, essa escolha arquitetural salvou nossos modelos de distribuição desktop e homelab do colapso operacional.
 
-Aqui está como construímos uma fila de jobs atômica diretamente no PostgreSQL usando `FOR UPDATE SKIP LOCKED`, leases com heartbeat e tokens criptográficos de fencing.
+Aqui está por que abandonamos a cartilha do Redis, como o `SKIP LOCKED` opera por baixo dos panos e como construir uma fila pronta para produção com leases renováveis e fencing criptográfico.
 
 ---
 
-## 1. A Armadilha da Escrita Dupla: Por Que Postgres Supera o Redis Aqui
+## 1. Por Que Equipes Buscam Filas (e a Armadilha da Escrita Dupla)
 
-A maioria dos sistemas combina um banco relacional com uma fila externa. Essa divisão introduz uma falha silenciosa em sistemas distribuídos: o risco de escrita dupla (dual-write hazard).
+Uma fila de segundo plano cumpre quatro funções essenciais:
 
-Veja o que acontece durante uma importação com PostgreSQL e Redis:
+1. **Armazena tarefas** até que um worker esteja disponível para processá-las.
+2. **Sobrevive a falhas catastróficas**, garantindo que o trabalho aceito nunca se perca.
+3. **Executa novas tentativas com backoff** em vez de descartar tarefas com erro.
+4. **Isola workers concorrentes**, para que múltiplos processos jamais disputem o mesmo registro.
+
+No instante em que um usuário joga 400 arquivos EPUB no Alexandryn, o reflexo clássico é subir o Redis.
+
+Extrair capas embutidas, processar manifests XML do OPF, calcular hashes de integridade e cruzar metadados com a API do Open Library não pode rodar dentro do ciclo HTTP. Fazer isso congela a interface web e derruba conexões TCP.
+
+Só que esse reflexo impõe um custo operacional pesado.
+
+O Alexandryn roda no hardware do próprio usuário: Electron no macOS, Windows e Linux, além de containers Docker headless em servidores unRAID, TrueNAS e Raspberry Pi.
+
+Adicionar um daemon do Redis significa:
+
+- Gerenciar scripts de supervisão de processos específicos para cada sistema operacional.
+- Lidar com colisões locais de porta quando um desenvolvedor já roda Redis na porta `6379`.
+- Queimar 60 MB de memória RAM ociosa nos notebooks dos usuários.
+- Adicionar mais um container no `docker-compose.yml` suscetível a falhas em reinícios de rede.
+
+Pior ainda: uma fila externa divide o seu sistema em dois mundos.
+
+O job fica no Redis. O registro do livro fica no PostgreSQL. Nenhuma transação ACID abrange os dois armazenamentos simultaneamente.
+
+Veja os dois cenários de falha por escrita dupla (dual-write hazard):
 
 ```text
+Cenário A: Banco Primeiro, Fila Depois
 Requisição HTTP
      │
      ▼
-[Passo 1: BEGIN Transação PostgreSQL]
+[Passo 1: COMMIT Transação PostgreSQL] ──> Grava registro do livro #4812
      │
-     ├── Grava registro do livro (id=4812)
-     │
-[Passo 2: COMMIT Transação PostgreSQL]
-     │
-     ▼  <── Queda de energia, OOM kill ou queda de rede exatamente aqui!
-[Passo 3: Enfileira job no Redis] ──> (NUNCA EXECUTADO)
+     ▼  <── Processo morto por OOM, queda de energia ou erro de rede!
+[Passo 2: Enfileira job no Redis]      ──> (NUNCA OCORRE)
 ```
 
-Se o servidor cair entre o Passo 2 e o Passo 3, o banco de dados armazena um livro que jamais terá sua capa extraída ou seus metadados indexados. Um registro órfão permanente.
+O banco mantém um livro gravado que jamais terá sua capa extraída ou seus metadados indexados. Um registro órfão permanente.
 
-Inverta a ordem das operações:
+Inverta a sequência:
 
 ```text
+Cenário B: Fila Primeiro, Banco Depois
 Requisição HTTP
      │
      ▼
-[Passo 1: Enfileira job no Redis (book_id=4812)]
+[Passo 1: Enfileira job no Redis]      ──> Job criado para o livro #4812
      │
-     ▼  <── Disco cheio, erro de chave estrangeira ou queda de conexão!
-[Passo 2: INSERT no PostgreSQL] ──> (FALHA E EXECUTA ROLLBACK)
+     ▼  <── Disco cheio, erro de chave única ou rollback no banco!
+[Passo 2: COMMIT Transação PostgreSQL] ──> (FALHA)
 ```
 
-Agora um worker consome o job do Redis, tenta buscar o livro 4812 no PostgreSQL, encontra zero linhas e envia o job para a dead-letter queue. Um job fantasma.
+O worker consome o job do Redis, busca o livro #4812 no PostgreSQL, encontra zero linhas e entra em pânico. Um job fantasma.
 
-Para contornar isso com Redis, você é obrigado a adotar o padrão Transactional Outbox. Você cria uma tabela de outbox no Postgres, roda um processo publicador para repassar linhas ao Redis e gerencia confirmações em duas fases.
+A solução padrão da indústria para esse impasse é o padrão **Transactional Outbox**: você grava os jobs em uma tabela de outbox no próprio PostgreSQL, roda um processo publicador para monitorar essa tabela e repassa os eventos para o Redis, gerenciando confirmações em duas fases.
 
-Isso é pura complexidade acidental. Eliminamos o intermediário.
+Uma tabela de outbox no PostgreSQL alimentando um broker externo já é uma fila de jobs. Adicionar o Redis por cima é apenas complexidade acidental.
 
-No Alexandryn (ADR 0014), a fila é uma tabela interna do PostgreSQL. Enfileirar o trabalho e alterar o estado da biblioteca ocorrem dentro da mesma fronteira transacional:
+Mantenha a fila inteira dentro do PostgreSQL e o problema simplesmente desaparece.
+
+No Alexandryn (ADR 0014), enfileirar o trabalho em segundo plano e alterar o estado da biblioteca compartilham exatamente a mesma transação do banco:
 
 ```sql
 BEGIN;
@@ -77,403 +101,500 @@ BEGIN;
 INSERT INTO books (id, title, file_path, status)
 VALUES ($1, $2, $3, 'importing');
 
-INSERT INTO jobs (id, queue, payload, status, available_at)
-VALUES ($4, 'metadata-fetch', $5, 'queued', $now);
+INSERT INTO jobs (queue, payload, status)
+VALUES ('metadata-fetch', jsonb_build_object('book_id', $1), 'pending');
 
 COMMIT;
 ```
 
-Se a transação passar, o livro e o job passam a existir simultaneamente. Se a transação sofrer rollback, o job desaparece na hora. Zero tarefas órfãs. Zero execuções fantasmas. Zero custo de two-phase commit.
+Se a transação passar, o livro e o job passam a existir simultaneamente. Se a transação sofrer rollback, o job é descartado na hora.
+
+Zero tarefas órfãs. Zero execuções fantasmas. Zero custo de transações distribuídas em duas fases.
 
 ---
 
-## 2. O Erro Inicial: Contenção de Linha e Deadlocks
+## 2. O Que o `FOR UPDATE SKIP LOCKED` Faz de Fato
 
-Construir uma fila em SQL parece simples até você rodar múltiplos workers concorrentes.
+A parte difícil de uma fila baseada em banco de dados é a reivindicação dos jobs, não o seu armazenamento.
 
-Esta foi nossa primeira tentativa ingênua:
+Imagine dois workers consultando uma tabela de tarefas pendentes:
 
 ```sql
--- PERIGOSO: Alta contenção sob concorrência real
 SELECT id, payload
 FROM jobs
-WHERE status = 'queued' AND available_at <= $now
-ORDER BY available_at ASC
+WHERE status = 'pending'
+ORDER BY run_at ASC
 LIMIT 1;
 ```
 
-Seguido imediatamente no código Go por:
+Ambos os workers executam essa consulta no mesmo milissegundo. Ambos leem o mesmo ID de linha. Ambos começam a extrair o mesmo arquivo EPUB.
+
+O usuário recebe capas duplicadas, entradas duplicadas no banco e processamento desperdiçado.
+
+Travar a linha com `FOR UPDATE` resolve a duplicidade:
 
 ```sql
-UPDATE jobs SET status = 'running' WHERE id = $id;
-```
-
-Passou limpo nos testes unitários com um único worker. Colapsou assim que subimos quatro goroutines de processamento simultâneo.
-
-Os quatro workers consultavam a tabela no mesmo instante. Todos liam exatamente o mesmo ID de linha. Todos disparavam comandos de `UPDATE` concorrentes naquela mesma linha.
-
-Um worker obtinha o lock. Os outros três ficavam bloqueados aguardando. Quando o primeiro worker commitava, os outros três falhavam suas condições, desperdiçavam ciclos de CPU do banco e provocavam deadlocks quando atualizavam registros em ordem invertida.
-
-Adicionar `FOR UPDATE` ao `SELECT` só piorou o quadro:
-
-```sql
--- AINDA PIOR: Serializa todos os workers em fila indiana
-SELECT id FROM jobs
-WHERE status = 'queued' AND available_at <= $now
-ORDER BY available_at ASC
+SELECT id, payload
+FROM jobs
+WHERE status = 'pending'
+ORDER BY run_at ASC
 LIMIT 1
 FOR UPDATE;
 ```
 
-Agora o Worker 1 travava a linha 1 em modo exclusivo. O Worker 2, o Worker 3 e o Worker 4 formavam uma fila indiana atrás dele. Eles precisavam esperar o Worker 1 concluir toda a transação antes de sequer conseguir ler a linha 1.
+Essa trava impede processamento duplicado, mas gera um gargalo ainda pior: contenção de locks.
 
-Quando o Worker 1 commitava `status = 'running'`, o Worker 2 acordava, percebia que a linha 1 não estava mais em `'queued'` e precisava reiniciar a busca. A concorrência caía para zero.
+O Worker 1 trava a linha 1. O Worker 2, o Worker 3 e o Worker 4 ficam travados em fila indiana atrás do Worker 1. Eles são forçados a esperar o Worker 1 concluir toda a transação antes de sequer conseguir ler a linha 1.
 
----
+Quando o Worker 1 commita e altera o status para `'running'`, o Worker 2 é liberado, descobre que a linha 1 não está mais `'pending'` e é obrigado a reiniciar a busca do zero. A concorrência cai para zero. Quatro workers passam a operar como uma única thread lenta.
 
-## 3. A Correção: PostgreSQL `SKIP LOCKED`
+O `SKIP LOCKED` muda completamente a dinâmica de aquisição de travas.
 
-A solução existe no PostgreSQL desde a versão 9.5: `FOR UPDATE SKIP LOCKED`.
-
-A cláusula `SKIP LOCKED` altera a forma de aquisição de travas. Se uma linha correspondente estiver travada por outra transação ativa, o PostgreSQL não espera. Ele ignora essa linha imediatamente e passa para o próximo candidato no índice:
+Em vez de bloquear esperando por uma linha travada, o PostgreSQL simplesmente ignora essa linha e retorna imediatamente o próximo registro desbloqueado que corresponda aos filtros da busca:
 
 ```sql
-SELECT id, queue, payload, attempts
+SELECT id, payload
 FROM jobs
-WHERE status IN ('queued', 'retrying')
-  AND available_at <= $1
-ORDER BY available_at ASC
+WHERE status = 'pending'
+ORDER BY run_at ASC
 LIMIT 1
 FOR UPDATE SKIP LOCKED;
 ```
 
-Quatro workers consultam a tabela no mesmo milissegundo:
+O PostgreSQL disponibiliza essa cláusula desde a versão 9.5 (janeiro de 2016).
+
+Agora, quatro workers consultam a tabela no mesmo milissegundo:
 
 - Worker 1 trava a linha 101.
 - Worker 2 ignora a linha 101 e trava a linha 102.
 - Worker 3 ignora as linhas 101 e 102, travando a linha 103.
 - Worker 4 ignora as linhas 101, 102 e 103, travando a linha 104.
 
-A contenção desaparece.
+Ninguém espera. A contenção desaparece.
 
-Aqui está o princípio de performance inegociável: **nunca segure a trava da linha durante a execução da tarefa**.
+Mas atenção a um detalhe crucial: as travas de linha obtidas por um `FOR UPDATE` duram apenas enquanto a transação que as abriu estiver ativa. Se você roda em modo autocommit, a trava evapora assim que a instrução SQL é concluída.
 
-Um parser de EPUB pode processar um arquivo de 100 MB durante 15 segundos. Se você mantiver a transação do banco aberta por 15 segundos, esgota o pool de conexões.
-
-O Alexandryn usa transações de reivindicação em escala de microssegundos:
-
-```go
-func (q *Queue) Claim(ctx context.Context, now time.Time) (*Job, error) {
-    tx, err := q.db.BeginTx(ctx, nil)
-    if err != nil {
-        return nil, err
-    }
-    defer tx.Rollback()
-
-    var j Job
-    query := `
-        SELECT id, queue, payload, attempts
-        FROM jobs
-        WHERE status IN ('queued', 'retrying')
-          AND available_at <= $1
-        ORDER BY available_at ASC
-        LIMIT 1
-        FOR UPDATE SKIP LOCKED`
-
-    err = tx.QueryRowContext(ctx, query, now).Scan(&j.ID, &j.Queue, &j.Payload, &j.Attempts)
-    if errors.Is(err, sql.ErrNoRows) {
-        return nil, nil // Sem jobs pendentes
-    }
-    if err != nil {
-        return nil, err
-    }
-
-    j.LeaseToken = uuid.New()
-    j.LockedUntil = now.Add(60 * time.Second)
-
-    updateQuery := `
-        UPDATE jobs
-        SET status = 'running',
-            locked_until = $1,
-            lease_token = $2,
-            attempts = attempts + 1,
-            updated_at = $3
-        WHERE id = $4`
-
-    _, err = tx.ExecContext(ctx, updateQuery, j.LockedUntil, j.LeaseToken, now, j.ID)
-    if err != nil {
-        return nil, err
-    }
-
-    if err := tx.Commit(); err != nil {
-        return nil, err
-    }
-
-    return &j, nil
-}
-```
-
-A transação abre, reivindica a linha, marca o status como running com um lease de 60 segundos, gera um token exclusivo e commita.
-
-Tempo total segurando a trava de linha no PostgreSQL: **abaixo de 800 microssegundos**.
-
-O worker então processa a extração do arquivo completamente fora de qualquer transação de banco.
+O `SKIP LOCKED` é apenas metade do segredo. A outra metade é atualizar o status da linha para `'running'` na **mesma instrução SQL atômica**.
 
 ---
 
-## 4. O Bug do Worker Zumbi: Revisão de Concorrência 0036
+## 3. Construindo a Fila: Uma Tabela, Quatro Consultas
 
-Durante nossa revisão cruzada de concorrência e segurança (review 0036), encontramos uma falha crítica.
+A fila completa opera com uma única tabela e quatro consultas SQL diretas.
 
-O que acontece quando um worker não morre, mas para de responder a tempo?
-
-Imagine que o Worker A reivindica o Job 42 com um lease de 60 segundos (`locked_until = now + 60s`).
-
-O Worker A inicia o processamento de um PDF malformado. O runtime do Go entra em uma pausa longa de GC, ou uma chamada externa de rede para o Open Library fica congelada em um socket TCP durante 70 segundos.
-
-O Alexandryn executa um processo de varredura (**reaper**) a cada 30 segundos. Ele busca jobs abandonados:
+### A Tabela
 
 ```sql
-SELECT id FROM jobs
-WHERE status = 'running'
-  AND locked_until < $now;
+CREATE TABLE jobs (
+    id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    queue        VARCHAR(64) NOT NULL,
+    payload      JSONB NOT NULL DEFAULT '{}',
+    status       VARCHAR(20) NOT NULL DEFAULT 'pending', -- pending, running, retrying, completed, failed
+    attempts     INT NOT NULL DEFAULT 0,
+    max_attempts INT NOT NULL DEFAULT 5,
+    run_at       TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    locked_until TIMESTAMPTZ,
+    lease_token  UUID,
+    last_error   TEXT,
+    created_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indice parcial para buscas ultra-rapidas de reivindicacao
+CREATE INDEX idx_jobs_claim ON jobs (run_at ASC)
+WHERE status IN ('pending', 'retrying');
+
+-- Indice para a varredura de leases expirados a cada 30 segundos
+CREATE INDEX idx_jobs_reaper ON jobs (locked_until ASC)
+WHERE status = 'running';
 ```
 
-No segundo 62, o reaper roda. Ele constata que o lease do Job 42 expirou e redefine seu status de volta para `'queued'`.
+O índice parcial `idx_jobs_claim` cobre exclusivamente linhas nos status `pending` e `retrying`. Conforme as tarefas são concluídas, elas saem do índice. A consulta de claim nunca precisa varrer pilhas de tarefas já finalizadas.
 
-O Worker B consulta o banco, reivindica o Job 42 e começa a trabalhar.
+### Consulta 1: Enfileirar (Enqueue)
 
-No segundo 71, o socket de rede do Worker A finalmente destrava. O Worker A não sabe que seu lease expirou. Ele conclui a extração e grava os resultados no banco.
+Adicionar uma tarefa é um `INSERT` padrão:
 
-Dois segundos depois, o Worker B conclui o mesmo trabalho e também tenta gravar.
-
-```text
-Linha do tempo:
-T=00s: Worker A reivindica o Job 42 (lease até T=60s)
-T=60s: Lease expira enquanto Worker A aguarda socket
-T=62s: Reaper recupera Job 42 e redefine para 'queued'
-T=63s: Worker B reivindica Job 42 (novo lease até T=123s)
-T=71s: Worker A acorda e grava dados ──> RISCO DE CORRUPÇÃO
-T=73s: Worker B grava dados
+```sql
+INSERT INTO jobs (queue, payload)
+VALUES ('metadata-fetch', '{"book_id": "4812", "file_path": "/books/duna.epub"}');
 ```
 
-Dois workers executaram concorrentemente a mesma tarefa. A escrita atrasada do Worker A sobrescreveu o trabalho do Worker B.
+### Consulta 2: Reivindicação Atômica (Claim)
 
-Esse é o clássico problema do worker zumbi. Locks distribuídos sem tokens de fencing falham por definição.
+Esta é a consulta fundamental onde toda a fila se apoia:
 
----
-
-## 5. A Solução: Fencing Criptográfico com `lease_token`
-
-Resolvemos essa falha transformando o lease do job em uma barreira de fencing.
-
-Cada vez que um job é reivindicado ou recuperado pelo reaper, geramos um novo UUID v4: o `lease_token`.
-
-### Heartbeats
-
-Jobs de longa duração precisam renovar seu contrato. Enquanto o handler processa a tarefa, uma goroutine em background envia um heartbeat a cada 20 segundos:
-
-```go
-func (w *Worker) runHeartbeat(ctx context.Context, jobID uuid.UUID, token uuid.UUID) {
-    ticker := time.NewTicker(20 * time.Second)
-    defer ticker.Stop()
-
-    for {
-        select {
-        case <-ctx.Done():
-            return
-        case <-ticker.C:
-            now := w.clock.Now()
-            newLock := now.Add(60 * time.Second)
-
-            res, err := w.db.ExecContext(ctx, `
-                UPDATE jobs
-                SET locked_until = $1, updated_at = $2
-                WHERE id = $3 AND lease_token = $4`,
-                newLock, now, jobID, token,
-            )
-            if err != nil {
-                w.logger.Warn("falha no heartbeat", "job_id", jobID, "error", err)
-                continue
-            }
-
-            rows, _ := res.RowsAffected()
-            if rows == 0 {
-                // Nosso lease foi revogado pelo reaper!
-                w.logger.Error("lease roubado pelo reaper; abortando execucao", "job_id", jobID)
-                w.cancelCurrentJob()
-                return
-            }
-        }
-    }
-}
+```sql
+UPDATE jobs
+SET status = 'running',
+    attempts = attempts + 1,
+    locked_until = $1,     -- $now + lease de 60 segundos
+    lease_token = $2,      -- novo UUID v4 exclusivo
+    updated_at = $3        -- $now
+WHERE id = (
+    SELECT id
+    FROM jobs
+    WHERE status IN ('pending', 'retrying')
+      AND run_at <= $3
+    ORDER BY run_at ASC
+    LIMIT 1
+    FOR UPDATE SKIP LOCKED
+)
+RETURNING id, queue, payload, attempts, max_attempts, lease_token;
 ```
 
-Se o reaper revogou o job, o `lease_token` da linha foi alterado. O comando de heartbeat afeta zero linhas. O worker detecta a perda da concessão e cancela imediatamente seu próprio `context.Context`.
+A subconsulta interna localiza a tarefa pendente mais antiga, ignora qualquer linha que outros workers já estejam travando e bloqueia apenas aquele registro.
 
-### Fencing na Conclusão
+O comando de `UPDATE` externo altera o status para `'running'`, define uma concessão de 60 segundos, atribui um `lease_token` exclusivo e retorna os dados para o worker.
 
-Quando o processamento termina, o worker grava a conclusão exigindo a mesma barreira:
+Toda essa instrução executa em menos de 800 microssegundos. O worker assume posse exclusiva da tarefa e o lock da linha no banco é liberado imediatamente.
+
+O worker processa a extração dos arquivos completamente fora de qualquer transação de banco de dados.
+
+### Consulta 3: Concluir (Complete)
+
+Quando o processamento tem sucesso, o worker marca a linha como finalizada:
 
 ```sql
 UPDATE jobs
 SET status = 'completed',
-    completed_at = $now,
     locked_until = NULL,
     lease_token = NULL,
     updated_at = $now
-WHERE id = $id AND lease_token = $lease_token;
+WHERE id = $1 AND lease_token = $2;
 ```
 
-Repare na cláusula `WHERE`: `WHERE id = $id AND lease_token = $lease_token`.
+### Consulta 4: Tentar Novamente com Backoff Exponencial (Retry)
 
-Se o Worker A travou além dos 60 segundos, o reaper recuperou o job e o entregou ao Worker B com um novo token.
-
-Quando o Worker A acordar e tentar gravar o resultado:
-
-1. O PostgreSQL executa o comando.
-2. O `lease_token` no banco não bate com o token antigo do Worker A.
-3. O PostgreSQL retorna: **0 linhas afetadas**.
-4. O Worker A detecta `rows == 0`, descarta arquivos temporários e registra um aviso em log.
-
-A escrita defasada do Worker A é ignorada sem tocar nos registros da biblioteca. Zero escritas divididas. Zero corrupção de dados.
-
----
-
-## 6. Viagem no Tempo Determinística: Testes Unitários em 40ms
-
-Testar filas concorrentes costuma ser doloroso. Engenheiros enchem suites de teste com chamadas a `time.Sleep(65 * time.Second)` para validar timeouts de lease e políticas de backoff.
-
-Isso transforma uma suíte rápida em um gargalo de minutos. Testes lentos são ignorados pelos desenvolvedores.
-
-No Alexandryn (ADR 0014), a fila nunca chama `NOW()` no SQL nem `time.Now()` direto no Go.
-
-Todas as consultas de claim, heartbeats e varreduras do reaper recebem um parâmetro `$now` explícito, fornecido por uma interface `Clock`:
-
-```go
-type Clock interface {
-    Now() time.Time
-}
-
-type RealClock struct{}
-
-func (RealClock) Now() time.Time {
-    return time.Now().UTC()
-}
-```
-
-Nos testes unitários, injetamos um relógio mockado com controle determinístico:
-
-```go
-type MockClock struct {
-    mu  sync.Mutex
-    now time.Time
-}
-
-func NewMockClock(start time.Time) *MockClock {
-    return &MockClock{now: start}
-}
-
-func (m *MockClock) Now() time.Time {
-    m.mu.Lock()
-    defer m.mu.Unlock()
-    return m.now
-}
-
-func (m *MockClock) Advance(d time.Duration) {
-    m.mu.Lock()
-    defer m.mu.Unlock()
-    m.now = m.now.Add(d)
-}
-```
-
-Aqui está nosso teste para o reaper e o token de fencing:
-
-```go
-func TestReaperReclaimsExpiredLease(t *testing.T) {
-    ctx := context.Background()
-    clk := NewMockClock(time.Date(2026, 9, 22, 12, 0, 0, 0, time.UTC))
-    q := NewTestQueue(t, clk)
-
-    // 1. Enfileira e reivindica um job
-    jobID := q.Enqueue(ctx, "test-task", []byte(`{}`))
-    claimed, err := q.Claim(ctx, clk.Now())
-    require.NoError(t, err)
-    require.Equal(t, jobID, claimed.ID)
-
-    // 2. Avanca o relogio alem dos 60s do lease (sem sleep real!)
-    clk.Advance(65 * time.Second)
-
-    // 3. Executa a varredura do reaper
-    reclaimedCount, err := q.ReapExpiredLeases(ctx, clk.Now())
-    require.NoError(t, err)
-    require.Equal(t, int64(1), reclaimedCount)
-
-    // 4. Worker defasado tenta concluir com o token antigo
-    err = q.Complete(ctx, claimed.ID, claimed.LeaseToken, clk.Now())
-    require.ErrorIs(t, err, ErrLeaseExpired)
-
-    // 5. Novo worker reivindica o job com um novo token
-    workerBClaim, err := q.Claim(ctx, clk.Now())
-    require.NoError(t, err)
-    require.NotEqual(t, claimed.LeaseToken, workerBClaim.LeaseToken)
-}
-```
-
-Esse teste valida o claim, a expiração do lease, a recuperação pelo reaper, a rejeição da escrita obsoleta e o novo claim concorrente.
-
-Tempo total de execução do teste: **42 milissegundos**.
-
-Sem goroutines dormindo. Sem condições de corrida em CI. Viagem no tempo determinística e instantânea.
-
----
-
-## 7. Sanitização de Erros e Tipos Sentinela
-
-Nem toda falha deve ser tratada da mesma forma. Se uma API externa retornar HTTP 503, o job deve tentar novamente com backoff exponencial:
+Se a execução falhar, o worker calcula o intervalo de espera exponencial:
 
 ```text
 espera = 2^tentativas * 5s
 ```
 
-Se um EPUB tiver o cabeçalho corrompido e for impossível de descompactar, tentar dez vezes não resolverá nada. Só desperdiçará ciclos de CPU e bateria.
+```sql
+UPDATE jobs
+SET status = CASE WHEN attempts >= max_attempts THEN 'failed' ELSE 'retrying' END,
+    run_at = $now + make_interval(secs => power(2, attempts) * 5),
+    locked_until = NULL,
+    lease_token = NULL,
+    last_error = $sanitized_error,
+    updated_at = $now
+WHERE id = $1 AND lease_token = $2;
+```
 
-Os handlers do Alexandryn utilizam sentinelas de erro:
+Como o campo `run_at` avança no tempo, a tarefa aguarda o período de backoff antes que qualquer worker possa reivindicá-la novamente.
+
+Se o número de `attempts` atingir `max_attempts`, a expressão `CASE` encaminha a tarefa direto para `'failed'`. Essa é a sua dead-letter queue. Você pode inspecionar os erros ou reprocessar registros usando comandos SQL simples.
+
+---
+
+## 4. Dois Workers Dividindo a Fila em Go
+
+Veja esse mecanismo funcionando na prática sob concorrência em Go.
+
+Abaixo está uma implementação completa e funcional com duas goroutines processando quatro tarefas simultâneas, simulando uma falha transiente, aguardando o backoff e concluindo com sucesso:
 
 ```go
-type PermanentError struct {
-    Err error
+package main
+
+import (
+	"context"
+	"database/sql"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"log"
+	"math"
+	"sync"
+	"time"
+
+	"github.com/google/uuid"
+	_ "github.com/jackc/pgx/v5/stdlib"
+)
+
+type Job struct {
+	ID          uuid.UUID
+	Queue       string
+	Payload     json.RawMessage
+	Attempts    int
+	MaxAttempts int
+	LeaseToken  uuid.UUID
 }
 
-func (e PermanentError) Error() string { return e.Err.Error() }
-func (e PermanentError) Unwrap() error { return e.Err }
+func claim(ctx context.Context, db *sql.DB, now time.Time) (*Job, error) {
+	var j Job
+	leaseToken := uuid.New()
+	lockedUntil := now.Add(60 * time.Second)
 
-func Permanent(err error) error {
-    return PermanentError{Err: err}
+	query := `
+		UPDATE jobs
+		SET status = 'running',
+		    attempts = attempts + 1,
+		    locked_until = $1,
+		    lease_token = $2,
+		    updated_at = $3
+		WHERE id = (
+			SELECT id FROM jobs
+			WHERE status IN ('pending', 'retrying') AND run_at <= $3
+			ORDER BY run_at ASC
+			LIMIT 1
+			FOR UPDATE SKIP LOCKED
+		)
+		RETURNING id, queue, payload, attempts, max_attempts, lease_token`
+
+	err := db.QueryRowContext(ctx, query, lockedUntil, leaseToken, now).
+		Scan(&j.ID, &j.Queue, &j.Payload, &j.Attempts, &j.MaxAttempts, &j.LeaseToken)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil // Sem tarefas pendentes no momento
+	}
+	return &j, err
+}
+
+func complete(ctx context.Context, db *sql.DB, id, token uuid.UUID, now time.Time) error {
+	res, err := db.ExecContext(ctx, `
+		UPDATE jobs
+		SET status = 'completed', locked_until = NULL, lease_token = NULL, updated_at = $1
+		WHERE id = $2 AND lease_token = $3`,
+		now, id, token,
+	)
+	if err != nil {
+		return err
+	}
+	rows, _ := res.RowsAffected()
+	if rows == 0 {
+		return errors.New("lease expirado ou revogado; conclusao rejeitada")
+	}
+	return nil
+}
+
+func retry(ctx context.Context, db *sql.DB, id, token uuid.UUID, attempts, maxAttempts int, errMsg string, now time.Time) error {
+	backoffSec := int(math.Pow(2, float64(attempts))) * 2
+	nextRun := now.Add(time.Duration(backoffSec) * time.Second)
+	status := "retrying"
+	if attempts >= maxAttempts {
+		status = "failed"
+	}
+
+	_, err := db.ExecContext(ctx, `
+		UPDATE jobs
+		SET status = $1, run_at = $2, locked_until = NULL, lease_token = NULL, last_error = $3, updated_at = $4
+		WHERE id = $5 AND lease_token = $6`,
+		status, nextRun, errMsg, now, id, token,
+	)
+	return err
+}
+
+func handleTask(j *Job) error {
+	time.Sleep(150 * time.Millisecond)
+
+	var p map[string]string
+	_ = json.Unmarshal(j.Payload, &p)
+
+	// Simula timeout de rede na primeira tentativa de sincronizacao
+	if p["name"] == "sync-metadata" && j.Attempts == 1 {
+		return errors.New("timeout ao conectar com openlibrary.org")
+	}
+	return nil
+}
+
+func worker(ctx context.Context, name string, db *sql.DB, wg *sync.WaitGroup) {
+	defer wg.Done()
+	idlePolls := 0
+
+	for idlePolls < 15 {
+		now := time.Now().UTC()
+		job, err := claim(ctx, db, now)
+		if err != nil {
+			log.Printf("[%s] erro no claim: %v", name, err)
+			time.Sleep(100 * time.Millisecond)
+			continue
+		}
+
+		if job == nil {
+			idlePolls++
+			time.Sleep(100 * time.Millisecond)
+			continue
+		}
+
+		idlePolls = 0
+		if err := handleTask(job); err != nil {
+			log.Printf("[%s] falha: %s (tentativa %d): %v", name, job.Queue, job.Attempts, err)
+			_ = retry(ctx, db, job.ID, job.LeaseToken, job.Attempts, job.MaxAttempts, err.Error(), time.Now().UTC())
+		} else {
+			log.Printf("[%s] sucesso: %s (tentativa %d)", name, job.Queue, job.Attempts)
+			_ = complete(ctx, db, job.ID, job.LeaseToken, time.Now().UTC())
+		}
+	}
 }
 ```
 
-No loop do worker:
+Executando dois workers simultâneos contra as quatro tarefas, a saída é clara:
+
+```text
+[worker-1] sucesso: extract-cover (tentativa 1)
+[worker-2] sucesso: parse-chapters (tentativa 1)
+[worker-1] falha: sync-metadata (tentativa 1): timeout ao conectar com openlibrary.org
+[worker-2] sucesso: calculate-hashes (tentativa 1)
+... intervalo de backoff decorre (4 segundos) ...
+[worker-2] sucesso: sync-metadata (tentativa 2)
+```
+
+Observe a tarefa `sync-metadata`: o `worker-1` tentou processá-la e encontrou uma falha de conexão. A tarefa entrou em backoff.
+
+Quatro segundos depois, o `worker-2` assumiu a tarefa reescalonada e a concluiu com sucesso.
+
+O estado vive inteiramente na tabela do banco. Qualquer worker retoma o trabalho exatamente de onde o anterior parou.
+
+---
+
+## 5. O Que Tutoriais Ignoram: A Realidade Crua de Produção
+
+As quatro consultas acima funcionam no cenário feliz. Em produção com hardware real, as coisas quebram de maneiras imprevistas.
+
+Três falhas específicas derrubam sistemas ingênuos:
+
+### Problema 1: Recuperação de Crashes (A Tarefa Presa em Execução)
+
+O que acontece quando o processo de um worker morre no meio da execução? Um OOM kill disparado pelo kernel, um kernel panic ou um cabo de força puxado da tomada.
+
+Como a instrução de claim gravou `status = 'running'` antes de iniciar o trabalho pesado, nenhuma trava de banco fica aberta enquanto o worker processa.
+
+Se o processo morrer, a linha fica congelada em `'running'` para sempre.
+
+O Alexandryn resolve isso com um processo em segundo plano (**reaper**) que faz uma varredura a cada 30 segundos:
+
+```sql
+UPDATE jobs
+SET status = 'retrying',
+    run_at = $now,
+    locked_until = NULL,
+    lease_token = NULL,
+    updated_at = $now
+WHERE status = 'running'
+  AND locked_until < $now;
+```
+
+Se uma tarefa permanece em `'running'` além do seu lease de 60 segundos, o worker é dado como morto. O reaper redefine a linha para `'retrying'` para que outro worker possa assumi-la.
+
+### Problema 2: O Worker Zumbi e Fencing Criptográfico
+
+O reaper resolve workers mortos, mas cria um problema ainda mais perigoso: **o worker zumbi**.
+
+Imagine que o Worker A reivindique o Job 42 com um lease de 60 segundos.
+
+O Worker A inicia o processamento de um EPUB pesado de 120 MB. O runtime do Go entra em uma pausa longa de garbage collection, ou uma chamada externa de rede fica travada em um socket TCP durante 65 segundos.
+
+O Worker A não morreu. Ele está temporariamente congelado.
+
+```text
+T=00s: Worker A reivindica o Job 42 (lease até T=60s)
+T=60s: Lease expira enquanto Worker A aguarda socket
+T=62s: Reaper roda e redefine Job 42 para 'retrying'
+T=63s: Worker B reivindica Job 42 (novo lease até T=123s)
+T=70s: Worker A descongela! Conclui o trabalho e grava no banco.
+T=72s: Worker B conclui o trabalho e grava no banco.
+```
+
+O Worker A e o Worker B executaram a mesma tarefa concorrentemente. O Worker A acordou atrasado e sobrescreveu o trabalho novo do Worker B com dados obsoletos.
+
+Esse é o clássico risco de escritas divididas (split-brain) em sistemas distribuídos. Locks distribuídos sem tokens de fencing são falhos por definição.
+
+O Alexandryn soluciona esse risco adotando **Fencing Criptográfico (`lease_token UUID`)** (Revisão 0036).
+
+1. Cada reivindicação gera um novo UUID: o `lease_token`.
+2. Durante a execução, tarefas longas enviam heartbeats a cada 20 segundos:
+   ```sql
+   UPDATE jobs
+   SET locked_until = $now + INTERVAL '60 seconds', updated_at = $now
+   WHERE id = $id AND lease_token = $token;
+   ```
+3. Ao concluir ou registrar falha, o worker impõe a validação do token:
+   ```sql
+   UPDATE jobs SET status = 'completed'
+   WHERE id = $id AND lease_token = $token;
+   ```
+
+Se o reaper revogou o Job 42, ele rotacionou o `lease_token` da linha.
+
+Quando o Worker A acordar e disparar a atualização de conclusão:
+
+1. O PostgreSQL compara o token no banco com o token defasado do Worker A.
+2. O PostgreSQL retorna: **0 linhas afetadas**.
+3. O Worker A verifica `RowsAffected()`. Ao identificar `0`, percebe a perda da concessão, cancela seu `context.Context` e descarta arquivos temporários.
+
+A gravação do Worker A é ignorada em silêncio sem corromper o banco.
+
+### Problema 3: Testes sem `time.Sleep()`
+
+Testar expiração de leases de 60 segundos ou backoff costuma gerar testes lentos e frágeis: desenvolvedores espalham chamadas a `time.Sleep(65 * time.Second)` pelos arquivos de teste.
+
+Isso transforma uma suíte ágil em um gargalo de minutos. Testes lentos são simplesmente ignorados no dia a dia.
+
+No Alexandryn (ADR 0014), o código da fila nunca chama `NOW()` no SQL nem `time.Now()` direto no Go.
+
+Todas as consultas de claim, heartbeats e limpezas do reaper recebem um parâmetro `$now` explícito, fornecido por uma interface `Clock`:
 
 ```go
-if errors.As(err, &permErr) {
-    // Encaminha direto para dead-letter queue; sem tentativas inuteis
-    q.MarkDeadLetter(ctx, job.ID, job.LeaseToken, sanitizeError(err.Error()))
-    return
+type Clock interface {
+    Now() time.Time
 }
 ```
 
-### Sanitização Centralizada e Obrigatória
+Nos testes unitários, injetamos um mock de relógio determinístico:
 
-Mensagens persistidas em `jobs.last_error` aparecem no painel administrativo e em diagnósticos no disco.
+```go
+func TestReaperReclaimsExpiredLease(t *testing.T) {
+    clk := clock.NewMock(time.Now())
+    q := NewQueue(db, clk)
 
-Mensagens de erro cruas vazam informações sensíveis com facilidade:
+    job := q.Enqueue(ctx, "extract-cover", payload)
+    claimed, _ := q.Claim(ctx, clk.Now())
 
-- Caminhos de arquivos no sistema operacional: `/home/luann/.alexandryn/library/livro.epub`
-- Senhas de banco de dados em strings de conexão com falha
-- Tokens de autenticação em URLs HTTP com erro
+    // Avanca 65 segundos no tempo instantaneamente: zero sleep!
+    clk.Advance(65 * time.Second)
 
-Antes de qualquer erro chegar ao banco de dados, ele passa por uma sanitização central:
+    reaped, _ := q.ReapExpiredLeases(ctx, clk.Now())
+    require.Equal(t, 1, reaped)
+
+    // Gravacao do worker defasado e sumariamente rejeitada
+    err := q.Complete(ctx, claimed.ID, claimed.LeaseToken, clk.Now())
+    require.ErrorIs(t, err, ErrLeaseExpired)
+}
+```
+
+A suíte completa de testes.. validando claims, expirações de 60 segundos, recuperação pelo reaper e bloqueio de escritas defasadas.. executa em **40 milissegundos**.
+
+---
+
+## 6. Sanitização Central de Erros e Tipos Sentinela
+
+Nem toda falha deve gerar novas tentativas.
+
+Se o Open Library retornar HTTP 503, faz todo sentido aguardar com backoff exponencial. Se um arquivo EPUB tiver o cabeçalho ZIP corrompido, tentar dez vezes não consertará o arquivo. Só gastará bateria e ciclos de CPU.
+
+Os handlers retornam erros sentinela:
+
+```go
+if errors.Is(err, epub.ErrCorruptZip) {
+    return job.Permanent(fmt.Errorf("arquivo zip irrecuperavel: %w", err))
+}
+```
+
+Quando o worker detecta um erro `Permanent`, ignora a política de novas tentativas e envia o registro direto para `'failed'`.
+
+### Sanitização Centralizada
+
+Mensagens gravadas em `jobs.last_error` são persistidas no disco e exibidas em painéis administrativos.
+
+Mensagens de erro não tratadas vazam segredos com frequência:
+
+- Caminhos do sistema operacional: `/Users/luann/.alexandryn/vault/livro.epub`
+- Senhas de banco em strings de conexão que falharam
+- Bearer tokens expostos em URLs de APIs
+
+Antes de qualquer erro chegar ao PostgreSQL, ele passa por uma sanitização central com regex:
 
 ```go
 var (
@@ -493,64 +614,65 @@ func sanitizeError(msg string) string {
 }
 ```
 
-O banco armazena apenas mensagens limpas. O log continua útil sem expor caminhos internos ou credenciais.
+Os diagnósticos permanecem claros sem transformar o banco em uma fonte de vazamento de credenciais.
 
 ---
 
-## 8. Estrutura em Produção
+## 7. Higiene da Tabela e Pressão do Vacuum
 
-Esta é a definição de tabela que opera no Alexandryn:
+Uma fila no PostgreSQL impõe uma realidade física que você deve respeitar: **dead tuples**.
 
-```sql
-CREATE TABLE jobs (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    queue VARCHAR(64) NOT NULL,
-    payload JSONB NOT NULL DEFAULT '{}',
-    status VARCHAR(20) NOT NULL DEFAULT 'queued', -- queued, running, retrying, completed, dead_letter
-    attempts INT NOT NULL DEFAULT 0,
-    max_attempts INT NOT NULL DEFAULT 5,
-    available_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    locked_until TIMESTAMPTZ,
-    lease_token UUID,
-    last_error TEXT,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    completed_at TIMESTAMPTZ
-);
+Cada alteração de status (de `pending` para `running`, para `retrying`, para `completed`) é um comando de `UPDATE`. No PostgreSQL, um `UPDATE` não sobrescreve bytes no mesmo lugar; ele grava uma nova versão da linha e marca a versão anterior como morta.
 
--- Indice critico para vazao do SKIP LOCKED
-CREATE INDEX idx_jobs_claim ON jobs (available_at ASC)
-WHERE status IN ('queued', 'retrying');
+Se você processa 5.000 tarefas por hora, gera 15.000 tuplas mortas a cada hora.
 
--- Indice para a varredura do reaper a cada 30 segundos
-CREATE INDEX idx_jobs_reaper ON jobs (locked_until ASC)
-WHERE status = 'running';
-```
+Três práticas impedem que o inchaço da tabela comprometa o desempenho:
 
-Nossa configuração de execução:
+1. **Indexação Parcial**:
 
-- **Pool de workers**: 4 goroutines simultâneas.
-- **Intervalo de polling**: 2 segundos quando ocioso.
-- **Duração do lease**: 60 segundos.
-- **Intervalo de heartbeat**: 20 segundos.
-- **Varredura do reaper**: a cada 30 segundos.
-- **Retenção**: limpeza de jobs concluídos após 7 dias.
+   ```sql
+   CREATE INDEX idx_jobs_claim ON jobs (run_at ASC)
+   WHERE status IN ('pending', 'retrying');
+   ```
+
+   Tarefas concluídas saem desse índice na hora. O índice de busca permanece minúsculo e cabe inteiro na memória RAM.
+
+2. **Limpeza Programada**:
+   Tarefas concluídas não se excluem sozinhas. Agende uma consulta periódica para expurgar tarefas com mais de 7 dias:
+
+   ```sql
+   DELETE FROM jobs
+   WHERE status = 'completed' AND updated_at < $now - INTERVAL '7 days';
+   ```
+
+3. **Autovacuum Agressivo**:
+   Em filas com alta rotatividade de escrita, ajuste os parâmetros de armazenamento da tabela para que o autovacuum atue com frequência:
+   ```sql
+   ALTER TABLE jobs SET (
+       autovacuum_vacuum_scale_factor = 0.05,
+       autovacuum_vacuum_threshold = 500
+   );
+   ```
 
 ---
 
-## O Que Aprendemos
+## Quando Você Realmente Precisa de um Broker Dedicado
 
-Abrimos mão da vazão pura do Redis. O Redis consegue processar 100.000 operações por segundo em memória. Nossa fila em PostgreSQL processa cerca de 6.000 claims por segundo em SSDs padrão.
+Uma fila em PostgreSQL possui limites físicos claros. Reconheça-os antes de bater de frente com eles:
 
-Para uma biblioteca digital auto-hospedada gerenciando 30.000 livros, 6.000 jobs por segundo é 200 vezes mais do que jamais precisaremos.
+- **Vazão massiva e contínua**: se o seu sistema processa 50.000 jobs por segundo, a sobrecarga de vacuum do PostgreSQL vira um problema operacional sério. Nesses volumes, Redis ou RabbitMQ dominam.
+- **Fan-out e streaming de eventos**: se dez microsserviços precisam de uma cópia independente de cada evento, você precisa de um log distribuído como Kafka, não de uma fila onde tarefas reivindicadas somem para os outros.
+- **Conjuntos complexos de funcionalidades**: limites de concorrência por inquilino, janelas dinâmicas de rate-limiting e filas prioritárias complexas. Ferramentas como BullMQ já entregam tudo isso pronto.
 
-Em troca, ganhamos:
+Para o Alexandryn, nossa demanda real é processar lotes de até 400 livros por importação. Nossa fila em PostgreSQL processa 6.000 claims por segundo em SSDs NVMe convencionais. Isso é 200 vezes mais do que jamais precisaremos.
 
-- Zero dependências de containers extras.
-- Zero scripts para gerenciar daemons no macOS e Windows.
-- Importações 100% atômicas dentro de transações unificadas de banco.
+Em troca dessa escolha, conquistamos:
+
+- 1 daemon a menos para supervisionar no macOS e Windows.
+- 0 colisões de porta no ambiente do usuário.
+- Importações 100% atômicas dentro de transações de banco unificadas.
 - Zero risco de escrita dupla.
-- Imunidade matemática a workers zumbis com tokens de fencing.
-- Testes unitários determinísticos em 40ms sem uma única chamada a `time.Sleep()`.
+- Imunidade matemática a workers zumbis através de tokens de fencing.
+- Testes unitários determinísticos em 40ms.
 
-Antes de adotar um serviço externo de filas, examine seu banco relacional. Primitivas como `SKIP LOCKED` e transações atômicas resolvem o problema com menos peças móveis e zero dores de cabeça distribuídas.
+A regra de ouro: **comece com o banco de dados que você já roda**. Só migre para um broker externo quando você conseguir apontar com clareza o limite físico que está atingindo.
