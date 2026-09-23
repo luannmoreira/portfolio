@@ -432,7 +432,9 @@ Sem goroutines dormindo. Sem condições de corrida em CI. Viagem no tempo deter
 
 Nem toda falha deve ser tratada da mesma forma. Se uma API externa retornar HTTP 503, o job deve tentar novamente com backoff exponencial:
 
-$$\text{espera} = 2^{\text{tentativas}} \times 5\text{s}$$
+```text
+espera = 2^tentativas * 5s
+```
 
 Se um EPUB tiver o cabeçalho corrompido e for impossível de descompactar, tentar dez vezes não resolverá nada. Só desperdiçará ciclos de CPU e bateria.
 

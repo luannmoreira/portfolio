@@ -432,7 +432,9 @@ No sleeping goroutines. No race conditions in CI. Pure, deterministic time trave
 
 Not all errors are equal. If an external API returns HTTP 503, the job should retry with exponential backoff:
 
-$$\text{delay} = 2^{\text{attempts}} \times 5\text{s}$$
+```text
+delay = 2^attempts * 5s
+```
 
 If an imported EPUB has a corrupted header and cannot be unzipped, retrying ten times will never fix the file. It only wastes CPU cycles and battery.
 
