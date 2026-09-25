@@ -102,6 +102,9 @@
     "metaTitle": "Projects • Luann Curioso",
     "allProjectsHeading": "All projects",
     "items": {
+      "alexandryn": {
+        "description": "A self-hosted digital library platform for EPUBs, PDFs, and comics designed with resilient architecture running on user hardware. Built with a Go backend, PostgreSQL storage, and React/TypeScript and Electron clients. Engineered with production-grade reliability: concurrent job processing with PostgreSQL FOR UPDATE SKIP LOCKED, cryptographic device pairing ceremony, in-process ACME TLS, and zero-trust LAN networking."
+      },
       "shellhub": {
         "description": "A production-grade remote device management platform used by real customers. Contributed across the full engineering lifecycle: building features in React and Vue 3 with TypeScript, standardizing unit testing with Vitest, refactoring legacy code into maintainable solutions, and improving UI architecture consistency. Beyond feature work, this meant integrating and testing payment gateways, contributing to a MongoDB-to-PostgreSQL database migration, reducing technical debt, reviewing pull requests, and participating in architectural discussions alongside backend engineers. Engineering a real product, not just its UI."
       },

@@ -14,6 +14,9 @@ function renderProjects() {
 test("renders every real project entry", () => {
   renderProjects();
 
+  expect(
+    screen.getByRole("heading", { name: "Alexandryn" })
+  ).toBeInTheDocument();
   expect(screen.getByRole("heading", { name: "ShellHub" })).toBeInTheDocument();
   expect(
     screen.getByRole("heading", { name: "OS Systems" })
@@ -21,6 +24,16 @@ test("renders every real project entry", () => {
   expect(
     screen.getByRole("heading", { name: "SEDEC / Invest MT" })
   ).toBeInTheDocument();
+});
+
+test("links out to Alexandryn repository", () => {
+  renderProjects();
+
+  const link = screen.getByRole("link", { name: /Alexandryn/ });
+  expect(link).toHaveAttribute(
+    "href",
+    "https://github.com/Alexandryn/alexandryn"
+  );
 });
 
 test("links out to Invest MT", () => {

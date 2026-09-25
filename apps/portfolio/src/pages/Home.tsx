@@ -12,7 +12,7 @@ import { useScrollToSection } from "../hooks/useScrollToSection";
 
 // Curated, not just "first two" — picked by id so the teaser survives
 // reordering/additions to the full projects list on /projects.
-const FEATURED_PROJECT_IDS = ["shellhub", "sedec-invest-mt"];
+const FEATURED_PROJECT_IDS = ["alexandryn", "shellhub"];
 const featuredProjects = FEATURED_PROJECT_IDS.map((id) =>
   projects.find((project) => project.id === id)!
 );

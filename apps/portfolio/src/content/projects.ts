@@ -10,6 +10,19 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    id: "alexandryn",
+    name: "Alexandryn",
+    tech: [
+      "Go",
+      "PostgreSQL",
+      "React",
+      "TypeScript",
+      "Electron",
+      "Docker",
+    ],
+    link: "https://github.com/Alexandryn/alexandryn",
+  },
+  {
     id: "shellhub",
     name: "ShellHub",
     tech: [
