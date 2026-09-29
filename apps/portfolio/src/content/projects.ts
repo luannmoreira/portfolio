@@ -12,14 +12,7 @@ export const projects: Project[] = [
   {
     id: "alexandryn",
     name: "Alexandryn",
-    tech: [
-      "Go",
-      "PostgreSQL",
-      "React",
-      "TypeScript",
-      "Electron",
-      "Docker",
-    ],
+    tech: ["Go", "PostgreSQL", "React", "TypeScript", "Electron", "Docker"],
     link: "https://github.com/Alexandryn/alexandryn",
   },
   {

@@ -1,7 +1,15 @@
 ---
 title: "How I Used AI Skill Core Principles to Build a Big App: Production-Grade Engineering with agent-skills"
 date: "2026-09-29"
-tags: ["ai", "software-engineering", "architecture", "agent-skills", "go", "testing"]
+tags:
+  [
+    "ai",
+    "software-engineering",
+    "architecture",
+    "agent-skills",
+    "go",
+    "testing",
+  ]
 excerpt: "A technical field report on building Alexandryn (a full-stack desktop and server library in Go, PostgreSQL, and React) using an engineering constitution, progressive context disclosure, and empirical verification gates."
 draft: false
 coverImage: "/content/blog/en/how-did-i-use-ai-skill-core-principles-to-base-a-big-app/cover.png"
@@ -70,8 +78,11 @@ The constitution applies equally to human maintainers and automated agents. It e
   title="Alexandryn Constitution: Rule 1 & Rule 2"
   description="Core lifecycle rules governing all changes across Go, React, and Electron."
 >
+
 - **Rule 1: Specification precedes implementation.** Behaviour is decided in a spec, reviewed, and only then built. Lifecycle: `DRAFT → REVIEWED → APPROVED → IMPLEMENTED → VERIFIED`. Nothing below `APPROVED` gets implemented.
+
 - **Rule 2: Tests define behaviour.** The default loop is `RED → GREEN → REFACTOR → VERIFY → AUDIT`. A test that has never failed has not been shown to test anything. Never delete or skip a failing test to make a build green.
+
 </Decision>
 
 Three other structural rules were critical in keeping the codebase manageable:
@@ -97,12 +108,12 @@ Language models are optimized to provide helpful-sounding answers with minimal f
 
 Each skill defines an explicit matrix that pairs common model rationalizations with strict rebuttals:
 
-| Agent Rationalization | Enforced Requirement |
-|---|---|
-| "The spec is overkill for this small endpoint." | No un-specced behaviour lands. Write the spec or reject the task. |
-| "I'll write the tests once the handler works." | Tests written post-hoc assert what code *does*, not what it *should* do. |
-| "The test failed due to environment issues, let's skip it." | A test that never failed tests nothing. Fix the code or stop. |
-| "The code compiles, so the implementation is complete." | Run the full test suite with race detection enabled. Show the exit code. |
+| Agent Rationalization                                       | Enforced Requirement                                                     |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------ |
+| "The spec is overkill for this small endpoint."             | No un-specced behaviour lands. Write the spec or reject the task.        |
+| "I'll write the tests once the handler works."              | Tests written post-hoc assert what code _does_, not what it _should_ do. |
+| "The test failed due to environment issues, let's skip it." | A test that never failed tests nothing. Fix the code or stop.            |
+| "The code compiles, so the implementation is complete."     | Run the full test suite with race detection enabled. Show the exit code. |
 
 These tables remove the ambiguity that allows an LLM to justify skipping verification steps.
 
@@ -115,6 +126,7 @@ Instead of executing large, open-ended tasks in a single prompt, work in Alexand
 ### Phase 1: DEFINE (`/spec`)
 
 Requirements were clarified before touching any source files. Using `spec-driven-development`, the agent produced a formal specification in `docs/specs/` defining:
+
 - HTTP request/response schemas and status codes.
 - Database migration requirements.
 - Error taxonomy and timeouts.
@@ -127,6 +139,7 @@ The spec remained in `DRAFT` until reviewed. Once signed off, its status moved t
 Feeding an entire 400-line specification into an agent for immediate implementation causes context fatigue. The agent forgets earlier constraints and introduces regressions.
 
 The `planning-and-task-breakdown` skill decomposed the spec into sequential, atomic tasks:
+
 - Each task targeted approximately 100 lines of code.
 - Tasks had explicit dependency ordering.
 - Every task defined its exact verification command.
@@ -137,14 +150,11 @@ In the implementation phase, `test-driven-development` required the agent to wri
 
 We verified the failure directly in the terminal:
 
-<Terminal
-  title="Running red phase test in terminal"
-  command="go test -v -run TestPairingSession_ExpiredRejection ./internal/domain/pairing/..."
->
---- FAIL: TestPairingSession_ExpiredRejection (0.01s)
+<Terminal>
+  {`--- FAIL: TestPairingSession_ExpiredRejection (0.01s)
     pairing_test.go:42: expected error ErrSessionExpired, got nil
 FAIL
-exit status 1
+exit status 1`}
 </Terminal>
 
 Only after the failure was confirmed did the agent implement the minimal Go code required to satisfy the assertion.
@@ -152,6 +162,7 @@ Only after the failure was confirmed did the agent implement the minimal Go code
 ### Phase 4: VERIFY (`/test`)
 
 Verification required empirical proof from tool execution:
+
 - `golangci-lint run ./...`
 - `go test -race -count=1 ./...`
 - `pnpm --filter desktop typecheck`
@@ -202,6 +213,7 @@ The handler accepted an `X-Library-Id` header, but the repository query looked u
 Because Constitution Rule 10 prohibits closing a roadmap phase with unresolved audit findings, the phase was blocked.
 
 To resolve it:
+
 1. We amended the specification (`backend-reading-api.md`).
 2. We wrote a failing test attempting a cross-tenant read.
 3. We updated the repository signature and SQL queries to require compound keys `(tenant_id, id)`.
@@ -222,8 +234,8 @@ Enforcing this level of structure on AI agents is not free. It introduces concre
       "58 specifications and 37 ADRs represent significant writing and review time",
       "Process feels slower in early stages compared to unconstrained prompt coding",
       "Human maintainer must review diffs carefully; the agent cannot verify architectural intent alone",
-      "Modifying specs when requirements shift requires discipline to avoid documentation drift"
-    ]
+      "Modifying specs when requirements shift requires discipline to avoid documentation drift",
+    ],
   }}
   right={{
     title: "Observed Benefits",
@@ -231,8 +243,8 @@ Enforcing this level of structure on AI agents is not free. It introduces concre
       "Zero silent architectural regressions across 15 complex roadmap phases",
       "Strict TDD ensured every test actually verified a failure condition",
       "Security vulnerabilities (like AUDIT-0012-C1) were caught mechanically before merge",
-      "Active instruction token overhead reduced by more than 60% via progressive disclosure"
-    ]
+      "Active instruction token overhead reduced by more than 60% via progressive disclosure",
+    ],
   }}
 />
 
@@ -241,6 +253,7 @@ Enforcing this level of structure on AI agents is not free. It introduces concre
 AI coding agents do not possess architectural judgment. They do not understand the long-term operational implications of choosing one persistence model over another.
 
 In Alexandryn, the following responsibilities remained entirely human:
+
 - **Defining domain invariants**: Deciding that Metadata and Source must never touch the UI domain.
 - **Threat modeling**: Recognizing that users might import malicious EPUB files with XML entity expansion attacks.
 - **Reviewing diffs**: Catching subtle edge-case omissions that still compile cleanly.

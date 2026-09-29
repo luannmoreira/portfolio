@@ -1,7 +1,15 @@
 ---
 title: "Como Usei os Princípios Centrais de AI Skills para Estruturar um Grande App: Engenharia de Produção com agent-skills"
 date: "2026-09-29"
-tags: ["ai", "software-engineering", "architecture", "agent-skills", "go", "testing"]
+tags:
+  [
+    "ai",
+    "software-engineering",
+    "architecture",
+    "agent-skills",
+    "go",
+    "testing",
+  ]
 excerpt: "Um relato técnico de campo sobre o desenvolvimento do Alexandryn (um sistema de biblioteca desktop e servidor em Go, PostgreSQL e React) usando uma constituição de engenharia, divulgação progressiva de contexto e portões empíricos de verificação."
 draft: false
 coverImage: "/content/blog/pt-BR/how-did-i-use-ai-skill-core-principles-to-base-a-big-app/cover.png"
@@ -70,8 +78,11 @@ A constituição vale para mantenedores humanos e agentes de IA. Ela define 12 r
   title="Constituição Alexandryn: Regra 1 e Regra 2"
   description="Regras fundamentais de ciclo de vida para alterações em Go, React e Electron."
 >
+
 - **Regra 1: A especificação precede a implementação.** O comportamento nasce em uma spec, é revisado e só então implementado. Ciclo: `DRAFT → REVIEWED → APPROVED → IMPLEMENTED → VERIFIED`. Nada com status inferior a `APPROVED` é construído.
+
 - **Regra 2: Testes definem o comportamento.** O fluxo padrão é `RED → GREEN → REFACTOR → VERIFY → AUDIT`. Um teste que nunca falhou não provou nada. Nunca exclua ou ignore um teste com falha para deixar a build verde.
+
 </Decision>
 
 Outras três regras estruturais foram essenciais para manter a estabilidade do sistema:
@@ -97,12 +108,12 @@ O `agent-skills` combate isso por meio de **tabelas anti-racionalização**.
 
 Cada habilidade define uma matriz explícita que confronta desculpas comuns dos modelos com exigências técnicas diretas:
 
-| Racionalização da IA | Exigência Impositiva |
-|---|---|
-| "Uma especificação é exagero para um endpoint tão simples." | Nenhum comportamento novo entra sem spec. Escreva a spec ou recuse a tarefa. |
-| "Vou fazer os testes assim que o código funcionar." | Testes feitos depois comprovam o que o código *faz*, não o que ele *deveria fazer*. |
-| "Esse teste falhou por instabilidade do ambiente, vamos pular." | Teste que nunca quebrou não testa nada. Corrija o código ou pare o trabalho. |
-| "O código compila, logo a implementação está pronta." | Execute a suíte de testes com race detection ativado. Exiba o código de saída. |
+| Racionalização da IA                                            | Exigência Impositiva                                                                |
+| --------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| "Uma especificação é exagero para um endpoint tão simples."     | Nenhum comportamento novo entra sem spec. Escreva a spec ou recuse a tarefa.        |
+| "Vou fazer os testes assim que o código funcionar."             | Testes feitos depois comprovam o que o código _faz_, não o que ele _deveria fazer_. |
+| "Esse teste falhou por instabilidade do ambiente, vamos pular." | Teste que nunca quebrou não testa nada. Corrija o código ou pare o trabalho.        |
+| "O código compila, logo a implementação está pronta."           | Execute a suíte de testes com race detection ativado. Exiba o código de saída.      |
 
 Essas tabelas removem a margem de ambiguidade que permite à IA justificar a omissão de etapas de verificação.
 
@@ -115,6 +126,7 @@ Em vez de executar tarefas amplas em um único comando, o trabalho no Alexandryn
 ### Fase 1: DEFINIR (`/spec`)
 
 Os requisitos eram refinados antes de alterar qualquer código-fonte. Com `spec-driven-development`, o agente redigia uma especificação formal em `docs/specs/` detalhando:
+
 - Contratos de requisição/resposta HTTP e códigos de status.
 - Migrações necessárias no banco de dados.
 - Taxonomia de erros e limites de tempo de execução.
@@ -127,6 +139,7 @@ A spec permanecia em `DRAFT` até ser revisada e ter seu status alterado para `A
 Entregar uma especificação extensa para implementação direta esgota a capacidade de retenção do modelo, provocando esquecimento de restrições anteriores.
 
 A habilidade `planning-and-task-breakdown` dividia a spec em tarefas sequenciais e atômicas:
+
 - Cada tarefa cobria cerca de 100 linhas de código.
 - Havia uma ordenação estrita de dependências entre tarefas.
 - Cada tarefa especificava o comando exato de verificação.
@@ -137,14 +150,11 @@ Na implementação, `test-driven-development` exigia que o agente escrevesse um 
 
 Confirmávamos a falha diretamente no terminal:
 
-<Terminal
-  title="Executando teste na fase vermelha"
-  command="go test -v -run TestPairingSession_ExpiredRejection ./internal/domain/pairing/..."
->
---- FAIL: TestPairingSession_ExpiredRejection (0.01s)
+<Terminal>
+  {`--- FAIL: TestPairingSession_ExpiredRejection (0.01s)
     pairing_test.go:42: expected error ErrSessionExpired, got nil
 FAIL
-exit status 1
+exit status 1`}
 </Terminal>
 
 Somente após a falha ser comprovada no log de execução o agente escrevia o código Go necessário para satisfazer a asserção.
@@ -152,6 +162,7 @@ Somente após a falha ser comprovada no log de execução o agente escrevia o c�
 ### Fase 4: VERIFICAR (`/test`)
 
 A validação dependia de evidências de execução prática das ferramentas:
+
 - `golangci-lint run ./...`
 - `go test -race -count=1 ./...`
 - `pnpm --filter desktop typecheck`
@@ -202,6 +213,7 @@ O handler recebia o cabeçalho `X-Library-Id`, mas a query do repositório busca
 A Regra 10 da Constituição proibia concluir uma fase com apontamentos de auditoria pendentes, o que congelou o encerramento da entrega.
 
 Para corrigir o problema:
+
 1. Atualizamos a especificação técnica (`backend-reading-api.md`).
 2. Criamos um teste com falha demonstrando a leitura indevida entre tenants.
 3. Ajustamos as assinaturas do repositório e as queries SQL para exigir chaves compostas `(tenant_id, id)`.
@@ -222,8 +234,8 @@ Impor essa estrutura sobre agentes de código traz uma sobrecarga de trabalho qu
       "58 especificações e 37 ADRs exigem tempo considerável de redação e revisão",
       "O ritmo inicial parece mais lento se comparado ao desenvolvimento com prompts livres",
       "O mantenedor humano precisa revisar diffs com atenção; o agente não avalia intenção arquitetural sozinho",
-      "Alterar especificações quando requisitos mudam exige disciplina constante para evitar descompasso documental"
-    ]
+      "Alterar especificações quando requisitos mudam exige disciplina constante para evitar descompasso documental",
+    ],
   }}
   right={{
     title: "Benefícios Observados",
@@ -231,8 +243,8 @@ Impor essa estrutura sobre agentes de código traz uma sobrecarga de trabalho qu
       "As regressões arquiteturais conhecidas foram contidas ao longo de 15 fases densas de roadmap",
       "O TDD rigoroso garantiu que cada teste comprovasse uma condição real de falha",
       "Falhas graves de segurança (como AUDIT-0012-C1) foram detectadas antes do merge",
-      "O consumo de tokens de instruções ativas caiu mais de 60% com a divulgação progressiva"
-    ]
+      "O consumo de tokens de instruções ativas caiu mais de 60% com a divulgação progressiva",
+    ],
   }}
 />
 
@@ -241,6 +253,7 @@ Impor essa estrutura sobre agentes de código traz uma sobrecarga de trabalho qu
 Agentes de código com IA não possuem julgamento arquitetural. Eles não avaliam os impactos operacionais de longo prazo de escolhas de persistência ou protocolos de comunicação.
 
 No Alexandryn, as decisões cruciais dependeram inteiramente de análise humana:
+
 - **Definir invariantes de domínio**: Garantir que dados de Metadados e Fontes nunca se misturem ao domínio da interface.
 - **Modelagem de ameaças**: Prever ataques de expansão de entidades XML ao descompactar arquivos EPUB enviados por usuários.
 - **Auditoria de diffs**: Identificar omissões sutis de casos de borda em códigos que compilam sem erros.
