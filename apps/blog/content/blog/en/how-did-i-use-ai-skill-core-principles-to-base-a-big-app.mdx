@@ -1,0 +1,258 @@
+---
+title: "How I Used AI Skill Core Principles to Build a Big App: Production-Grade Engineering with agent-skills"
+date: "2026-09-29"
+tags: ["ai", "software-engineering", "architecture", "agent-skills", "go", "testing"]
+excerpt: "A technical field report on building Alexandryn (a full-stack desktop and server library in Go, PostgreSQL, and React) using an engineering constitution, progressive context disclosure, and empirical verification gates."
+draft: false
+coverImage: "/content/blog/en/how-did-i-use-ai-skill-core-principles-to-base-a-big-app/cover.png"
+---
+
+_A technical field report on building Alexandryn (a full-stack Go, PostgreSQL, and React desktop system) using an engineering constitution, progressive context disclosure, and empirical verification gates._
+
+---
+
+When an AI coding agent writes code without strict boundaries, the failure mode is predictable.
+
+The initial progress feels deceptively fast. The agent produces working functions and passes basic smoke tests. But as soon as the project spans multiple packages and reaches a few thousand lines of code, subtle defects accumulate:
+
+- The model invents methods for external packages that do not exist in the installed version.
+- When a test fails, the agent modifies the test assertions instead of fixing the implementation.
+- Tests written after the code end up confirming the current behavior, including any logic bugs already present.
+- Architectural boundaries erode as handlers begin making direct database queries or importing domain models across isolated layers.
+
+I built **Alexandryn**, a self-hosted digital library system. It features a Go 1.27 backend, PostgreSQL storage, an Electron desktop host, and a React frontend. The application handles local disk access, encrypted book vaults, multi-tenant library namespaces, local network synchronization, and in-process ACME TLS certificates.
+
+In a system that reads user files and exposes network listeners, architectural drift creates immediate security and data corruption risks.
+
+To build Alexandryn with AI without compromising technical integrity, I used Addy Osmani's `agent-skills` framework and an engineering constitution.
+
+This is a field report on what worked, what failed, and the real maintenance costs of that governance model.
+
+---
+
+## 1. Why Monolithic System Prompts Fail
+
+A common approach to controlling AI coding agents is creating a massive system prompt. Many repositories maintain a single `CLAUDE.md` or `.cursorrules` file with thousands of lines covering style guides, architectural rules, and test conventions.
+
+In Alexandryn, that approach broke down quickly for two reasons:
+
+1. **Context Window Dilution**: Forcing the model to ingest 30,000 tokens of rules on every prompt degrades attention. Critical instructions regarding error handling or tenancy isolation get buried in the middle of the context window.
+2. **Resource Inefficiency**: The model processes thousands of tokens of unrelated rules when you only need it to fix a specific query in a repository file.
+
+The `agent-skills` framework addresses this through **progressive disclosure**.
+
+Rather than dumping the entire rulebook into every turn, skills operate as modular units loaded on demand. The system activates only the relevant `SKILL.md` entry point for the active phase of work. Deep reference material, checklists, and anti-pattern guides are loaded only when the task requires them.
+
+```
+┌────────────────────────────────────────────────────────┐
+│                      AGENT-SKILLS                      │
+│                                                        │
+│   DEFINE       PLAN        BUILD      VERIFY    REVIEW │
+│   /spec       /plan       /build      /test    /review │
+│     │           │           │           │         │    │
+│     ▼           ▼           ▼           ▼         ▼    │
+│  [PRD &      [Atomic     [TDD Red    [DevTools  [Five- │
+│ Invariants]  Slices]    Green Refactor] Runtime] Axis] │
+└────────────────────────────────────────────────────────┘
+```
+
+By scoping the prompt context to the specific task, active instruction overhead stayed below 3,500 tokens per subtask in Alexandryn, preserving the model's reasoning capacity for code logic.
+
+---
+
+## 2. The Engineering Constitution and Invariant Rules
+
+An agent needs an unambiguous standard of truth. In Alexandryn, that standard is defined in `docs/constitution.md`.
+
+The constitution applies equally to human maintainers and automated agents. It establishes 12 invariant rules that cannot be bypassed for convenience:
+
+<Decision
+  title="Alexandryn Constitution: Rule 1 & Rule 2"
+  description="Core lifecycle rules governing all changes across Go, React, and Electron."
+>
+- **Rule 1: Specification precedes implementation.** Behaviour is decided in a spec, reviewed, and only then built. Lifecycle: `DRAFT → REVIEWED → APPROVED → IMPLEMENTED → VERIFIED`. Nothing below `APPROVED` gets implemented.
+- **Rule 2: Tests define behaviour.** The default loop is `RED → GREEN → REFACTOR → VERIFY → AUDIT`. A test that has never failed has not been shown to test anything. Never delete or skip a failing test to make a build green.
+</Decision>
+
+Three other structural rules were critical in keeping the codebase manageable:
+
+1. **Domain boundaries are load-bearing (Rule 3)**:
+   Three concerns remain permanently separate: Metadata (what a book is), Source (where files come from), and Domain (what the user owns and reads). An Open Library response shape never reaches the user interface. An OPDS feed protocol never enters the domain layer.
+2. **All external input is hostile (Rule 4)**:
+   Every file read from disk, every network payload, and every value crossing the Electron IPC bridge is validated with size limits, shape checks, and timeouts.
+3. **Adversarial review is routine (Rule 10)**:
+   Every major milestone undergoes a hostile audit before closing. The agent must evaluate: _"What happens when the input is malformed, enormous, duplicated, or malicious?"_
+
+---
+
+## 3. Addressing Agent Shortcuts with Anti-Rationalization Tables
+
+Language models are optimized to provide helpful-sounding answers with minimal friction. In software development, that tendency translates into cutting corners:
+
+- When an agent encounters an edge case, it often omits validation to produce cleaner-looking code.
+- When an agent writes tests after implementing a function, it writes assertions that simply mirror the existing output, missing underlying logical flaws.
+- When a test fails due to an environmental dependency, the agent frequently attempts to comment out or skip the assertion.
+
+`agent-skills` combats this with **anti-rationalization tables**.
+
+Each skill defines an explicit matrix that pairs common model rationalizations with strict rebuttals:
+
+| Agent Rationalization | Enforced Requirement |
+|---|---|
+| "The spec is overkill for this small endpoint." | No un-specced behaviour lands. Write the spec or reject the task. |
+| "I'll write the tests once the handler works." | Tests written post-hoc assert what code *does*, not what it *should* do. |
+| "The test failed due to environment issues, let's skip it." | A test that never failed tests nothing. Fix the code or stop. |
+| "The code compiles, so the implementation is complete." | Run the full test suite with race detection enabled. Show the exit code. |
+
+These tables remove the ambiguity that allows an LLM to justify skipping verification steps.
+
+---
+
+## 4. The 6-Phase Lifecycle in Alexandryn
+
+Instead of executing large, open-ended tasks in a single prompt, work in Alexandryn followed a structured 6-phase lifecycle mapped to specific slash commands:
+
+### Phase 1: DEFINE (`/spec`)
+
+Requirements were clarified before touching any source files. Using `spec-driven-development`, the agent produced a formal specification in `docs/specs/` defining:
+- HTTP request/response schemas and status codes.
+- Database migration requirements.
+- Error taxonomy and timeouts.
+- Explicit acceptance criteria.
+
+The spec remained in `DRAFT` until reviewed. Once signed off, its status moved to `APPROVED`.
+
+### Phase 2: PLAN (`/plan`)
+
+Feeding an entire 400-line specification into an agent for immediate implementation causes context fatigue. The agent forgets earlier constraints and introduces regressions.
+
+The `planning-and-task-breakdown` skill decomposed the spec into sequential, atomic tasks:
+- Each task targeted approximately 100 lines of code.
+- Tasks had explicit dependency ordering.
+- Every task defined its exact verification command.
+
+### Phase 3: BUILD (`/build`)
+
+In the implementation phase, `test-driven-development` required the agent to write a failing test first.
+
+We verified the failure directly in the terminal:
+
+<Terminal
+  title="Running red phase test in terminal"
+  command="go test -v -run TestPairingSession_ExpiredRejection ./internal/domain/pairing/..."
+>
+--- FAIL: TestPairingSession_ExpiredRejection (0.01s)
+    pairing_test.go:42: expected error ErrSessionExpired, got nil
+FAIL
+exit status 1
+</Terminal>
+
+Only after the failure was confirmed did the agent implement the minimal Go code required to satisfy the assertion.
+
+### Phase 4: VERIFY (`/test`)
+
+Verification required empirical proof from tool execution:
+- `golangci-lint run ./...`
+- `go test -race -count=1 ./...`
+- `pnpm --filter desktop typecheck`
+- Playwright E2E tests for browser and Electron interactions.
+
+If any check failed, the **Stop-the-Line** rule was triggered. The agent was prohibited from writing new features until the pipeline returned to green.
+
+### Phase 5: REVIEW (`/review`)
+
+Before merging into the main branch, code was evaluated using `code-review-and-quality` across five axes: correctness, readability, architecture, security, and performance.
+
+We also applied `code-simplification` based on Chesterton's Fence: if the agent introduced 70 lines of custom helper functions where standard library primitives existed, the unnecessary code was eliminated.
+
+### Phase 6: SHIP (`/ship`)
+
+Using `git-workflow-and-versioning`, changes were committed as small, atomic units adhering to Conventional Commits. This ensured that if an unexpected regression surfaced later, `git bisect` could pinpoint the exact commit responsible.
+
+---
+
+## 5. Case Study: The AUDIT-0012-C1 IDOR Vulnerability
+
+The value of an engineering harness is demonstrated when it catches critical defects before code reaches production.
+
+During Phase 12 (Authentication and Multi-Library Tenancy), the agent implemented library switching and work lookup endpoints. The Go code compiled cleanly. All unit tests passed. Manual browser testing showed that books loaded correctly.
+
+Then we executed the mandatory **Gate 2 Adversarial Review** (`security-auditor`).
+
+The audit analyzed the HTTP handler call sites:
+
+```go
+// The vulnerable implementation before Gate 2 review
+func (h *Handler) GetLibraryEntry(w http.ResponseWriter, r *http.Request) {
+    id := chi.URLParam(r, "id")
+    // Vulnerability: ID was queried globally without scoping to the active library
+    entry, err := h.repo.FindByID(r.Context(), id)
+    if err != nil {
+        http.Error(w, "not found", http.StatusNotFound)
+        return
+    }
+    json.NewEncoder(w).Encode(entry)
+}
+```
+
+The review surfaced a critical security flaw: **AUDIT-0012-C1**.
+
+The handler accepted an `X-Library-Id` header, but the repository query looked up the book strictly by its primary key ID without verifying that the record belonged to the authenticated user's active library. A user in Library A could access books stored in Library B simply by knowing or guessing the entity ID. This was an Insecure Direct Object Reference (IDOR).
+
+Because Constitution Rule 10 prohibits closing a roadmap phase with unresolved audit findings, the phase was blocked.
+
+To resolve it:
+1. We amended the specification (`backend-reading-api.md`).
+2. We wrote a failing test attempting a cross-tenant read.
+3. We updated the repository signature and SQL queries to require compound keys `(tenant_id, id)`.
+4. We verified that the exploit test now returned an HTTP 404/403.
+
+Without an adversarial audit gate, this vulnerability would have shipped unnoticed, because the happy-path unit tests and the compiler had no reason to complain.
+
+---
+
+## 6. The Real Costs and Trade-offs of the Governance Harness
+
+Enforcing this level of structure on AI agents is not free. It introduces concrete overhead that any engineering team must weigh:
+
+<Tradeoff
+  left={{
+    title: "Overhead and Friction",
+    points: [
+      "58 specifications and 37 ADRs represent significant writing and review time",
+      "Process feels slower in early stages compared to unconstrained prompt coding",
+      "Human maintainer must review diffs carefully; the agent cannot verify architectural intent alone",
+      "Modifying specs when requirements shift requires discipline to avoid documentation drift"
+    ]
+  }}
+  right={{
+    title: "Observed Benefits",
+    points: [
+      "Zero silent architectural regressions across 15 complex roadmap phases",
+      "Strict TDD ensured every test actually verified a failure condition",
+      "Security vulnerabilities (like AUDIT-0012-C1) were caught mechanically before merge",
+      "Active instruction token overhead reduced by more than 60% via progressive disclosure"
+    ]
+  }}
+/>
+
+### What Remains the Developer's Responsibility
+
+AI coding agents do not possess architectural judgment. They do not understand the long-term operational implications of choosing one persistence model over another.
+
+In Alexandryn, the following responsibilities remained entirely human:
+- **Defining domain invariants**: Deciding that Metadata and Source must never touch the UI domain.
+- **Threat modeling**: Recognizing that users might import malicious EPUB files with XML entity expansion attacks.
+- **Reviewing diffs**: Catching subtle edge-case omissions that still compile cleanly.
+
+If a developer does not understand the domain or fails to inspect the generated code, an AI agent will simply produce structurally flawed code faster.
+
+---
+
+## 7. Conclusion
+
+Using AI agents to build production-grade software requires shifting where you spend your engineering effort.
+
+Instead of writing syntax line by line, you spend your time defining specifications, setting domain boundaries, and constructing verification gates. The agent acts as an execution engine, while the engineering constitution and the `agent-skills` harness ensure the code remains grounded in verified reality.
+
+This approach introduces real process overhead. For quick prototypes or throwaway scripts, it is unnecessary bureaucracy. But for systems like Alexandryn.. where security, data integrity, and architectural longevity matter.. having an unyielding set of rules is the only reason the project remained stable across 15 development phases.
