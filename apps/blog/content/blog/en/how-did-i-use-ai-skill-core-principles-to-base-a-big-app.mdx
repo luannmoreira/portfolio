@@ -1,5 +1,5 @@
 ---
-title: "How I Used AI Skill Core Principles to Build a Big App: Production-Grade Engineering with agent-skills"
+title: "How I Used agent-skills to Build a Big App with AI"
 date: "2026-09-29"
 tags:
   [
@@ -51,17 +51,15 @@ The `agent-skills` framework addresses this through **progressive disclosure**.
 
 Rather than dumping the entire rulebook into every turn, skills operate as modular units loaded on demand. The system activates only the relevant `SKILL.md` entry point for the active phase of work. Deep reference material, checklists, and anti-pattern guides are loaded only when the task requires them.
 
-```
-┌────────────────────────────────────────────────────────┐
-│                      AGENT-SKILLS                      │
-│                                                        │
-│   DEFINE       PLAN        BUILD      VERIFY    REVIEW │
-│   /spec       /plan       /build      /test    /review │
-│     │           │           │           │         │    │
-│     ▼           ▼           ▼           ▼         ▼    │
-│  [PRD &      [Atomic     [TDD Red    [DevTools  [Five- │
-│ Invariants]  Slices]    Green Refactor] Runtime] Axis] │
-└────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+  P0["DEFINE · /spec<br/>PRD & invariants"]
+  P1["PLAN · /plan<br/>Atomic slices"]
+  P2["BUILD · /build<br/>TDD red-green-refactor"]
+  P3["VERIFY · /test<br/>Runtime evidence"]
+  P4["REVIEW · /review<br/>Five-axis review"]
+  P5["SHIP · /ship<br/>Atomic commits"]
+  P0 --> P1 --> P2 --> P3 --> P4 --> P5
 ```
 
 By scoping the prompt context to the specific task, active instruction overhead stayed below 3,500 tokens per subtask in Alexandryn, preserving the model's reasoning capacity for code logic.
@@ -76,8 +74,9 @@ The constitution applies equally to human maintainers and automated agents. It e
 
 <Decision
   title="Alexandryn Constitution: Rule 1 & Rule 2"
-  description="Core lifecycle rules governing all changes across Go, React, and Electron."
 >
+
+Core lifecycle rules governing all changes across Go, React, and Electron.
 
 - **Rule 1: Specification precedes implementation.** Behaviour is decided in a spec, reviewed, and only then built. Lifecycle: `DRAFT → REVIEWED → APPROVED → IMPLEMENTED → VERIFIED`. Nothing below `APPROVED` gets implemented.
 
@@ -227,26 +226,23 @@ Without an adversarial audit gate, this vulnerability would have shipped unnotic
 
 Enforcing this level of structure on AI agents is not free. It introduces concrete overhead that any engineering team must weigh:
 
-<Tradeoff
-  left={{
-    title: "Overhead and Friction",
-    points: [
-      "58 specifications and 37 ADRs represent significant writing and review time",
-      "Process feels slower in early stages compared to unconstrained prompt coding",
-      "Human maintainer must review diffs carefully; the agent cannot verify architectural intent alone",
-      "Modifying specs when requirements shift requires discipline to avoid documentation drift",
-    ],
-  }}
-  right={{
-    title: "Observed Benefits",
-    points: [
-      "Zero silent architectural regressions across 15 complex roadmap phases",
-      "Strict TDD ensured every test actually verified a failure condition",
-      "Security vulnerabilities (like AUDIT-0012-C1) were caught mechanically before merge",
-      "Active instruction token overhead reduced by more than 60% via progressive disclosure",
-    ],
-  }}
-/>
+<Tradeoff title="Overhead vs. observed benefits">
+
+**Overhead and Friction**
+
+- 58 specifications and 37 ADRs represent significant writing and review time
+- Process feels slower in early stages compared to unconstrained prompt coding
+- Human maintainer must review diffs carefully; the agent cannot verify architectural intent alone
+- Modifying specs when requirements shift requires discipline to avoid documentation drift
+
+**Observed Benefits**
+
+- Known architectural regressions were contained across 15 dense roadmap phases
+- Strict TDD ensured every test actually verified a failure condition
+- Serious security flaws (like AUDIT-0012-C1) were caught before merge
+- Active instruction token overhead reduced by more than 60% via progressive disclosure
+
+</Tradeoff>
 
 ### What Remains the Developer's Responsibility
 
@@ -268,4 +264,4 @@ Using AI agents to build production-grade software requires shifting where you s
 
 Instead of writing syntax line by line, you spend your time defining specifications, setting domain boundaries, and constructing verification gates. The agent acts as an execution engine, while the engineering constitution and the `agent-skills` harness ensure the code remains grounded in verified reality.
 
-This approach introduces real process overhead. For quick prototypes or throwaway scripts, it is unnecessary bureaucracy. But for systems like Alexandryn.. where security, data integrity, and architectural longevity matter.. having an unyielding set of rules is the only reason the project remained stable across 15 development phases.
+This approach introduces real process overhead. For quick prototypes or throwaway scripts, it is unnecessary bureaucracy. But for systems like Alexandryn, where security, data integrity, and architectural longevity matter, having an unyielding set of rules is the only reason the project remained stable across 15 development phases.

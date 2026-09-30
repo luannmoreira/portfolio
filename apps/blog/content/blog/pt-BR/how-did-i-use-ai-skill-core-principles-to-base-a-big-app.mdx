@@ -1,5 +1,5 @@
 ---
-title: "Como Usei os Princípios Centrais de AI Skills para Estruturar um Grande App: Engenharia de Produção com agent-skills"
+title: "Como Usei agent-skills para Construir um Grande App com IA"
 date: "2026-09-29"
 tags:
   [
@@ -51,17 +51,15 @@ O framework `agent-skills` resolve isso aplicando **divulgação progressiva** (
 
 Em vez de carregar todas as regras de uma vez, as habilidades operam como unidades modulares sob demanda. O sistema ativa apenas o arquivo `SKILL.md` relevante para a etapa atual. Checklists aprofundados e materiais de referência entram na memória apenas quando a tarefa ativa exige.
 
-```
-┌────────────────────────────────────────────────────────┐
-│                      AGENT-SKILLS                      │
-│                                                        │
-│   DEFINE       PLAN        BUILD      VERIFY    REVIEW │
-│   /spec       /plan       /build      /test    /review │
-│     │           │           │           │         │    │
-│     ▼           ▼           ▼           ▼         ▼    │
-│  [PRD e      [Tarefas    [TDD Red    [Runtime   [Cinco │
-│ Invariantes] Atômicas]  Green Refactor] DevTools] Eixos]│
-└────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+  P0["DEFINE · /spec<br/>PRD e invariantes"]
+  P1["PLAN · /plan<br/>Tarefas atômicas"]
+  P2["BUILD · /build<br/>TDD red-green-refactor"]
+  P3["VERIFY · /test<br/>Evidência em runtime"]
+  P4["REVIEW · /review<br/>Revisão em cinco eixos"]
+  P5["SHIP · /ship<br/>Commits atômicos"]
+  P0 --> P1 --> P2 --> P3 --> P4 --> P5
 ```
 
 Ao restringir o contexto ao trabalho imediato, o overhead de instruções ativas ficou abaixo de 3.500 tokens por subtarefa no Alexandryn, preservando a precisão lógica do modelo para o código.
@@ -76,8 +74,9 @@ A constituição vale para mantenedores humanos e agentes de IA. Ela define 12 r
 
 <Decision
   title="Constituição Alexandryn: Regra 1 e Regra 2"
-  description="Regras fundamentais de ciclo de vida para alterações em Go, React e Electron."
 >
+
+Regras fundamentais de ciclo de vida para alterações em Go, React e Electron.
 
 - **Regra 1: A especificação precede a implementação.** O comportamento nasce em uma spec, é revisado e só então implementado. Ciclo: `DRAFT → REVIEWED → APPROVED → IMPLEMENTED → VERIFIED`. Nada com status inferior a `APPROVED` é construído.
 
@@ -227,26 +226,23 @@ Sem o portão de auditoria hostil, essa falha teria passado despercebida, pois t
 
 Impor essa estrutura sobre agentes de código traz uma sobrecarga de trabalho que precisa ser avaliada:
 
-<Tradeoff
-  left={{
-    title: "Atritos e Sobrecarga",
-    points: [
-      "58 especificações e 37 ADRs exigem tempo considerável de redação e revisão",
-      "O ritmo inicial parece mais lento se comparado ao desenvolvimento com prompts livres",
-      "O mantenedor humano precisa revisar diffs com atenção; o agente não avalia intenção arquitetural sozinho",
-      "Alterar especificações quando requisitos mudam exige disciplina constante para evitar descompasso documental",
-    ],
-  }}
-  right={{
-    title: "Benefícios Observados",
-    points: [
-      "As regressões arquiteturais conhecidas foram contidas ao longo de 15 fases densas de roadmap",
-      "O TDD rigoroso garantiu que cada teste comprovasse uma condição real de falha",
-      "Falhas graves de segurança (como AUDIT-0012-C1) foram detectadas antes do merge",
-      "O consumo de tokens de instruções ativas caiu mais de 60% com a divulgação progressiva",
-    ],
-  }}
-/>
+<Tradeoff title="Sobrecarga vs. benefícios observados">
+
+**Atritos e Sobrecarga**
+
+- 58 especificações e 37 ADRs exigem tempo considerável de redação e revisão
+- O ritmo inicial parece mais lento se comparado ao desenvolvimento com prompts livres
+- O mantenedor humano precisa revisar diffs com atenção; o agente não avalia intenção arquitetural sozinho
+- Alterar especificações quando requisitos mudam exige disciplina constante para evitar descompasso documental
+
+**Benefícios Observados**
+
+- As regressões arquiteturais conhecidas foram contidas ao longo de 15 fases densas de roadmap
+- O TDD rigoroso garantiu que cada teste comprovasse uma condição real de falha
+- Falhas graves de segurança (como AUDIT-0012-C1) foram detectadas antes do merge
+- O consumo de tokens de instruções ativas caiu mais de 60% com a divulgação progressiva
+
+</Tradeoff>
 
 ### O Que Continua Sob Responsabilidade do Desenvolvedor
 
@@ -268,4 +264,4 @@ Utilizar agentes de IA no desenvolvimento de software de produção exige reorga
 
 Em vez de focar primariamente na escrita de sintaxe, o trabalho se concentra em formular especificações, delimitar fronteiras de domínio e estabelecer portões objetivos de verificação. O agente funciona como um executor de código, enquanto a constituição de engenharia e o `agent-skills` mantêm o processo alinhado a critérios verificáveis.
 
-Esse método introduz uma sobrecarga real de processo. Para protótipos rápidos ou scripts pontuais, trata-se de burocracia excessiva. No entanto, para sistemas como o Alexandryn.. em que segurança, integridade de dados e clareza arquitetural são requisitos indispensáveis.. manter um conjunto rígido de regras foi o fator determinante para a estabilidade do projeto ao longo de 15 fases de desenvolvimento.
+Esse método introduz uma sobrecarga real de processo. Para protótipos rápidos ou scripts pontuais, trata-se de burocracia excessiva. No entanto, para sistemas como o Alexandryn, em que segurança, integridade de dados e clareza arquitetural são requisitos indispensáveis, manter um conjunto rígido de regras foi o fator determinante para a estabilidade do projeto ao longo de 15 fases de desenvolvimento.
