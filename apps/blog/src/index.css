@@ -95,6 +95,22 @@ code {
 .prose ol {
   padding-left: 1.5em;
 }
+/* Tailwind's preflight resets list-style to none — without these, bullets
+   and step numbers vanish and a numbered procedure reads as loose lines. */
+.prose ul {
+  list-style-type: disc;
+}
+.prose ol {
+  list-style-type: decimal;
+}
+/* Block-level MDX output (code figures, Callout/Terminal wrappers, Mermaid
+   SVGs) carries no margin of its own, so the next paragraph would sit flush
+   against it. */
+.prose > figure,
+.prose > div,
+.prose > svg {
+  margin-bottom: var(--spacing-stack-sm);
+}
 .prose li {
   margin-bottom: calc(var(--spacing-unit) / 2);
 }
