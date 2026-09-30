@@ -36,7 +36,16 @@ export default defineConfig({
           // Must run before rehype-pretty-code: it targets the same
           // <pre><code class="language-mermaid"> shape rehype-pretty-code
           // would otherwise syntax-highlight as if it were plain code.
-          [rehypeMermaid, { strategy: "inline-svg", colorScheme: "dark" }],
+          // lineColor: Mermaid's default #333333 edges are near-invisible on
+          // the fixed dark card svg.flowchart sits on (index.css).
+          [
+            rehypeMermaid,
+            {
+              strategy: "inline-svg",
+              colorScheme: "dark",
+              mermaidConfig: { themeVariables: { lineColor: "#94a3b8" } },
+            },
+          ],
           rehypeSlug,
           [rehypeAutolinkHeadings, { behavior: "wrap" }],
           [
