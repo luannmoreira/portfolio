@@ -23,7 +23,9 @@ function Pre(props: ComponentPropsWithoutRef<"pre">) {
       <pre
         ref={preRef}
         {...props}
-        className={`overflow-x-auto ${props.className ?? ""}`}
+        // pt-10 reserves a strip above the first line for the absolutely
+        // positioned copy button — otherwise it covers code on narrow screens.
+        className={`overflow-x-auto pt-10 ${props.className ?? ""}`}
       />
       <button
         type="button"

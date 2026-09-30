@@ -29,7 +29,8 @@ export default defineConfig({
       // the default "chromium" project only.
       name: "mobile-chromium",
       use: { ...devices["Pixel 7"] },
-      testMatch: /accessibility\.spec\.ts|mobile-nav\.spec\.ts/,
+      testMatch:
+        /accessibility\.spec\.ts|mobile-nav\.spec\.ts|code-blocks\.spec\.ts/,
     },
   ],
   webServer: {
